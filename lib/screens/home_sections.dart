@@ -35,7 +35,7 @@ class _AskPharmacist extends StatelessWidget {
                                 child: FittedBox(
                                   fit: BoxFit.scaleDown,
                                   alignment: Alignment.centerLeft,
-                                  child: Text('PRIVATE BEAUTY CONSULT · ONLINE',
+                                  child: Text('AI PHARMACIST · 24/7 ONLINE',
                                       style: TextStyle(
                                           color: AppColors.berry,
                                           fontSize: 9,
@@ -45,12 +45,12 @@ class _AskPharmacist extends StatelessWidget {
                               ),
                             ]),
                             const Spacer(),
-                            Text('오늘의 피부 고민,\n리아 약사에게 맡겨보세요.',
+                            Text('궁금한 성분,\nAI 약사 챗봇에게\n물어보세요.',
                                 style:
                                     Theme.of(context).textTheme.headlineMedium),
                             const SizedBox(height: 12),
                             const Row(children: [
-                              Text('1:1 프라이빗 상담 시작',
+                              Text('AI 약사 챗봇 시작',
                                   style: TextStyle(
                                       color: AppColors.berry,
                                       fontSize: 11,
@@ -67,9 +67,9 @@ class _AskPharmacist extends StatelessWidget {
                       flex: 42,
                       child: Stack(fit: StackFit.expand, children: [
                         Image.asset(
-                          'assets/characters/pharmacist-lia-illustrated-violet.png',
+                          'assets/editorial/ai-molecule-violet-3d.png',
                           fit: BoxFit.cover,
-                          alignment: const Alignment(.05, -.32),
+                          alignment: const Alignment(.05, 0),
                         ),
                         const DecoratedBox(
                           decoration: BoxDecoration(

@@ -60,13 +60,23 @@ void main() {
     await tester.tap(find.byKey(const Key('pharmacist-chat-fab')));
     await tester.pumpAndSettle();
 
-    expect(find.text('리아 약사'), findsOneWidget);
+    expect(find.text('리아 AI 약사'), findsOneWidget);
     expect(find.textContaining('의료 진단·처방을 대신하지 않아요'), findsOneWidget);
 
     await tester.tap(find.text('레티날 사용법'));
     await tester.pumpAndSettle();
 
     expect(find.textContaining('저녁에 주 2회부터'), findsOneWidget);
+  });
+
+  test('ingredient chatbot explains a common pairing', () {
+    const service = PharmacistChatService();
+
+    expect(
+      service.answerFor('비타민 C와 나이아신아마이드 궁합'),
+      contains('함께 사용할 수 있어요'),
+    );
+    expect(service.answerFor('아침 사용 순서'), contains('자외선 차단제'));
   });
 
   testWidgets('shows the routine compatibility checker', (tester) async {

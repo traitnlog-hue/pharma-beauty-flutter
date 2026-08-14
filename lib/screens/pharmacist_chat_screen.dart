@@ -81,13 +81,13 @@ class _PharmacistChatScreenState extends State<PharmacistChatScreen> {
             _LiaAvatar(radius: 23),
             SizedBox(width: 11),
             Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
-              Text('리아 약사',
+              Text('리아 AI 약사',
                   style: TextStyle(fontSize: 16, fontWeight: FontWeight.w900)),
               SizedBox(height: 2),
               Row(children: [
                 CircleAvatar(radius: 3, backgroundColor: AppColors.fuchsia),
                 SizedBox(width: 5),
-                Text('성분 상담 중',
+                Text('24시간 성분 상담 중',
                     style: TextStyle(
                         color: AppColors.muted,
                         fontSize: 10,
@@ -113,7 +113,7 @@ class _PharmacistChatScreenState extends State<PharmacistChatScreen> {
                 SizedBox(width: 9),
                 Expanded(
                   child: Text(
-                    '화장품 성분 안내이며 의료 진단·처방을 대신하지 않아요.',
+                    '챗봇의 화장품 성분 안내이며 의료 진단·처방을 대신하지 않아요.',
                     style: TextStyle(fontSize: 10, height: 1.4),
                   ),
                 ),
@@ -191,8 +191,8 @@ class _LiaAvatar extends StatelessWidget {
   Widget build(BuildContext context) => CircleAvatar(
         radius: radius,
         backgroundColor: AppColors.oatmeal,
-        backgroundImage: const AssetImage(
-            'assets/characters/pharmacist-lia-illustrated-violet.png'),
+        backgroundImage:
+            const AssetImage('assets/editorial/ai-molecule-violet-3d.png'),
       );
 }
 
@@ -266,7 +266,7 @@ class _TypingBubble extends StatelessWidget {
             ),
             child: Padding(
               padding: EdgeInsets.symmetric(horizontal: 16, vertical: 12),
-              child: Text('답변을 정리하고 있어요 ···',
+              child: Text('성분 정보를 정리하고 있어요 ···',
                   style: TextStyle(color: AppColors.muted, fontSize: 11)),
             ),
           ),

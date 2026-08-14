@@ -175,10 +175,10 @@ class _AppShellState extends State<AppShell> {
               icon: const CircleAvatar(
                 radius: 16,
                 backgroundColor: AppColors.blush,
-                backgroundImage: AssetImage(
-                    'assets/characters/pharmacist-lia-illustrated-violet.png'),
+                backgroundImage:
+                    AssetImage('assets/editorial/ai-molecule-violet-3d.png'),
               ),
-              label: const Text('약사에게 물어보기',
+              label: const Text('AI 약사 챗봇',
                   style: TextStyle(fontSize: 10, fontWeight: FontWeight.w900)),
             ),
       bottomNavigationBar: SafeArea(
