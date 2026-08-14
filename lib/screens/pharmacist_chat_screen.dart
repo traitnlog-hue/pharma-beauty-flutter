@@ -85,7 +85,7 @@ class _PharmacistChatScreenState extends State<PharmacistChatScreen> {
                   style: TextStyle(fontSize: 16, fontWeight: FontWeight.w900)),
               SizedBox(height: 2),
               Row(children: [
-                CircleAvatar(radius: 3, backgroundColor: Color(0xFF42B883)),
+                CircleAvatar(radius: 3, backgroundColor: AppColors.fuchsia),
                 SizedBox(width: 5),
                 Text('성분 상담 중',
                     style: TextStyle(
@@ -103,9 +103,10 @@ class _PharmacistChatScreenState extends State<PharmacistChatScreen> {
               margin: const EdgeInsets.fromLTRB(16, 8, 16, 10),
               padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 11),
               decoration: BoxDecoration(
-                color: AppColors.mint,
+                color: AppColors.blush,
                 borderRadius: BorderRadius.circular(16),
-                border: Border.all(color: AppColors.sage.withValues(alpha: .2)),
+                border: Border.all(
+                    color: AppColors.roseGold.withValues(alpha: .45)),
               ),
               child: const Row(children: [
                 Icon(Icons.verified_user_outlined, size: 17),
@@ -137,6 +138,12 @@ class _PharmacistChatScreenState extends State<PharmacistChatScreen> {
                 itemCount: PharmacistChatService.prompts.length,
                 separatorBuilder: (_, __) => const SizedBox(width: 7),
                 itemBuilder: (_, index) => ActionChip(
+                  backgroundColor: AppColors.surface,
+                  side: const BorderSide(color: AppColors.roseGold),
+                  labelStyle: const TextStyle(
+                      color: AppColors.berry,
+                      fontSize: 11,
+                      fontWeight: FontWeight.w800),
                   label: Text(PharmacistChatService.prompts[index]),
                   onPressed: () => send(PharmacistChatService.prompts[index]),
                 ),
@@ -145,7 +152,7 @@ class _PharmacistChatScreenState extends State<PharmacistChatScreen> {
             Container(
               padding: const EdgeInsets.fromLTRB(12, 10, 12, 12),
               decoration: const BoxDecoration(
-                color: AppColors.surface,
+                color: AppColors.pearl,
                 border: Border(top: BorderSide(color: AppColors.line)),
               ),
               child: Row(children: [
@@ -185,7 +192,7 @@ class _LiaAvatar extends StatelessWidget {
         radius: radius,
         backgroundColor: AppColors.oatmeal,
         backgroundImage:
-            const AssetImage('assets/characters/pharmacist-lia.png'),
+            const AssetImage('assets/characters/pharmacist-lia-pink-glam.png'),
       );
 }
 
@@ -214,7 +221,7 @@ class _MessageBubble extends StatelessWidget {
                 decoration: BoxDecoration(
                   color: message.fromPharmacist
                       ? AppColors.surface
-                      : AppColors.deep,
+                      : AppColors.berry,
                   borderRadius: BorderRadius.only(
                     topLeft: const Radius.circular(20),
                     topRight: const Radius.circular(20),

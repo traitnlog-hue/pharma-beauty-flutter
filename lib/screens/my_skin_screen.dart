@@ -53,13 +53,13 @@ class MySkinScreen extends StatelessWidget {
               padding: const EdgeInsets.all(24),
               decoration: BoxDecoration(
                 gradient: const LinearGradient(
-                    colors: [AppColors.deep, Color(0xFF163D37)],
+                    colors: [AppColors.deep, AppColors.berry],
                     begin: Alignment.topLeft,
                     end: Alignment.bottomRight),
                 borderRadius: BorderRadius.circular(30),
                 boxShadow: const [
                   BoxShadow(
-                      color: Color(0x2410201D),
+                      color: Color(0x243A1425),
                       blurRadius: 30,
                       offset: Offset(0, 16))
                 ],
@@ -88,7 +88,7 @@ class MySkinScreen extends StatelessWidget {
                     const SizedBox(height: 8),
                     Text('PRIMARY CONCERN · $profileConcern',
                         style: const TextStyle(
-                            color: Color(0xFFB9C8C3),
+                            color: AppColors.ballerina,
                             fontSize: 10,
                             fontWeight: FontWeight.w700)),
                     const SizedBox(height: 20),
@@ -195,7 +195,8 @@ class _ProfileTag extends StatelessWidget {
   Widget build(BuildContext context) => Container(
       padding: const EdgeInsets.symmetric(horizontal: 11, vertical: 7),
       decoration: BoxDecoration(
-          color: const Color(0xFF16483F),
+          color: AppColors.fuchsia.withValues(alpha: .26),
+          border: Border.all(color: AppColors.roseGold),
           borderRadius: BorderRadius.circular(30)),
       child: Text(label,
           style: const TextStyle(

@@ -20,6 +20,7 @@ flutter:
   assets:
     - assets/products/
     - assets/characters/
+    - assets/editorial/
   fonts:
     - family: NotoSansKR
       fonts:

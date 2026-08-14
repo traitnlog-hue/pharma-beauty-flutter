@@ -39,7 +39,7 @@ void main() {
     await tester.pumpWidget(const PharmaBeautyApp());
 
     expect(find.text('PHARMA\nBEAUTY'), findsOneWidget);
-    expect(find.textContaining('피부가 보내는'), findsOneWidget);
+    expect(find.textContaining('피부를 돌보는'), findsOneWidget);
   });
 
   testWidgets('opens the ingredient discovery experience', (tester) async {

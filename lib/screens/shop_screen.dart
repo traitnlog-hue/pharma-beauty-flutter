@@ -69,24 +69,25 @@ class _ShopScreenState extends State<ShopScreen> {
         padding: const EdgeInsets.fromLTRB(22, 34, 22, 28),
         decoration: BoxDecoration(
           gradient: const LinearGradient(
-              colors: [AppColors.mint, Color(0xFFE4E0FF)],
+              colors: [AppColors.blush, AppColors.pearl, Color(0xFFF2C1D3)],
               begin: Alignment.topLeft,
               end: Alignment.bottomRight),
           borderRadius: BorderRadius.circular(32),
+          border: Border.all(color: AppColors.roseGold, width: .7),
         ),
         child: Center(
             child: ConstrainedBox(
           constraints: const BoxConstraints(maxWidth: 1040),
           child:
               Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
-            const Text('SHOP · SMART CATALOG',
+            const Text('THE BEAUTY CABINET · CURATED BY DATA',
                 style: TextStyle(
-                    color: AppColors.violet,
+                    color: AppColors.berry,
                     fontSize: 10,
                     fontWeight: FontWeight.w900,
                     letterSpacing: 1.1)),
             const SizedBox(height: 18),
-            Text('스킨케어를 고르는\n새로운 렌즈.',
+            Text('예쁜 것보다,\n잘 맞는 것이\n나만의 취향.',
                 style: Theme.of(context).textTheme.headlineLarge),
             const SizedBox(height: 24),
             SingleChildScrollView(
@@ -119,7 +120,7 @@ class _ShopScreenState extends State<ShopScreen> {
                             padding: const EdgeInsets.only(right: 8),
                             child: Material(
                               color: filter == value
-                                  ? AppColors.ink
+                                  ? AppColors.berry
                                   : AppColors.surface,
                               borderRadius: BorderRadius.circular(30),
                               child: InkWell(
@@ -174,9 +175,11 @@ class _ShopScreenState extends State<ShopScreen> {
                 decoration: BoxDecoration(
                   color: AppColors.surface,
                   borderRadius: BorderRadius.circular(28),
+                  border: Border.all(
+                      color: AppColors.roseGold.withValues(alpha: .38)),
                   boxShadow: const [
                     BoxShadow(
-                        color: Color(0x0F10201D),
+                        color: Color(0x183A1425),
                         blurRadius: 22,
                         offset: Offset(0, 10))
                   ],

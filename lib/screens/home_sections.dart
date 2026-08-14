@@ -11,58 +11,70 @@ class _AskPharmacist extends StatelessWidget {
           child: ConstrainedBox(
             constraints: const BoxConstraints(maxWidth: 1080),
             child: Material(
-              color: AppColors.mint,
-              borderRadius: BorderRadius.circular(30),
+              color: AppColors.blush,
+              borderRadius: BorderRadius.circular(32),
               clipBehavior: Clip.antiAlias,
               child: InkWell(
                 onTap: onOpen,
                 child: SizedBox(
-                  height: 220,
+                  height: 226,
                   child: Row(children: [
                     Expanded(
-                      flex: 6,
+                      flex: 58,
                       child: Padding(
-                        padding: const EdgeInsets.fromLTRB(24, 24, 8, 22),
+                        padding: const EdgeInsets.fromLTRB(24, 22, 8, 22),
                         child: Column(
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
                             const Row(children: [
                               CircleAvatar(
                                   radius: 4,
-                                  backgroundColor: Color(0xFF42B883)),
+                                  backgroundColor: AppColors.fuchsia),
                               SizedBox(width: 7),
-                              Text('PHARMACIST · ONLINE',
+                              Text('PRIVATE BEAUTY CONSULT · ONLINE',
                                   style: TextStyle(
+                                      color: AppColors.berry,
                                       fontSize: 9,
                                       fontWeight: FontWeight.w900,
-                                      letterSpacing: .8)),
+                                      letterSpacing: 1)),
                             ]),
                             const Spacer(),
-                            Text('성분이 헷갈리면\n리아 약사에게 물어보세요.',
+                            Text('오늘의 피부 고민,\n리아 약사에게 맡겨보세요.',
                                 style:
                                     Theme.of(context).textTheme.headlineMedium),
                             const SizedBox(height: 12),
                             const Row(children: [
-                              Text('1:1 성분 상담 시작',
+                              Text('1:1 프라이빗 상담 시작',
                                   style: TextStyle(
+                                      color: AppColors.berry,
                                       fontSize: 11,
                                       fontWeight: FontWeight.w900)),
                               SizedBox(width: 5),
-                              Icon(Icons.arrow_forward_rounded, size: 16),
+                              Icon(Icons.arrow_forward_rounded,
+                                  color: AppColors.berry, size: 16),
                             ]),
                           ],
                         ),
                       ),
                     ),
                     Expanded(
-                      flex: 4,
-                      child: SizedBox.expand(
-                        child: Image.asset(
-                          'assets/characters/pharmacist-lia.png',
+                      flex: 42,
+                      child: Stack(fit: StackFit.expand, children: [
+                        Image.asset(
+                          'assets/characters/pharmacist-lia-pink-glam.png',
                           fit: BoxFit.cover,
-                          alignment: const Alignment(.1, -.1),
+                          alignment: const Alignment(.05, -.32),
                         ),
-                      ),
+                        const DecoratedBox(
+                          decoration: BoxDecoration(
+                            gradient: LinearGradient(
+                              colors: [AppColors.blush, Colors.transparent],
+                              begin: Alignment.centerLeft,
+                              end: Alignment.center,
+                            ),
+                          ),
+                        ),
+                      ]),
                     ),
                   ]),
                 ),
@@ -82,110 +94,279 @@ class _Hero extends StatelessWidget {
         padding: const EdgeInsets.fromLTRB(14, 4, 14, 0),
         child: LayoutBuilder(builder: (context, constraints) {
           final wide = constraints.maxWidth > 860;
-          final copy = Padding(
-            padding: EdgeInsets.all(wide ? 42 : 24),
-            child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  const _StatusPill(
-                      icon: Icons.auto_awesome_rounded,
-                      label: 'YOUR SKIN · LIVE'),
-                  const SizedBox(height: 28),
-                  Text('피부가 보내는\n신호부터 읽어요.',
-                      style: (wide
-                              ? Theme.of(context).textTheme.displayLarge
-                              : Theme.of(context).textTheme.displayMedium)
-                          ?.copyWith(color: Colors.white)),
-                  const SizedBox(height: 18),
-                  const Text(
-                      '제품을 더 사기 전에, 지금 내 피부가 원하는 성분과\n피해야 할 조합을 먼저 확인하세요.',
-                      style: TextStyle(
-                          color: Color(0xFFC9D8D4),
-                          fontSize: 13,
-                          height: 1.6,
-                          fontWeight: FontWeight.w600)),
-                  const SizedBox(height: 28),
-                  FilledButton.icon(
+          return Container(
+            height: wide ? 650 : 650,
+            clipBehavior: Clip.antiAlias,
+            decoration: BoxDecoration(
+              color: AppColors.deep,
+              borderRadius: BorderRadius.circular(36),
+              border: Border.all(color: AppColors.champagne, width: .8),
+              boxShadow: const [
+                BoxShadow(
+                    color: Color(0x332B0B1B),
+                    blurRadius: 38,
+                    offset: Offset(0, 18))
+              ],
+            ),
+            child: Stack(fit: StackFit.expand, children: [
+              Image.asset(
+                'assets/editorial/pink-glam-hero.png',
+                fit: BoxFit.cover,
+                alignment:
+                    wide ? const Alignment(.65, 0) : const Alignment(.48, 0),
+              ),
+              DecoratedBox(
+                decoration: BoxDecoration(
+                  gradient: LinearGradient(
+                    begin: wide ? Alignment.centerLeft : Alignment.topCenter,
+                    end: wide ? Alignment.centerRight : Alignment.bottomCenter,
+                    colors: wide
+                        ? const [
+                            AppColors.deep,
+                            Color(0xE62B0B1B),
+                            Color(0x332B0B1B),
+                            Colors.transparent
+                          ]
+                        : const [
+                            Color(0xD92B0B1B),
+                            Color(0x662B0B1B),
+                            Colors.transparent,
+                            Color(0xB32B0B1B)
+                          ],
+                    stops:
+                        wide ? const [0, .38, .68, 1] : const [0, .34, .64, 1],
+                  ),
+                ),
+              ),
+              Padding(
+                padding: EdgeInsets.fromLTRB(
+                    wide ? 46 : 24, wide ? 46 : 28, wide ? 46 : 24, 28),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    const _StatusPill(
+                        icon: Icons.auto_awesome_rounded,
+                        label: 'BEAUTY IS SELF-CARE'),
+                    SizedBox(height: wide ? 76 : 30),
+                    ConstrainedBox(
+                      constraints: BoxConstraints(maxWidth: wide ? 520 : 350),
+                      child: Text('피부를 돌보는 일,\n나를 아끼는 방식.',
+                          style: (wide
+                                  ? Theme.of(context).textTheme.displayLarge
+                                  : Theme.of(context).textTheme.displayMedium)
+                              ?.copyWith(
+                                  color: AppColors.pearl,
+                                  fontSize: wide ? null : 43)),
+                    ),
+                    const SizedBox(height: 18),
+                    ConstrainedBox(
+                      constraints: const BoxConstraints(maxWidth: 420),
+                      child: const Text(
+                        '약사가 검토한 성분 데이터와 나만의 피부 신호를 연결해,\n매일 더 정확하고 아름다운 셀프케어를 시작하세요.',
+                        style: TextStyle(
+                            color: Color(0xFFF5DDE6),
+                            fontSize: 13,
+                            height: 1.65,
+                            fontWeight: FontWeight.w600),
+                      ),
+                    ),
+                    const SizedBox(height: 26),
+                    FilledButton.icon(
                       style: FilledButton.styleFrom(
-                          backgroundColor: AppColors.lime,
-                          foregroundColor: AppColors.ink),
+                          backgroundColor: AppColors.fuchsia,
+                          foregroundColor: Colors.white,
+                          side: const BorderSide(
+                              color: AppColors.champagne, width: .7)),
                       onPressed: onProfile,
                       icon: const Icon(Icons.face_retouching_natural_rounded,
                           size: 18),
-                      label: const Text('3분 피부 스캔 시작')),
-                ]),
-          );
-          final visual = Container(
-            constraints: BoxConstraints(minHeight: wide ? 560 : 400),
-            decoration: BoxDecoration(
-              gradient: const LinearGradient(
-                  colors: [AppColors.violet, Color(0xFF442BCB), AppColors.cyan],
-                  begin: Alignment.topLeft,
-                  end: Alignment.bottomRight),
-              borderRadius: wide
-                  ? const BorderRadius.horizontal(right: Radius.circular(34))
-                  : const BorderRadius.vertical(bottom: Radius.circular(34)),
-            ),
-            child: Stack(alignment: Alignment.center, children: [
+                      label: const Text('나의 스킨 프로필 시작'),
+                    ),
+                    const Spacer(),
+                    Wrap(spacing: 8, runSpacing: 8, children: const [
+                      _HeroSignal(value: '94%', label: 'SKIN MATCH'),
+                      _HeroSignal(value: '06', label: 'CURATED ACTIVES'),
+                      _HeroSignal(value: '1:1', label: 'PHARMACIST CARE'),
+                    ]),
+                  ],
+                ),
+              ),
               Positioned(
-                  right: -70,
-                  top: -80,
-                  child: Container(
-                      width: 260,
-                      height: 260,
-                      decoration: BoxDecoration(
-                          shape: BoxShape.circle,
-                          color: Colors.white.withValues(alpha: .13)))),
-              Positioned(
-                  left: -50,
-                  bottom: -60,
-                  child: Container(
-                      width: 210,
-                      height: 210,
-                      decoration: BoxDecoration(
-                          shape: BoxShape.circle,
-                          color: AppColors.lime.withValues(alpha: .22)))),
-              ProductBottle(product: products.first, height: wide ? 440 : 350),
-              Positioned(
-                  left: 18,
-                  top: 18,
-                  child: _MetricBubble(
-                      value: '94', suffix: '%', label: 'SKIN MATCH')),
-              Positioned(
-                  right: 18,
-                  bottom: 18,
-                  child: Container(
-                      padding: const EdgeInsets.symmetric(
-                          horizontal: 14, vertical: 11),
-                      decoration: BoxDecoration(
-                          color: Colors.white.withValues(alpha: .9),
-                          borderRadius: BorderRadius.circular(18)),
-                      child: const Row(children: [
-                        Icon(Icons.bolt_rounded,
-                            color: AppColors.violet, size: 17),
-                        SizedBox(width: 7),
-                        Text('장벽 회복 신호 ↑',
-                            style: TextStyle(
-                                fontSize: 10, fontWeight: FontWeight.w900))
-                      ]))),
+                top: 20,
+                right: 20,
+                child: Text('PB / EDIT 01',
+                    style: TextStyle(
+                        color: Colors.white.withValues(alpha: .78),
+                        fontSize: 8,
+                        fontWeight: FontWeight.w800,
+                        letterSpacing: 1.4)),
+              ),
             ]),
           );
-          final darkCopy = Container(color: AppColors.deep, child: copy);
-          return ClipRRect(
-            borderRadius: BorderRadius.circular(34),
-            child: wide
-                ? SizedBox(
-                    height: 610,
-                    child: Row(children: [
-                      Expanded(flex: 11, child: darkCopy),
-                      Expanded(flex: 9, child: visual)
-                    ]))
-                : Column(
-                    crossAxisAlignment: CrossAxisAlignment.stretch,
-                    children: [darkCopy, visual]),
-          );
         }),
+      );
+}
+
+class _HeroSignal extends StatelessWidget {
+  const _HeroSignal({required this.value, required this.label});
+  final String value;
+  final String label;
+
+  @override
+  Widget build(BuildContext context) => Container(
+        padding: const EdgeInsets.symmetric(horizontal: 13, vertical: 10),
+        decoration: BoxDecoration(
+          color: AppColors.pearl.withValues(alpha: .9),
+          borderRadius: BorderRadius.circular(16),
+          border: Border.all(color: AppColors.champagne.withValues(alpha: .7)),
+        ),
+        child: Row(mainAxisSize: MainAxisSize.min, children: [
+          Text(value,
+              style: const TextStyle(
+                  color: AppColors.berry,
+                  fontSize: 13,
+                  fontWeight: FontWeight.w900)),
+          const SizedBox(width: 7),
+          Text(label,
+              style: const TextStyle(
+                  color: AppColors.muted,
+                  fontSize: 7,
+                  fontWeight: FontWeight.w900,
+                  letterSpacing: .8)),
+        ]),
+      );
+}
+
+class _SelfCareManifesto extends StatelessWidget {
+  const _SelfCareManifesto();
+
+  @override
+  Widget build(BuildContext context) => Padding(
+        padding: const EdgeInsets.fromLTRB(20, 42, 20, 0),
+        child: Center(
+          child: ConstrainedBox(
+            constraints: const BoxConstraints(maxWidth: 1080),
+            child: LayoutBuilder(builder: (context, constraints) {
+              final wide = constraints.maxWidth > 680;
+              final quote = Container(
+                padding: const EdgeInsets.fromLTRB(24, 30, 24, 26),
+                decoration: BoxDecoration(
+                  color: AppColors.berry,
+                  borderRadius: const BorderRadius.only(
+                    topLeft: Radius.circular(34),
+                    topRight: Radius.circular(16),
+                    bottomLeft: Radius.circular(18),
+                    bottomRight: Radius.circular(34),
+                  ),
+                  border: Border.all(color: AppColors.champagne, width: .8),
+                ),
+                child: const Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text('GLOWING SKIN · CONFIDENT MIND',
+                        style: TextStyle(
+                            color: AppColors.champagne,
+                            fontSize: 9,
+                            fontWeight: FontWeight.w900,
+                            letterSpacing: 1.15)),
+                    Spacer(),
+                    Text('“예쁜 피부보다\n편안한 피부가 먼저예요.”',
+                        style: TextStyle(
+                            color: AppColors.pearl,
+                            fontSize: 24,
+                            height: 1.28,
+                            fontWeight: FontWeight.w800,
+                            letterSpacing: -1.2)),
+                    SizedBox(height: 12),
+                    Text('PHARMA BEAUTY SELF-CARE NOTE  /  01',
+                        style: TextStyle(
+                            color: AppColors.ballerina,
+                            fontSize: 8,
+                            fontWeight: FontWeight.w800,
+                            letterSpacing: 1)),
+                  ],
+                ),
+              );
+              final reminder = Container(
+                padding: const EdgeInsets.fromLTRB(24, 22, 24, 22),
+                decoration: BoxDecoration(
+                  color: AppColors.surface,
+                  borderRadius: const BorderRadius.only(
+                    topLeft: Radius.circular(16),
+                    topRight: Radius.circular(34),
+                    bottomLeft: Radius.circular(34),
+                    bottomRight: Radius.circular(18),
+                  ),
+                  border: Border.all(color: AppColors.roseGold),
+                  boxShadow: const [
+                    BoxShadow(
+                        color: Color(0x143A1425),
+                        blurRadius: 28,
+                        offset: Offset(0, 12))
+                  ],
+                ),
+                child: const Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Row(children: [
+                      Icon(Icons.favorite_rounded,
+                          color: AppColors.fuchsia, size: 15),
+                      SizedBox(width: 8),
+                      Text('TODAY’S SELF-CARE REMINDER',
+                          style: TextStyle(
+                              color: AppColors.berry,
+                              fontSize: 9,
+                              fontWeight: FontWeight.w900,
+                              letterSpacing: 1)),
+                    ]),
+                    Spacer(),
+                    _ReminderLine('물을 천천히, 충분히 마시기'),
+                    _ReminderLine('스킨케어는 필요한 만큼만'),
+                    _ReminderLine('피부와 마음에 다정하기'),
+                    _ReminderLine('오늘의 나도 충분하다고 기억하기'),
+                  ],
+                ),
+              );
+              if (wide) {
+                return SizedBox(
+                  height: 238,
+                  child: Row(children: [
+                    Expanded(child: quote),
+                    const SizedBox(width: 12),
+                    Expanded(child: reminder),
+                  ]),
+                );
+              }
+              return Column(children: [
+                SizedBox(height: 230, child: quote),
+                const SizedBox(height: 12),
+                SizedBox(height: 250, child: reminder),
+              ]);
+            }),
+          ),
+        ),
+      );
+}
+
+class _ReminderLine extends StatelessWidget {
+  const _ReminderLine(this.label);
+  final String label;
+
+  @override
+  Widget build(BuildContext context) => Padding(
+        padding: const EdgeInsets.only(top: 10),
+        child: Row(children: [
+          const Icon(Icons.auto_awesome_rounded,
+              color: AppColors.champagne, size: 13),
+          const SizedBox(width: 10),
+          Expanded(
+            child: Text(label,
+                style: const TextStyle(
+                    color: AppColors.ink,
+                    fontSize: 12,
+                    fontWeight: FontWeight.w700)),
+          ),
+        ]),
       );
 }
 
@@ -575,42 +756,6 @@ class _StatusPill extends StatelessWidget {
                   fontSize: 9,
                   fontWeight: FontWeight.w900,
                   letterSpacing: .8))
-        ]),
-      );
-}
-
-class _MetricBubble extends StatelessWidget {
-  const _MetricBubble(
-      {required this.value, required this.suffix, required this.label});
-  final String value;
-  final String suffix;
-  final String label;
-  @override
-  Widget build(BuildContext context) => Container(
-        width: 92,
-        height: 92,
-        padding: const EdgeInsets.all(14),
-        decoration: BoxDecoration(
-            color: Colors.white.withValues(alpha: .9), shape: BoxShape.circle),
-        child: Column(mainAxisAlignment: MainAxisAlignment.center, children: [
-          RichText(
-              text: TextSpan(
-                  style: const TextStyle(color: AppColors.ink),
-                  children: [
-                TextSpan(
-                    text: value,
-                    style: const TextStyle(
-                        fontSize: 26,
-                        fontWeight: FontWeight.w900,
-                        letterSpacing: -1.5)),
-                TextSpan(
-                    text: suffix,
-                    style: const TextStyle(
-                        fontSize: 10, fontWeight: FontWeight.w900))
-              ])),
-          const SizedBox(height: 3),
-          Text(label,
-              style: const TextStyle(fontSize: 7, fontWeight: FontWeight.w900))
         ]),
       );
 }

@@ -11,12 +11,13 @@ class _TrendHero extends StatelessWidget {
         decoration: BoxDecoration(
           borderRadius: BorderRadius.circular(32),
           gradient: const LinearGradient(
-              colors: [Color(0xFF7657FF), Color(0xFF5137D9), Color(0xFF0E3934)],
+              colors: [AppColors.berry, AppColors.fuchsia, Color(0xFFB95A7D)],
               begin: Alignment.topLeft,
               end: Alignment.bottomRight),
+          border: Border.all(color: AppColors.champagne, width: .8),
           boxShadow: const [
             BoxShadow(
-                color: Color(0x337657FF), blurRadius: 36, offset: Offset(0, 16))
+                color: Color(0x33DF0AA4), blurRadius: 36, offset: Offset(0, 16))
           ],
         ),
         child: Center(
@@ -31,23 +32,23 @@ class _TrendHero extends StatelessWidget {
                     height: 190,
                     decoration: BoxDecoration(
                         shape: BoxShape.circle,
-                        color: AppColors.cyan.withValues(alpha: .18)))),
+                        color: AppColors.ballerina.withValues(alpha: .2)))),
             Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
               const Row(children: [
                 _LivePill(label: 'LIVE · WEEK 32'),
                 Spacer(),
-                Icon(Icons.graphic_eq_rounded, color: AppColors.lime)
+                Icon(Icons.graphic_eq_rounded, color: AppColors.champagne)
               ]),
               const SizedBox(height: 32),
-              Text('INGREDIENT\nPULSE',
+              Text('THE GLOW\nINGREDIENT EDIT',
                   style: Theme.of(context)
                       .textTheme
                       .displayMedium
                       ?.copyWith(color: Colors.white, letterSpacing: -3)),
               const SizedBox(height: 12),
-              const Text('성분 백과보다 빠르게. 지금 반응하는 성분과\n내 루틴의 다음 신호를 발견하세요.',
+              const Text('백과사전처럼 쌓아두지 않고, 지금 주목받는 성분과\n나에게 필요한 다음 루틴을 에디트해드려요.',
                   style: TextStyle(
-                      color: Color(0xFFDDE9E6),
+                      color: Color(0xFFF9E5ED),
                       height: 1.55,
                       fontWeight: FontWeight.w600)),
               const SizedBox(height: 26),

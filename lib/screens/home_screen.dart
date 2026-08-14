@@ -55,6 +55,7 @@ class _HomeScreenState extends State<HomeScreen> {
     return Stack(children: [
       CustomScrollView(slivers: [
         SliverToBoxAdapter(child: _Hero(onProfile: openProfile)),
+        const SliverToBoxAdapter(child: _SelfCareManifesto()),
         const SliverToBoxAdapter(child: _DailyBrief()),
         SliverToBoxAdapter(
             child: _AskPharmacist(onOpen: widget.onAskPharmacist)),
@@ -83,7 +84,7 @@ class _HomeScreenState extends State<HomeScreen> {
           right: 20,
           bottom: 160,
           child: Material(
-            color: AppColors.deep,
+            color: AppColors.berry,
             borderRadius: BorderRadius.circular(22),
             elevation: 12,
             shadowColor: AppColors.deep.withValues(alpha: .28),
@@ -99,7 +100,7 @@ class _HomeScreenState extends State<HomeScreen> {
                       height: 34,
                       alignment: Alignment.center,
                       decoration: const BoxDecoration(
-                          color: AppColors.lime, shape: BoxShape.circle),
+                          color: AppColors.champagne, shape: BoxShape.circle),
                       child: Text('${widget.compareIds.length}',
                           style: const TextStyle(fontWeight: FontWeight.w900))),
                   const SizedBox(width: 12),

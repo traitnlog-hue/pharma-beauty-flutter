@@ -167,14 +167,16 @@ class _AppShellState extends State<AppShell> {
         key: const Key('pharmacist-chat-fab'),
         heroTag: 'pharmacist-chat',
         onPressed: openPharmacistChat,
-        backgroundColor: AppColors.deep,
+        backgroundColor: AppColors.berry,
         foregroundColor: Colors.white,
         elevation: 8,
         icon: const CircleAvatar(
           radius: 16,
-          backgroundImage: AssetImage('assets/characters/pharmacist-lia.png'),
+          backgroundColor: AppColors.blush,
+          backgroundImage:
+              AssetImage('assets/characters/pharmacist-lia-pink-glam.png'),
         ),
-        label: const Text('리아 약사',
+        label: const Text('ASK LIA',
             style: TextStyle(fontSize: 11, fontWeight: FontWeight.w900)),
       ),
       bottomNavigationBar: SafeArea(
@@ -185,12 +187,13 @@ class _AppShellState extends State<AppShell> {
             filter: ImageFilter.blur(sigmaX: 18, sigmaY: 18),
             child: Container(
               decoration: BoxDecoration(
-                color: Colors.white.withValues(alpha: .82),
+                color: AppColors.pearl.withValues(alpha: .88),
                 borderRadius: BorderRadius.circular(26),
-                border: Border.all(color: Colors.white.withValues(alpha: .75)),
+                border: Border.all(
+                    color: AppColors.champagne.withValues(alpha: .55)),
                 boxShadow: const [
                   BoxShadow(
-                      color: Color(0x1F10201D),
+                      color: Color(0x263A1425),
                       blurRadius: 28,
                       offset: Offset(0, 10))
                 ],
@@ -202,7 +205,7 @@ class _AppShellState extends State<AppShell> {
                 height: 66,
                 backgroundColor: Colors.transparent,
                 surfaceTintColor: Colors.transparent,
-                indicatorColor: AppColors.lime,
+                indicatorColor: AppColors.blush,
                 indicatorShape: const StadiumBorder(),
                 labelBehavior: NavigationDestinationLabelBehavior.alwaysShow,
                 labelTextStyle:
@@ -212,7 +215,7 @@ class _AppShellState extends State<AppShell> {
                               ? FontWeight.w900
                               : FontWeight.w700,
                           color: states.contains(WidgetState.selected)
-                              ? AppColors.ink
+                              ? AppColors.berry
                               : AppColors.muted,
                         )),
                 destinations: const [

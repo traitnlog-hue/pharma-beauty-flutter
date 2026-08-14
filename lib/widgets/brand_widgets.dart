@@ -17,27 +17,31 @@ class BrandLogo extends StatelessWidget {
           width: 34,
           height: 34,
           alignment: Alignment.center,
-          decoration: const BoxDecoration(
-            gradient: LinearGradient(
-                colors: [AppColors.violet, AppColors.cyan],
+          decoration: BoxDecoration(
+            gradient: const LinearGradient(
+                colors: [AppColors.berry, AppColors.fuchsia],
                 begin: Alignment.topLeft,
                 end: Alignment.bottomRight),
             shape: BoxShape.circle,
+            border: Border.all(color: AppColors.champagne, width: 1.2),
+            boxShadow: const [
+              BoxShadow(
+                  color: Color(0x33DF0AA4),
+                  blurRadius: 16,
+                  offset: Offset(0, 6))
+            ],
           ),
-          child: const Text('+',
-              style: TextStyle(
-                  color: Colors.white,
-                  fontSize: 21,
-                  fontWeight: FontWeight.w500)),
+          child: const Icon(Icons.auto_awesome_rounded,
+              color: AppColors.pearl, size: 16),
         ),
         if (!compact) ...[
           const SizedBox(width: 9),
           const Text('PHARMA\nBEAUTY',
               style: TextStyle(
-                  fontSize: 10,
-                  height: .95,
+                  fontSize: 9,
+                  height: 1.05,
                   fontWeight: FontWeight.w900,
-                  letterSpacing: .7)),
+                  letterSpacing: 1.2)),
         ],
       ],
     );
@@ -56,7 +60,7 @@ class SectionLabel extends StatelessWidget {
     return Text(
       '$index / $label',
       style: TextStyle(
-        color: light ? AppColors.mint : AppColors.ink,
+        color: light ? AppColors.ballerina : AppColors.berry,
         fontSize: 9,
         fontWeight: FontWeight.w800,
         letterSpacing: 1.4,
@@ -106,11 +110,16 @@ class MatchPill extends StatelessWidget {
   Widget build(BuildContext context) {
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 7),
-      color: dark ? AppColors.lime : AppColors.ink,
+      decoration: BoxDecoration(
+        color: dark ? AppColors.champagne : AppColors.berry,
+        borderRadius: BorderRadius.circular(999),
+        border: Border.all(
+            color: dark ? AppColors.pearl : AppColors.champagne, width: .7),
+      ),
       child: Text(
         '$value% MATCH',
         style: TextStyle(
-            color: dark ? AppColors.ink : Colors.white,
+            color: dark ? AppColors.deep : Colors.white,
             fontSize: 9,
             fontWeight: FontWeight.w900,
             letterSpacing: .4),
