@@ -1,7 +1,9 @@
 import 'package:flutter_test/flutter_test.dart';
 import 'package:pharma_beauty/main.dart';
 import 'package:pharma_beauty/catalog.dart';
+import 'package:pharma_beauty/features/pharmacist_chat/pharmacist_chat_service.dart';
 import 'package:pharma_beauty/screens/routine_builder_screen.dart';
+import 'package:pharma_beauty/state/app_state.dart';
 import 'package:pharma_beauty/theme.dart';
 import 'package:flutter/material.dart';
 
@@ -12,6 +14,25 @@ void main() {
     expect(conflict, isNotNull);
     expect(conflict!.first, '레티날');
     expect(conflict.second, 'BHA');
+  });
+
+  test('app state enforces the three-product comparison limit', () {
+    final state = AppState();
+
+    expect(state.toggleCompare(products[0]), isTrue);
+    expect(state.toggleCompare(products[1]), isTrue);
+    expect(state.toggleCompare(products[2]), isTrue);
+    expect(state.toggleCompare(products[3]), isFalse);
+    expect(state.compareIds, hasLength(3));
+
+    state.dispose();
+  });
+
+  test('pharmacist service keeps high-risk guidance explicit', () {
+    const service = PharmacistChatService();
+
+    expect(service.answerFor('임신 중 레티놀을 써도 될까요?'), contains('담당 의료진이나 약사'));
+    expect(service.answerFor('레티날 사용법'), contains('주 2회'));
   });
 
   testWidgets('shows the PHARMA BEAUTY home experience', (tester) async {

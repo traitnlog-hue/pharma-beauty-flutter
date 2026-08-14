@@ -24,8 +24,17 @@
 - 추천 결과와 추천 근거
 - 상품 상세
 - 최대 3개 상품 비교
+- 리아 약사 캐릭터와 성분 상담 챗봇
 - 모바일 하단 내비게이션
 - 태블릿·웹 반응형 레이아웃
+
+## 코드 구조
+
+- `lib/state`: 비교·저장·최근 본 제품·피부 프로필 상태
+- `lib/features/pharmacist_chat`: 챗봇 메시지 모델과 답변 규칙
+- `lib/screens/*_screen.dart`: 화면 상태와 사용자 이벤트
+- `lib/screens/*_sections.dart`: HOME·TRENDS의 순수 UI 섹션
+- `lib/widgets`: 여러 화면에서 재사용하는 브랜드·검색 위젯
 
 ## 실행
 

@@ -2,10 +2,11 @@ import 'dart:ui';
 
 import 'package:flutter/material.dart';
 
-import '../catalog.dart';
 import '../models.dart';
+import '../state/app_state.dart';
 import '../theme.dart';
 import '../widgets/brand_widgets.dart';
+import '../widgets/product_search_delegate.dart';
 import 'compare_screen.dart';
 import 'discover_screen.dart';
 import 'home_screen.dart';
@@ -24,32 +25,31 @@ class AppShell extends StatefulWidget {
 
 class _AppShellState extends State<AppShell> {
   int currentIndex = 0;
-  String profileConcern = concerns.first;
-  final compareIds = <int>{};
-  final savedIds = <int>{1, 3};
-  final recentIds = <int>[2];
+  late final AppState appState;
 
-  List<BeautyProduct> get comparedProducts =>
-      products.where((product) => compareIds.contains(product.id)).toList();
+  @override
+  void initState() {
+    super.initState();
+    appState = AppState()..addListener(_refresh);
+  }
+
+  @override
+  void dispose() {
+    appState
+      ..removeListener(_refresh)
+      ..dispose();
+    super.dispose();
+  }
+
+  void _refresh() => setState(() {});
 
   void toggleCompare(BeautyProduct product) {
-    setState(() {
-      if (compareIds.contains(product.id)) {
-        compareIds.remove(product.id);
-      } else if (compareIds.length < 3) {
-        compareIds.add(product.id);
-      } else {
-        ScaffoldMessenger.of(context)
-            .showSnackBar(const SnackBar(content: Text('비교는 최대 3개까지 가능해요.')));
-      }
-    });
+    if (appState.toggleCompare(product)) return;
+    ScaffoldMessenger.of(context)
+        .showSnackBar(const SnackBar(content: Text('비교는 최대 3개까지 가능해요.')));
   }
 
-  void toggleSaved(BeautyProduct product) {
-    setState(() {
-      if (!savedIds.add(product.id)) savedIds.remove(product.id);
-    });
-  }
+  void toggleSaved(BeautyProduct product) => appState.toggleSaved(product);
 
   void openCompare() {
     Navigator.push(
@@ -63,36 +63,33 @@ class _AppShellState extends State<AppShell> {
                               fontWeight: FontWeight.w900,
                               letterSpacing: 1.3))),
                   body: CompareScreen(
-                      products: comparedProducts, onRemove: toggleCompare),
+                      products: appState.comparedProducts,
+                      onRemove: toggleCompare),
                 )));
   }
 
   Future<void> editProfile() async {
     final result = await Navigator.push<String>(
         context, MaterialPageRoute(builder: (_) => const SkinProfileScreen()));
-    if (result != null) setState(() => profileConcern = result);
+    if (result != null) appState.updateProfileConcern(result);
   }
 
   void openProduct(BeautyProduct product) {
-    setState(() {
-      recentIds.remove(product.id);
-      recentIds.insert(0, product.id);
-      if (recentIds.length > 5) recentIds.removeLast();
-    });
+    appState.recordViewed(product);
     Navigator.push(
         context,
         MaterialPageRoute(
             builder: (_) => ProductDetailScreen(
                   product: product,
                   onCompare: () => toggleCompare(product),
-                  initiallySaved: savedIds.contains(product.id),
+                  initiallySaved: appState.savedIds.contains(product.id),
                   onToggleSaved: () => toggleSaved(product),
                 )));
   }
 
   Future<void> openSearch() async {
     final result = await showSearch<BeautyProduct?>(
-        context: context, delegate: _ProductSearch());
+        context: context, delegate: ProductSearchDelegate());
     if (result != null && mounted) openProduct(result);
   }
 
@@ -107,23 +104,23 @@ class _AppShellState extends State<AppShell> {
   Widget build(BuildContext context) {
     final pages = [
       HomeScreen(
-          compareIds: compareIds,
+          compareIds: appState.compareIds,
           onToggleCompare: toggleCompare,
           onShowCompare: openCompare,
           onOpenProduct: openProduct,
           onAskPharmacist: openPharmacistChat,
           onDiscover: () => setState(() => currentIndex = 2)),
       ShopScreen(
-          compareIds: compareIds,
-          savedIds: savedIds,
+          compareIds: appState.compareIds,
+          savedIds: appState.savedIds,
           onCompare: toggleCompare,
           onSave: toggleSaved,
           onOpenProduct: openProduct),
       const DiscoverScreen(),
       MySkinScreen(
-          profileConcern: profileConcern,
-          savedIds: savedIds,
-          recentIds: recentIds,
+          profileConcern: appState.profileConcern,
+          savedIds: appState.savedIds,
+          recentIds: appState.recentIds,
           onEditProfile: editProfile,
           onOpenProduct: openProduct,
           onToggleSave: toggleSaved),
@@ -141,8 +138,8 @@ class _AppShellState extends State<AppShell> {
               icon: const Icon(Icons.search, size: 22),
               tooltip: '검색'),
           Badge(
-            isLabelVisible: compareIds.isNotEmpty,
-            label: Text('${compareIds.length}'),
+            isLabelVisible: appState.compareIds.isNotEmpty,
+            label: Text('${appState.compareIds.length}'),
             child: IconButton.filledTonal(
                 onPressed: openCompare,
                 icon: const Icon(Icons.compare_arrows, size: 21),
@@ -241,50 +238,6 @@ class _AppShellState extends State<AppShell> {
           ),
         ),
       ),
-    );
-  }
-}
-
-class _ProductSearch extends SearchDelegate<BeautyProduct?> {
-  @override
-  String get searchFieldLabel => '피부 고민, 성분, 제품 검색';
-
-  @override
-  List<Widget>? buildActions(BuildContext context) => [
-        if (query.isNotEmpty)
-          IconButton(onPressed: () => query = '', icon: const Icon(Icons.close))
-      ];
-  @override
-  Widget? buildLeading(BuildContext context) => IconButton(
-      onPressed: () => close(context, null),
-      icon: const Icon(Icons.arrow_back));
-  @override
-  Widget buildResults(BuildContext context) => _results();
-  @override
-  Widget buildSuggestions(BuildContext context) => _results();
-
-  Widget _results() {
-    final normalized = query.toLowerCase();
-    final result = products
-        .where((item) =>
-            item.name.toLowerCase().contains(normalized) ||
-            item.brand.toLowerCase().contains(normalized) ||
-            item.concern.contains(query) ||
-            item.category.contains(query) ||
-            item.ingredients.any((value) => value.contains(query)))
-        .toList();
-    return ListView.separated(
-      padding: const EdgeInsets.all(20),
-      itemCount: result.length,
-      separatorBuilder: (_, __) => const Divider(),
-      itemBuilder: (context, index) {
-        final product = result[index];
-        return ListTile(
-            title: Text(product.name),
-            subtitle: Text('${product.concern} · ${product.ingredients.first}'),
-            trailing: Text('${product.match}%'),
-            onTap: () => close(context, product));
-      },
     );
   }
 }
