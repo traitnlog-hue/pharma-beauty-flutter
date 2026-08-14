@@ -157,7 +157,7 @@ class _DiscoverScreenState extends State<DiscoverScreen> {
                     ? const ['현재 알려진 주요 충돌 조합이 적어요']
                     : ingredient.cautionWith,
                 icon: Icons.bolt_rounded,
-                color: const Color(0xFFFFE3DC),
+                color: AppColors.blush,
               ),
               const SizedBox(height: 24),
               FilledButton.icon(

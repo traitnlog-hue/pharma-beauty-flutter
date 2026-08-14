@@ -2,34 +2,34 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 
 abstract final class AppColors {
-  // Dusty Surreal × Soft Futurism × Clinical Trust
-  static const ink = Color(0xFF252123);
-  static const deep = Color(0xFF1C1B1C);
-  static const paper = Color(0xFFF8F2F1);
-  static const paper2 = Color(0xFFEEE6E4);
-  static const surface = Color(0xFFFFFCFB);
-  static const pearl = Color(0xFFFFFAF7);
-  static const blush = Color(0xFFF0D6DE);
-  static const ballerina = Color(0xFFE8BDC9);
-  static const rose = Color(0xFFC78696);
+  // Clinical White × Cool Gray × Glassy Purple
+  static const ink = Color(0xFF19191C);
+  static const deep = Color(0xFF111114);
+  static const paper = Color(0xFFF8F8FA);
+  static const paper2 = Color(0xFFECECF1);
+  static const surface = Color(0xFFFFFFFF);
+  static const pearl = Color(0xFFFCFCFE);
+  static const blush = Color(0xFFE9E6FF);
+  static const ballerina = Color(0xFFCFC8FF);
+  static const rose = Color(0xFFA89DEB);
 
-  /// PHARMA BEAUTY signature — Rose Dragée.
-  static const fuchsia = Color(0xFFDF0AA4);
-  static const champagne = Color(0xFFC9A98F);
-  static const roseGold = Color(0xFFC79B94);
-  static const berry = Color(0xFF5C2941);
-  static const muted = Color(0xFF756B6E);
-  static const line = Color(0x24252123);
+  /// PHARMA BEAUTY signature violet.
+  static const fuchsia = Color(0xFF6C5CE7);
+  static const champagne = Color(0xFFC8CAD2);
+  static const roseGold = Color(0xFFB9B4D7);
+  static const berry = Color(0xFF4B3FA8);
+  static const muted = Color(0xFF73737F);
+  static const line = Color(0x2419191C);
 
   // Semantic compatibility aliases used by feature screens.
-  static const mint = Color(0xFFEDE4E2);
-  static const sage = Color(0xFFA99691);
-  static const oatmeal = Color(0xFFE9D8D1);
-  static const lime = Color(0xFFDFB8C4);
+  static const mint = Color(0xFFEEF0F3);
+  static const sage = Color(0xFF9C9DA8);
+  static const oatmeal = Color(0xFFE8E8EC);
+  static const lime = Color(0xFFCFC8FF);
   static const violet = fuchsia;
-  static const cyan = Color(0xFFD4C9D0);
-  static const coral = Color(0xFFD49A93);
-  static const butter = Color(0xFFE8D1B9);
+  static const cyan = Color(0xFFE4E6F0);
+  static const coral = Color(0xFFD9D4FF);
+  static const butter = Color(0xFFF0F0F3);
 }
 
 ThemeData buildAppTheme() {
@@ -68,8 +68,8 @@ ThemeData buildAppTheme() {
     scaffoldBackgroundColor: AppColors.paper,
     colorScheme: ColorScheme.fromSeed(
       seedColor: AppColors.fuchsia,
-      primary: AppColors.ink,
-      secondary: AppColors.fuchsia,
+      primary: AppColors.fuchsia,
+      secondary: AppColors.berry,
       tertiary: AppColors.champagne,
       surface: AppColors.paper,
     ),
@@ -85,7 +85,7 @@ ThemeData buildAppTheme() {
     ),
     filledButtonTheme: FilledButtonThemeData(
       style: FilledButton.styleFrom(
-        backgroundColor: AppColors.ink,
+        backgroundColor: AppColors.fuchsia,
         foregroundColor: Colors.white,
         shape: const StadiumBorder(),
         padding: const EdgeInsets.symmetric(horizontal: 22, vertical: 18),
@@ -96,7 +96,7 @@ ThemeData buildAppTheme() {
       style: OutlinedButton.styleFrom(
         shape: const StadiumBorder(),
         padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 16),
-        foregroundColor: AppColors.berry,
+        foregroundColor: AppColors.fuchsia,
         side: const BorderSide(color: AppColors.roseGold),
       ),
     ),

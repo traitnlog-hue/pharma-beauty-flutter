@@ -169,14 +169,14 @@ class _AppShellState extends State<AppShell> {
               key: const Key('pharmacist-chat-fab'),
               heroTag: 'pharmacist-chat',
               onPressed: openPharmacistChat,
-              backgroundColor: AppColors.ink,
+              backgroundColor: AppColors.fuchsia,
               foregroundColor: Colors.white,
               elevation: 8,
               icon: const CircleAvatar(
                 radius: 16,
                 backgroundColor: AppColors.blush,
                 backgroundImage: AssetImage(
-                    'assets/characters/pharmacist-lia-pink-glam.png'),
+                    'assets/characters/pharmacist-lia-clinical-violet.png'),
               ),
               label: const Text('약사에게 물어보기',
                   style: TextStyle(fontSize: 10, fontWeight: FontWeight.w900)),

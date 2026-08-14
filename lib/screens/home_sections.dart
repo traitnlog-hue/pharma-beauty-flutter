@@ -61,7 +61,7 @@ class _AskPharmacist extends StatelessWidget {
                       flex: 42,
                       child: Stack(fit: StackFit.expand, children: [
                         Image.asset(
-                          'assets/characters/pharmacist-lia-pink-glam.png',
+                          'assets/characters/pharmacist-lia-clinical-violet.png',
                           fit: BoxFit.cover,
                           alignment: const Alignment(.05, -.32),
                         ),
@@ -110,9 +110,9 @@ class _Hero extends StatelessWidget {
             ),
             child: Stack(fit: StackFit.expand, children: [
               Image.asset(
-                'assets/editorial/dusty-surreal-hero.png',
+                'assets/editorial/clinical-violet-hero.png',
                 fit: BoxFit.cover,
-                alignment: wide ? const Alignment(.45, 0) : Alignment.center,
+                alignment: wide ? const Alignment(.25, 0) : Alignment.center,
               ),
               DecoratedBox(
                 decoration: BoxDecoration(
@@ -121,16 +121,16 @@ class _Hero extends StatelessWidget {
                     end: Alignment.bottomCenter,
                     colors: wide
                         ? const [
-                            Color(0xD91C1B1C),
-                            Color(0x801C1B1C),
+                            Color(0xD9111114),
+                            Color(0x7A4B3FA8),
                             Colors.transparent,
-                            Color(0x401C1B1C)
+                            Color(0x30111114)
                           ]
                         : const [
                             Colors.transparent,
-                            Color(0x121C1B1C),
-                            Color(0x991C1B1C),
-                            Color(0xE61C1B1C)
+                            Color(0x126C5CE7),
+                            Color(0xB04B3FA8),
+                            Color(0xEE111114)
                           ],
                     stops: const [0, .36, .72, 1],
                   ),
@@ -169,7 +169,7 @@ class _Hero extends StatelessWidget {
                       child: const Text(
                         '복잡한 질문 없이 3분이면 충분해요.\n내 피부가 원하는 케어부터 확인해보세요.',
                         style: TextStyle(
-                            color: Color(0xFFF7EFED),
+                            color: Color(0xFFF4F2FF),
                             fontSize: 14,
                             height: 1.55,
                             fontWeight: FontWeight.w600),
@@ -178,7 +178,7 @@ class _Hero extends StatelessWidget {
                     const SizedBox(height: 18),
                     FilledButton.icon(
                       style: FilledButton.styleFrom(
-                          backgroundColor: AppColors.ink,
+                          backgroundColor: AppColors.fuchsia,
                           foregroundColor: Colors.white,
                           minimumSize: const Size(0, 50),
                           side: BorderSide(

@@ -184,7 +184,7 @@ class _RoutineStatus extends StatelessWidget {
   Widget build(BuildContext context) => Container(
         padding: const EdgeInsets.all(20),
         decoration: BoxDecoration(
-          color: warning ? const Color(0xFFFFE3DC) : AppColors.deep,
+          color: warning ? AppColors.blush : AppColors.deep,
           borderRadius: BorderRadius.circular(24),
         ),
         child: Row(crossAxisAlignment: CrossAxisAlignment.start, children: [

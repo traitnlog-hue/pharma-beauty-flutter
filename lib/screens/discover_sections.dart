@@ -11,7 +11,7 @@ class _TrendHero extends StatelessWidget {
         decoration: BoxDecoration(
           borderRadius: BorderRadius.circular(32),
           gradient: const LinearGradient(
-              colors: [Color(0xFF4F4548), Color(0xFF8E7479), Color(0xFFC99BAA)],
+              colors: [AppColors.deep, AppColors.berry, AppColors.fuchsia],
               begin: Alignment.topLeft,
               end: Alignment.bottomRight),
           border: Border.all(color: Colors.white, width: .7),
@@ -48,7 +48,7 @@ class _TrendHero extends StatelessWidget {
               const SizedBox(height: 12),
               const Text('백과사전처럼 쌓아두지 않고, 지금 주목받는 성분과\n나에게 필요한 다음 루틴을 에디트해드려요.',
                   style: TextStyle(
-                      color: Color(0xFFF9E5ED),
+                      color: Color(0xFFF0EEFF),
                       height: 1.55,
                       fontWeight: FontWeight.w600)),
               const SizedBox(height: 26),

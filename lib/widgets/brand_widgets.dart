@@ -19,20 +19,20 @@ class BrandLogo extends StatelessWidget {
           alignment: Alignment.center,
           decoration: BoxDecoration(
             gradient: const LinearGradient(
-                colors: [AppColors.ink, Color(0xFF4B4144)],
+                colors: [AppColors.berry, AppColors.fuchsia],
                 begin: Alignment.topLeft,
                 end: Alignment.bottomRight),
-            shape: BoxShape.circle,
-            border: Border.all(color: AppColors.fuchsia, width: 1.2),
+            borderRadius: BorderRadius.circular(12),
+            border: Border.all(color: Colors.white, width: 1.2),
             boxShadow: const [
               BoxShadow(
-                  color: Color(0x33DF0AA4),
+                  color: Color(0x336C5CE7),
                   blurRadius: 16,
                   offset: Offset(0, 6))
             ],
           ),
           child: const Icon(Icons.auto_awesome_rounded,
-              color: AppColors.fuchsia, size: 16),
+              color: Colors.white, size: 16),
         ),
         if (!compact) ...[
           const SizedBox(width: 9),

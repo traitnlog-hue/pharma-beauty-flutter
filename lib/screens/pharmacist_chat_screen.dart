@@ -191,8 +191,8 @@ class _LiaAvatar extends StatelessWidget {
   Widget build(BuildContext context) => CircleAvatar(
         radius: radius,
         backgroundColor: AppColors.oatmeal,
-        backgroundImage:
-            const AssetImage('assets/characters/pharmacist-lia-pink-glam.png'),
+        backgroundImage: const AssetImage(
+            'assets/characters/pharmacist-lia-clinical-violet.png'),
       );
 }
 
