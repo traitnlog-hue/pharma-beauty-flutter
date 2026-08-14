@@ -192,7 +192,7 @@ class _LiaAvatar extends StatelessWidget {
         radius: radius,
         backgroundColor: AppColors.oatmeal,
         backgroundImage: const AssetImage(
-            'assets/characters/pharmacist-lia-clinical-violet.png'),
+            'assets/characters/pharmacist-lia-illustrated-violet.png'),
       );
 }
 

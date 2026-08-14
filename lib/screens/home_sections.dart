@@ -31,12 +31,18 @@ class _AskPharmacist extends StatelessWidget {
                                   radius: 4,
                                   backgroundColor: AppColors.fuchsia),
                               SizedBox(width: 7),
-                              Text('PRIVATE BEAUTY CONSULT · ONLINE',
-                                  style: TextStyle(
-                                      color: AppColors.berry,
-                                      fontSize: 9,
-                                      fontWeight: FontWeight.w900,
-                                      letterSpacing: 1)),
+                              Expanded(
+                                child: FittedBox(
+                                  fit: BoxFit.scaleDown,
+                                  alignment: Alignment.centerLeft,
+                                  child: Text('PRIVATE BEAUTY CONSULT · ONLINE',
+                                      style: TextStyle(
+                                          color: AppColors.berry,
+                                          fontSize: 9,
+                                          fontWeight: FontWeight.w900,
+                                          letterSpacing: 1)),
+                                ),
+                              ),
                             ]),
                             const Spacer(),
                             Text('오늘의 피부 고민,\n리아 약사에게 맡겨보세요.',
@@ -61,7 +67,7 @@ class _AskPharmacist extends StatelessWidget {
                       flex: 42,
                       child: Stack(fit: StackFit.expand, children: [
                         Image.asset(
-                          'assets/characters/pharmacist-lia-clinical-violet.png',
+                          'assets/characters/pharmacist-lia-illustrated-violet.png',
                           fit: BoxFit.cover,
                           alignment: const Alignment(.05, -.32),
                         ),

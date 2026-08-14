@@ -176,7 +176,7 @@ class _AppShellState extends State<AppShell> {
                 radius: 16,
                 backgroundColor: AppColors.blush,
                 backgroundImage: AssetImage(
-                    'assets/characters/pharmacist-lia-clinical-violet.png'),
+                    'assets/characters/pharmacist-lia-illustrated-violet.png'),
               ),
               label: const Text('약사에게 물어보기',
                   style: TextStyle(fontSize: 10, fontWeight: FontWeight.w900)),
