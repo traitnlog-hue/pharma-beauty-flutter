@@ -39,13 +39,13 @@ void main() {
     await tester.pumpWidget(const PharmaBeautyApp());
 
     expect(find.text('PHARMA\nBEAUTY'), findsOneWidget);
-    expect(find.textContaining('피부를 돌보는'), findsOneWidget);
+    expect(find.textContaining('오늘 피부'), findsOneWidget);
   });
 
   testWidgets('opens the ingredient discovery experience', (tester) async {
     await tester.pumpWidget(const PharmaBeautyApp());
 
-    await tester.tap(find.text('TRENDS'));
+    await tester.tap(find.text('트렌드'));
     await tester.pumpAndSettle();
 
     expect(find.text('지금 뜨는 성분'), findsOneWidget);
@@ -55,6 +55,8 @@ void main() {
   testWidgets('asks Lia pharmacist about retinal', (tester) async {
     await tester.pumpWidget(const PharmaBeautyApp());
 
+    await tester.tap(find.text('쇼핑'));
+    await tester.pumpAndSettle();
     await tester.tap(find.byKey(const Key('pharmacist-chat-fab')));
     await tester.pumpAndSettle();
 

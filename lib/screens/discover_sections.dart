@@ -11,13 +11,13 @@ class _TrendHero extends StatelessWidget {
         decoration: BoxDecoration(
           borderRadius: BorderRadius.circular(32),
           gradient: const LinearGradient(
-              colors: [AppColors.berry, AppColors.fuchsia, Color(0xFFB95A7D)],
+              colors: [Color(0xFF4F4548), Color(0xFF8E7479), Color(0xFFC99BAA)],
               begin: Alignment.topLeft,
               end: Alignment.bottomRight),
-          border: Border.all(color: AppColors.champagne, width: .8),
+          border: Border.all(color: Colors.white, width: .7),
           boxShadow: const [
             BoxShadow(
-                color: Color(0x33DF0AA4), blurRadius: 36, offset: Offset(0, 16))
+                color: Color(0x24252123), blurRadius: 32, offset: Offset(0, 14))
           ],
         ),
         child: Center(

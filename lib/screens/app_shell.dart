@@ -129,7 +129,7 @@ class _AppShellState extends State<AppShell> {
     return Scaffold(
       extendBody: true,
       appBar: AppBar(
-        toolbarHeight: 72,
+        toolbarHeight: 68,
         titleSpacing: 20,
         title: const BrandLogo(),
         actions: [
@@ -163,22 +163,24 @@ class _AppShellState extends State<AppShell> {
         ],
       ),
       body: IndexedStack(index: currentIndex, children: pages),
-      floatingActionButton: FloatingActionButton.extended(
-        key: const Key('pharmacist-chat-fab'),
-        heroTag: 'pharmacist-chat',
-        onPressed: openPharmacistChat,
-        backgroundColor: AppColors.berry,
-        foregroundColor: Colors.white,
-        elevation: 8,
-        icon: const CircleAvatar(
-          radius: 16,
-          backgroundColor: AppColors.blush,
-          backgroundImage:
-              AssetImage('assets/characters/pharmacist-lia-pink-glam.png'),
-        ),
-        label: const Text('ASK LIA',
-            style: TextStyle(fontSize: 11, fontWeight: FontWeight.w900)),
-      ),
+      floatingActionButton: currentIndex == 0
+          ? null
+          : FloatingActionButton.extended(
+              key: const Key('pharmacist-chat-fab'),
+              heroTag: 'pharmacist-chat',
+              onPressed: openPharmacistChat,
+              backgroundColor: AppColors.ink,
+              foregroundColor: Colors.white,
+              elevation: 8,
+              icon: const CircleAvatar(
+                radius: 16,
+                backgroundColor: AppColors.blush,
+                backgroundImage: AssetImage(
+                    'assets/characters/pharmacist-lia-pink-glam.png'),
+              ),
+              label: const Text('약사에게 물어보기',
+                  style: TextStyle(fontSize: 10, fontWeight: FontWeight.w900)),
+            ),
       bottomNavigationBar: SafeArea(
         minimum: const EdgeInsets.fromLTRB(14, 0, 14, 12),
         child: ClipRRect(
@@ -189,11 +191,10 @@ class _AppShellState extends State<AppShell> {
               decoration: BoxDecoration(
                 color: AppColors.pearl.withValues(alpha: .88),
                 borderRadius: BorderRadius.circular(26),
-                border: Border.all(
-                    color: AppColors.champagne.withValues(alpha: .55)),
+                border: Border.all(color: AppColors.line),
                 boxShadow: const [
                   BoxShadow(
-                      color: Color(0x263A1425),
+                      color: Color(0x20252123),
                       blurRadius: 28,
                       offset: Offset(0, 10))
                 ],
@@ -205,7 +206,7 @@ class _AppShellState extends State<AppShell> {
                 height: 66,
                 backgroundColor: Colors.transparent,
                 surfaceTintColor: Colors.transparent,
-                indicatorColor: AppColors.blush,
+                indicatorColor: AppColors.fuchsia.withValues(alpha: .13),
                 indicatorShape: const StadiumBorder(),
                 labelBehavior: NavigationDestinationLabelBehavior.alwaysShow,
                 labelTextStyle:
@@ -215,26 +216,26 @@ class _AppShellState extends State<AppShell> {
                               ? FontWeight.w900
                               : FontWeight.w700,
                           color: states.contains(WidgetState.selected)
-                              ? AppColors.berry
+                              ? AppColors.ink
                               : AppColors.muted,
                         )),
                 destinations: const [
                   NavigationDestination(
                       icon: Icon(Icons.home_outlined),
                       selectedIcon: Icon(Icons.home_rounded),
-                      label: 'HOME'),
+                      label: '홈'),
                   NavigationDestination(
                       icon: Icon(Icons.grid_view_rounded),
                       selectedIcon: Icon(Icons.grid_view_rounded),
-                      label: 'SHOP'),
+                      label: '쇼핑'),
                   NavigationDestination(
                       icon: Icon(Icons.bubble_chart_outlined),
                       selectedIcon: Icon(Icons.bubble_chart_rounded),
-                      label: 'TRENDS'),
+                      label: '트렌드'),
                   NavigationDestination(
                       icon: Icon(Icons.face_outlined),
                       selectedIcon: Icon(Icons.face_rounded),
-                      label: 'MY SKIN'),
+                      label: '마이스킨'),
                 ],
               ),
             ),

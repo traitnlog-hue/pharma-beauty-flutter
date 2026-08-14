@@ -2,34 +2,34 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 
 abstract final class AppColors {
-  // Pink Glam Editorial × Clinical Trust
-  static const ink = Color(0xFF3A1425);
-  static const deep = Color(0xFF2B0B1B);
-  static const paper = Color(0xFFFFF7FA);
-  static const paper2 = Color(0xFFF6E8EE);
-  static const surface = Color(0xFFFFFCFD);
-  static const pearl = Color(0xFFFFFBF8);
-  static const blush = Color(0xFFF6D5E1);
-  static const ballerina = Color(0xFFF2C3D3);
-  static const rose = Color(0xFFD7799B);
+  // Dusty Surreal × Soft Futurism × Clinical Trust
+  static const ink = Color(0xFF252123);
+  static const deep = Color(0xFF1C1B1C);
+  static const paper = Color(0xFFF8F2F1);
+  static const paper2 = Color(0xFFEEE6E4);
+  static const surface = Color(0xFFFFFCFB);
+  static const pearl = Color(0xFFFFFAF7);
+  static const blush = Color(0xFFF0D6DE);
+  static const ballerina = Color(0xFFE8BDC9);
+  static const rose = Color(0xFFC78696);
 
   /// PHARMA BEAUTY signature — Rose Dragée.
   static const fuchsia = Color(0xFFDF0AA4);
-  static const champagne = Color(0xFFD5AE68);
-  static const roseGold = Color(0xFFC98B84);
-  static const berry = Color(0xFF741F42);
-  static const muted = Color(0xFF806773);
-  static const line = Color(0x243A1425);
+  static const champagne = Color(0xFFC9A98F);
+  static const roseGold = Color(0xFFC79B94);
+  static const berry = Color(0xFF5C2941);
+  static const muted = Color(0xFF756B6E);
+  static const line = Color(0x24252123);
 
   // Semantic compatibility aliases used by feature screens.
-  static const mint = Color(0xFFF7DEE8);
-  static const sage = Color(0xFFB88A9D);
-  static const oatmeal = Color(0xFFF3E4DF);
-  static const lime = Color(0xFFF3C65C);
+  static const mint = Color(0xFFEDE4E2);
+  static const sage = Color(0xFFA99691);
+  static const oatmeal = Color(0xFFE9D8D1);
+  static const lime = Color(0xFFDFB8C4);
   static const violet = fuchsia;
-  static const cyan = Color(0xFFF0A7C0);
-  static const coral = Color(0xFFE98285);
-  static const butter = Color(0xFFF6DBA3);
+  static const cyan = Color(0xFFD4C9D0);
+  static const coral = Color(0xFFD49A93);
+  static const butter = Color(0xFFE8D1B9);
 }
 
 ThemeData buildAppTheme() {
@@ -68,7 +68,7 @@ ThemeData buildAppTheme() {
     scaffoldBackgroundColor: AppColors.paper,
     colorScheme: ColorScheme.fromSeed(
       seedColor: AppColors.fuchsia,
-      primary: AppColors.berry,
+      primary: AppColors.ink,
       secondary: AppColors.fuchsia,
       tertiary: AppColors.champagne,
       surface: AppColors.paper,
@@ -85,7 +85,7 @@ ThemeData buildAppTheme() {
     ),
     filledButtonTheme: FilledButtonThemeData(
       style: FilledButton.styleFrom(
-        backgroundColor: AppColors.berry,
+        backgroundColor: AppColors.ink,
         foregroundColor: Colors.white,
         shape: const StadiumBorder(),
         padding: const EdgeInsets.symmetric(horizontal: 22, vertical: 18),

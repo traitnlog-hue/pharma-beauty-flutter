@@ -19,11 +19,11 @@ class BrandLogo extends StatelessWidget {
           alignment: Alignment.center,
           decoration: BoxDecoration(
             gradient: const LinearGradient(
-                colors: [AppColors.berry, AppColors.fuchsia],
+                colors: [AppColors.ink, Color(0xFF4B4144)],
                 begin: Alignment.topLeft,
                 end: Alignment.bottomRight),
             shape: BoxShape.circle,
-            border: Border.all(color: AppColors.champagne, width: 1.2),
+            border: Border.all(color: AppColors.fuchsia, width: 1.2),
             boxShadow: const [
               BoxShadow(
                   color: Color(0x33DF0AA4),
@@ -32,7 +32,7 @@ class BrandLogo extends StatelessWidget {
             ],
           ),
           child: const Icon(Icons.auto_awesome_rounded,
-              color: AppColors.pearl, size: 16),
+              color: AppColors.fuchsia, size: 16),
         ),
         if (!compact) ...[
           const SizedBox(width: 9),

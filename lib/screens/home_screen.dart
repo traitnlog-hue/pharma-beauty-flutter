@@ -55,7 +55,11 @@ class _HomeScreenState extends State<HomeScreen> {
     return Stack(children: [
       CustomScrollView(slivers: [
         SliverToBoxAdapter(child: _Hero(onProfile: openProfile)),
-        const SliverToBoxAdapter(child: _SelfCareManifesto()),
+        SliverToBoxAdapter(
+            child: _SelfCareManifesto(
+                onProfile: openProfile,
+                onDiscover: widget.onDiscover,
+                onAsk: widget.onAskPharmacist)),
         const SliverToBoxAdapter(child: _DailyBrief()),
         SliverToBoxAdapter(
             child: _AskPharmacist(onOpen: widget.onAskPharmacist)),

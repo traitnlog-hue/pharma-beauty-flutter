@@ -69,11 +69,11 @@ class _ShopScreenState extends State<ShopScreen> {
         padding: const EdgeInsets.fromLTRB(22, 34, 22, 28),
         decoration: BoxDecoration(
           gradient: const LinearGradient(
-              colors: [AppColors.blush, AppColors.pearl, Color(0xFFF2C1D3)],
+              colors: [AppColors.pearl, AppColors.paper2, AppColors.blush],
               begin: Alignment.topLeft,
               end: Alignment.bottomRight),
           borderRadius: BorderRadius.circular(32),
-          border: Border.all(color: AppColors.roseGold, width: .7),
+          border: Border.all(color: Colors.white, width: .8),
         ),
         child: Center(
             child: ConstrainedBox(
