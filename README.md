@@ -54,3 +54,17 @@ Android 디버그 APK:
 ```text
 build/app/outputs/flutter-apk/app-debug.apk
 ```
+
+## 자동 검사와 빌드
+
+`main` 브랜치 Push와 Pull Request마다 GitHub Actions가 다음 작업을 자동으로 실행합니다.
+
+1. Flutter 정적 분석
+2. 단위·위젯 테스트
+3. Flutter Web 릴리스 빌드
+4. Android 디버그 APK 빌드
+
+성공한 실행의 **Artifacts**에서 `pharma-beauty-android-debug` APK와
+`pharma-beauty-web` 웹 빌드를 14일 동안 내려받을 수 있습니다.
+
+현재 저장소는 비공개 상태를 유지하며, 계정 플랜 제한으로 GitHub Pages는 연결하지 않았습니다.
