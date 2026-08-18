@@ -111,7 +111,7 @@ class _DiscoverScreenState extends State<DiscoverScreen> {
                         Text('${meta.score}',
                             style: const TextStyle(
                                 fontSize: 42,
-                                fontWeight: FontWeight.w900,
+                                fontWeight: FontWeight.w700,
                                 letterSpacing: -2)),
                         const Text('/100',
                             style: TextStyle(
@@ -122,8 +122,8 @@ class _DiscoverScreenState extends State<DiscoverScreen> {
                           style: const TextStyle(
                               fontSize: 36,
                               height: .95,
-                              fontWeight: FontWeight.w900,
-                              letterSpacing: -2)),
+                              fontWeight: FontWeight.w700,
+                              letterSpacing: -1)),
                       const SizedBox(height: 7),
                       Text(ingredient.name,
                           style: const TextStyle(

@@ -1,266 +1,312 @@
 part of 'home_screen.dart';
 
-class _AskPharmacist extends StatelessWidget {
-  const _AskPharmacist({required this.onOpen});
+class _Hero extends StatelessWidget {
+  const _Hero({required this.profile, required this.onProfile});
+
+  final SkinProfile profile;
+  final VoidCallback onProfile;
+
+  @override
+  Widget build(BuildContext context) {
+    final concern = profile.isComplete ? profile.primaryConcern : '수분 부족';
+    return Padding(
+      padding: const EdgeInsets.fromLTRB(14, 4, 14, 0),
+      child: Center(
+        child: ConstrainedBox(
+          constraints: const BoxConstraints(maxWidth: 1080),
+          child: Container(
+            key: const Key('skin-weather-hero'),
+            height: 370,
+            clipBehavior: Clip.antiAlias,
+            decoration: BoxDecoration(
+              gradient: const LinearGradient(
+                colors: [Color(0xFFF1F0FF), Color(0xFFC8C7FF)],
+                begin: Alignment.topLeft,
+                end: Alignment.bottomRight,
+              ),
+              borderRadius: BorderRadius.circular(AppRadii.hero),
+              border: Border.all(color: AppColors.line),
+            ),
+            child: Stack(
+              fit: StackFit.expand,
+              children: [
+                const CustomPaint(painter: _SkinWeatherPainter()),
+                Padding(
+                  padding: const EdgeInsets.fromLTRB(22, 20, 22, 20),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Row(
+                        children: [
+                          Container(
+                            padding: const EdgeInsets.symmetric(
+                                horizontal: 11, vertical: 8),
+                            decoration: BoxDecoration(
+                              color: Colors.white.withValues(alpha: .72),
+                              borderRadius: BorderRadius.circular(11),
+                            ),
+                            child: const Row(
+                              children: [
+                                Icon(Icons.wb_sunny_outlined,
+                                    size: 15, color: AppColors.berry),
+                                SizedBox(width: 7),
+                                Text('TODAY · SKIN WEATHER',
+                                    style: TextStyle(
+                                        color: AppColors.berry,
+                                        fontSize: 9,
+                                        fontWeight: FontWeight.w700,
+                                        letterSpacing: .8)),
+                              ],
+                            ),
+                          ),
+                          const Spacer(),
+                          const Text('08.18',
+                              style: TextStyle(
+                                  color: AppColors.berry,
+                                  fontSize: 10,
+                                  fontWeight: FontWeight.w600,
+                                  letterSpacing: .8)),
+                        ],
+                      ),
+                      const SizedBox(height: 26),
+                      const Text('오늘 피부 날씨',
+                          style: TextStyle(
+                              color: AppColors.berry,
+                              fontSize: 12,
+                              fontWeight: FontWeight.w700)),
+                      const SizedBox(height: 6),
+                      Text('$concern 주의',
+                          style: const TextStyle(
+                              color: AppColors.ink,
+                              fontSize: 34,
+                              height: 1.08,
+                              fontWeight: FontWeight.w700,
+                              letterSpacing: -1.2)),
+                      const SizedBox(height: 8),
+                      const Text('수분 신호가 낮아요. 오늘은 회복과 보습에 집중하세요.',
+                          style: TextStyle(
+                              color: AppColors.berry,
+                              fontSize: 12,
+                              height: 1.45)),
+                      const Spacer(),
+                      Container(
+                        padding: const EdgeInsets.fromLTRB(14, 13, 10, 13),
+                        decoration: BoxDecoration(
+                          color: Colors.white.withValues(alpha: .82),
+                          borderRadius: BorderRadius.circular(16),
+                          border: Border.all(
+                              color: Colors.white.withValues(alpha: .9)),
+                        ),
+                        child: Row(
+                          children: [
+                            const Expanded(
+                                child: _WeatherMetric(
+                                    icon: Icons.water_drop_outlined,
+                                    label: '수분',
+                                    value: '42%')),
+                            const _WeatherDivider(),
+                            const Expanded(
+                                child: _WeatherMetric(
+                                    icon: Icons.air_rounded,
+                                    label: 'PM2.5',
+                                    value: '38 나쁨')),
+                            const _WeatherDivider(),
+                            const Expanded(
+                                child: _WeatherMetric(
+                                    icon: Icons.light_mode_outlined,
+                                    label: 'UV',
+                                    value: '높음')),
+                            IconButton(
+                              key: const Key('skin-weather-update'),
+                              tooltip: '오늘 피부 상태 업데이트',
+                              onPressed: onProfile,
+                              icon: const Icon(Icons.arrow_forward_rounded,
+                                  color: AppColors.berry),
+                            ),
+                          ],
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+              ],
+            ),
+          ),
+        ),
+      ),
+    );
+  }
+}
+
+class _WeatherMetric extends StatelessWidget {
+  const _WeatherMetric(
+      {required this.icon, required this.label, required this.value});
+
+  final IconData icon;
+  final String label;
+  final String value;
+
+  @override
+  Widget build(BuildContext context) => Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Row(children: [
+            Icon(icon, size: 13, color: AppColors.berry),
+            const SizedBox(width: 4),
+            Text(label,
+                style: const TextStyle(
+                    color: AppColors.muted,
+                    fontSize: 9,
+                    fontWeight: FontWeight.w600)),
+          ]),
+          const SizedBox(height: 4),
+          Text(value,
+              maxLines: 1,
+              overflow: TextOverflow.ellipsis,
+              style: const TextStyle(
+                  color: AppColors.ink,
+                  fontSize: 13,
+                  fontWeight: FontWeight.w700)),
+        ],
+      );
+}
+
+class _WeatherDivider extends StatelessWidget {
+  const _WeatherDivider();
+
+  @override
+  Widget build(BuildContext context) => Container(
+        width: 1,
+        height: 34,
+        margin: const EdgeInsets.symmetric(horizontal: 8),
+        color: AppColors.line,
+      );
+}
+
+class _SkinWeatherPainter extends CustomPainter {
+  const _SkinWeatherPainter();
+
+  @override
+  void paint(Canvas canvas, Size size) {
+    canvas.drawCircle(Offset(size.width * .82, size.height * .28),
+        size.width * .17, Paint()..color = Colors.white.withValues(alpha: .28));
+
+    final back = Path()
+      ..moveTo(0, size.height * .7)
+      ..quadraticBezierTo(size.width * .28, size.height * .42, size.width * .56,
+          size.height * .66)
+      ..quadraticBezierTo(
+          size.width * .78, size.height * .48, size.width, size.height * .58)
+      ..lineTo(size.width, size.height)
+      ..lineTo(0, size.height)
+      ..close();
+    canvas.drawPath(back, Paint()..color = const Color(0x267064DB));
+
+    final front = Path()
+      ..moveTo(0, size.height * .82)
+      ..quadraticBezierTo(size.width * .27, size.height * .61, size.width * .52,
+          size.height * .78)
+      ..quadraticBezierTo(
+          size.width * .76, size.height * .63, size.width, size.height * .72)
+      ..lineTo(size.width, size.height)
+      ..lineTo(0, size.height)
+      ..close();
+    canvas.drawPath(front, Paint()..color = const Color(0x1F493A9A));
+  }
+
+  @override
+  bool shouldRepaint(covariant CustomPainter oldDelegate) => false;
+}
+
+class _SkinChartCard extends StatelessWidget {
+  const _SkinChartCard({required this.profile, required this.onOpen});
+
+  final SkinProfile profile;
   final VoidCallback onOpen;
 
   @override
   Widget build(BuildContext context) => Padding(
-        padding: const EdgeInsets.fromLTRB(14, 18, 14, 0),
+        padding: const EdgeInsets.fromLTRB(14, 12, 14, 0),
         child: Center(
           child: ConstrainedBox(
             constraints: const BoxConstraints(maxWidth: 1080),
             child: Material(
-              color: AppColors.blush,
-              borderRadius: BorderRadius.circular(32),
+              color: AppColors.surface,
+              borderRadius: BorderRadius.circular(18),
               clipBehavior: Clip.antiAlias,
               child: InkWell(
+                key: profile.isComplete
+                    ? const Key('skin-chart-edit')
+                    : const Key('skin-chart-start'),
                 onTap: onOpen,
-                child: SizedBox(
-                  height: 226,
-                  child: Row(children: [
-                    Expanded(
-                      flex: 58,
-                      child: Padding(
-                        padding: const EdgeInsets.fromLTRB(24, 22, 8, 22),
+                child: Container(
+                  key: const Key('skin-chart-card'),
+                  padding: const EdgeInsets.all(16),
+                  decoration: BoxDecoration(
+                    borderRadius: BorderRadius.circular(18),
+                    border: Border.all(color: AppColors.line),
+                  ),
+                  child: Row(
+                    children: [
+                      Container(
+                        width: 44,
+                        height: 44,
+                        alignment: Alignment.center,
+                        decoration: BoxDecoration(
+                          color: AppColors.blush,
+                          borderRadius: BorderRadius.circular(13),
+                        ),
+                        child: const Icon(Icons.assignment_outlined,
+                            color: AppColors.berry, size: 21),
+                      ),
+                      const SizedBox(width: 13),
+                      Expanded(
                         child: Column(
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
-                            const Row(children: [
-                              CircleAvatar(
-                                  radius: 4,
-                                  backgroundColor: AppColors.fuchsia),
-                              SizedBox(width: 7),
-                              Expanded(
-                                child: FittedBox(
-                                  fit: BoxFit.scaleDown,
-                                  alignment: Alignment.centerLeft,
-                                  child: Text('AI PHARMACIST · 24/7 ONLINE',
-                                      style: TextStyle(
-                                          color: AppColors.berry,
-                                          fontSize: 9,
-                                          fontWeight: FontWeight.w900,
-                                          letterSpacing: 1)),
-                                ),
-                              ),
-                            ]),
-                            const Spacer(),
-                            Text('궁금한 성분,\nAI 약사 챗봇에게\n물어보세요.',
-                                style:
-                                    Theme.of(context).textTheme.headlineMedium),
-                            const SizedBox(height: 12),
-                            const Row(children: [
-                              Text('AI 약사 챗봇 시작',
-                                  style: TextStyle(
-                                      color: AppColors.berry,
-                                      fontSize: 11,
-                                      fontWeight: FontWeight.w900)),
-                              SizedBox(width: 5),
-                              Icon(Icons.arrow_forward_rounded,
-                                  color: AppColors.berry, size: 16),
-                            ]),
+                            Text(
+                              profile.isComplete
+                                  ? '${profile.profileName} 차트'
+                                  : '내 스킨 차트 만들기',
+                              maxLines: 1,
+                              overflow: TextOverflow.ellipsis,
+                              style: const TextStyle(
+                                  color: AppColors.ink,
+                                  fontSize: 16,
+                                  fontWeight: FontWeight.w700),
+                            ),
+                            const SizedBox(height: 4),
+                            Text(
+                              profile.isComplete
+                                  ? '${profile.primaryConcern} · ${profile.recommendedIngredients}'
+                                  : '5개 항목 · 약 1분 · 바로 맞춤 추천',
+                              maxLines: 1,
+                              overflow: TextOverflow.ellipsis,
+                              style: const TextStyle(
+                                  color: AppColors.muted, fontSize: 11),
+                            ),
                           ],
                         ),
                       ),
-                    ),
-                    Expanded(
-                      flex: 42,
-                      child: Stack(fit: StackFit.expand, children: [
-                        Image.asset(
-                          'assets/editorial/ai-molecule-violet-3d.png',
-                          fit: BoxFit.cover,
-                          alignment: const Alignment(.05, 0),
+                      const SizedBox(width: 8),
+                      Container(
+                        width: 38,
+                        height: 38,
+                        alignment: Alignment.center,
+                        decoration: BoxDecoration(
+                          color: AppColors.fuchsia,
+                          borderRadius: BorderRadius.circular(12),
                         ),
-                        const DecoratedBox(
-                          decoration: BoxDecoration(
-                            gradient: LinearGradient(
-                              colors: [AppColors.blush, Colors.transparent],
-                              begin: Alignment.centerLeft,
-                              end: Alignment.center,
-                            ),
-                          ),
-                        ),
-                      ]),
-                    ),
-                  ]),
+                        child: const Icon(Icons.arrow_forward_rounded,
+                            color: Colors.white, size: 18),
+                      ),
+                    ],
+                  ),
                 ),
               ),
             ),
           ),
         ),
-      );
-}
-
-class _Hero extends StatelessWidget {
-  const _Hero({required this.onProfile});
-  final VoidCallback onProfile;
-
-  @override
-  Widget build(BuildContext context) => Padding(
-        padding: const EdgeInsets.fromLTRB(14, 4, 14, 0),
-        child: LayoutBuilder(builder: (context, constraints) {
-          final wide = constraints.maxWidth > 860;
-          return Container(
-            height: wide ? 560 : 500,
-            clipBehavior: Clip.antiAlias,
-            decoration: BoxDecoration(
-              color: AppColors.oatmeal,
-              borderRadius: BorderRadius.circular(34),
-              border: Border.all(color: Colors.white.withValues(alpha: .7)),
-              boxShadow: const [
-                BoxShadow(
-                    color: Color(0x24252123),
-                    blurRadius: 30,
-                    offset: Offset(0, 14))
-              ],
-            ),
-            child: Stack(fit: StackFit.expand, children: [
-              Image.asset(
-                'assets/editorial/clinical-violet-hero.png',
-                fit: BoxFit.cover,
-                alignment: wide ? const Alignment(.25, 0) : Alignment.center,
-              ),
-              DecoratedBox(
-                decoration: BoxDecoration(
-                  gradient: LinearGradient(
-                    begin: wide ? Alignment.centerLeft : Alignment.topCenter,
-                    end: Alignment.bottomCenter,
-                    colors: wide
-                        ? const [
-                            Color(0xD9111114),
-                            Color(0x7A4B3FA8),
-                            Colors.transparent,
-                            Color(0x30111114)
-                          ]
-                        : const [
-                            Colors.transparent,
-                            Color(0x126C5CE7),
-                            Color(0xB04B3FA8),
-                            Color(0xEE111114)
-                          ],
-                    stops: const [0, .36, .72, 1],
-                  ),
-                ),
-              ),
-              Padding(
-                padding: EdgeInsets.fromLTRB(
-                    wide ? 44 : 22, wide ? 38 : 20, wide ? 44 : 22, 24),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Row(children: [
-                      const _GlassLabel(label: 'TODAY · SKIN CHECK'),
-                      const Spacer(),
-                      Text('08.14',
-                          style: TextStyle(
-                              color: AppColors.ink.withValues(alpha: .72),
-                              fontSize: 10,
-                              fontWeight: FontWeight.w900,
-                              letterSpacing: 1)),
-                    ]),
-                    const Spacer(),
-                    ConstrainedBox(
-                      constraints: BoxConstraints(maxWidth: wide ? 470 : 330),
-                      child: Text('오늘 피부,\n가볍게 체크해볼까?',
-                          style: TextStyle(
-                              color: Colors.white,
-                              fontSize: wide ? 54 : 34,
-                              height: 1.08,
-                              fontWeight: FontWeight.w800,
-                              letterSpacing: wide ? -3 : -1.8)),
-                    ),
-                    const SizedBox(height: 12),
-                    ConstrainedBox(
-                      constraints: const BoxConstraints(maxWidth: 390),
-                      child: const Text(
-                        '복잡한 질문 없이 3분이면 충분해요.\n내 피부가 원하는 케어부터 확인해보세요.',
-                        style: TextStyle(
-                            color: Color(0xFFF4F2FF),
-                            fontSize: 14,
-                            height: 1.55,
-                            fontWeight: FontWeight.w600),
-                      ),
-                    ),
-                    const SizedBox(height: 18),
-                    FilledButton.icon(
-                      style: FilledButton.styleFrom(
-                          backgroundColor: AppColors.fuchsia,
-                          foregroundColor: Colors.white,
-                          minimumSize: const Size(0, 50),
-                          side: BorderSide(
-                              color: Colors.white.withValues(alpha: .18))),
-                      onPressed: onProfile,
-                      icon: const Icon(Icons.arrow_forward_rounded, size: 18),
-                      label: const Text('3분 피부 체크'),
-                    ),
-                  ],
-                ),
-              ),
-              Positioned(
-                top: wide ? 92 : 78,
-                right: 18,
-                child: const _SkinSignalCard(),
-              ),
-            ]),
-          );
-        }),
-      );
-}
-
-class _GlassLabel extends StatelessWidget {
-  const _GlassLabel({required this.label});
-  final String label;
-
-  @override
-  Widget build(BuildContext context) => Container(
-        padding: const EdgeInsets.symmetric(horizontal: 13, vertical: 9),
-        decoration: BoxDecoration(
-          color: Colors.white.withValues(alpha: .62),
-          borderRadius: BorderRadius.circular(999),
-          border: Border.all(color: Colors.white.withValues(alpha: .72)),
-        ),
-        child: Text(label,
-            style: const TextStyle(
-                color: AppColors.ink,
-                fontSize: 9,
-                fontWeight: FontWeight.w900,
-                letterSpacing: .9)),
-      );
-}
-
-class _SkinSignalCard extends StatelessWidget {
-  const _SkinSignalCard();
-
-  @override
-  Widget build(BuildContext context) => Container(
-        width: 98,
-        padding: const EdgeInsets.fromLTRB(14, 13, 14, 12),
-        decoration: BoxDecoration(
-          color: Colors.white.withValues(alpha: .66),
-          borderRadius: BorderRadius.circular(25),
-          border: Border.all(color: Colors.white.withValues(alpha: .78)),
-          boxShadow: const [
-            BoxShadow(
-                color: Color(0x19252123), blurRadius: 18, offset: Offset(0, 8))
-          ],
-        ),
-        child: const Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Text('42%',
-                  style: TextStyle(
-                      color: AppColors.ink,
-                      fontSize: 25,
-                      height: 1,
-                      fontWeight: FontWeight.w800,
-                      letterSpacing: -1.2)),
-              SizedBox(height: 7),
-              Text('수분 신호',
-                  style: TextStyle(
-                      color: AppColors.muted,
-                      fontSize: 10,
-                      fontWeight: FontWeight.w800)),
-            ]),
       );
 }
 
@@ -283,9 +329,9 @@ class _SelfCareManifesto extends StatelessWidget {
               const Text('바로 시작하기',
                   style: TextStyle(
                       color: AppColors.ink,
-                      fontSize: 22,
-                      fontWeight: FontWeight.w900,
-                      letterSpacing: -.8)),
+                      fontSize: 20,
+                      fontWeight: FontWeight.w700,
+                      letterSpacing: -.35)),
               const SizedBox(height: 5),
               const Text('궁금한 케어를 빠르게 찾아보세요.',
                   style: TextStyle(color: AppColors.muted, fontSize: 13)),
@@ -293,21 +339,21 @@ class _SelfCareManifesto extends StatelessWidget {
               Row(children: [
                 Expanded(
                     child: _QuickAction(
-                        icon: Icons.face_retouching_natural_rounded,
+                        icon: Icons.assignment_ind_outlined,
                         label: '피부 체크',
                         color: AppColors.blush,
                         onTap: onProfile)),
                 const SizedBox(width: 8),
                 Expanded(
                     child: _QuickAction(
-                        icon: Icons.bubble_chart_outlined,
+                        icon: Icons.science_outlined,
                         label: '성분 트렌드',
                         color: AppColors.paper2,
                         onTap: onDiscover)),
                 const SizedBox(width: 8),
                 Expanded(
                     child: _QuickAction(
-                        icon: Icons.auto_awesome_outlined,
+                        icon: Icons.format_list_numbered_rounded,
                         label: '루틴 만들기',
                         color: AppColors.oatmeal,
                         onTap: () => Navigator.push(
@@ -331,14 +377,11 @@ class _SelfCareManifesto extends StatelessWidget {
                     const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
                 decoration: BoxDecoration(
                   color: AppColors.ink,
-                  borderRadius: BorderRadius.circular(22),
+                  borderRadius: BorderRadius.circular(16),
                 ),
                 child: const Row(children: [
-                  CircleAvatar(
-                      radius: 14,
-                      backgroundColor: AppColors.fuchsia,
-                      child: Icon(Icons.favorite_outline_rounded,
-                          color: Colors.white, size: 15)),
+                  Icon(Icons.info_outline_rounded,
+                      color: AppColors.ballerina, size: 18),
                   SizedBox(width: 11),
                   Expanded(
                     child: Text('오늘은 액티브 성분 하나만, 보습은 충분히.',
@@ -353,6 +396,432 @@ class _SelfCareManifesto extends StatelessWidget {
                 ]),
               ),
             ]),
+          ),
+        ),
+      );
+}
+
+class _CoreHooks extends StatelessWidget {
+  const _CoreHooks({
+    required this.onProfile,
+    required this.onRoutine,
+    required this.onCompare,
+  });
+
+  final VoidCallback onProfile;
+  final VoidCallback onRoutine;
+  final VoidCallback onCompare;
+
+  @override
+  Widget build(BuildContext context) {
+    final hooks = [
+      (
+        key: const Key('core-hook-profile'),
+        index: '01',
+        icon: Icons.assignment_outlined,
+        title: '왜 안 맞았는지\n차트로 확인',
+        caption: '자극 이력 · 성분 대조',
+        onTap: onProfile,
+      ),
+      (
+        key: const Key('core-hook-synergy'),
+        index: '02',
+        icon: Icons.warning_amber_rounded,
+        title: '함께 쓰기 전\n충돌 신호 확인',
+        caption: '레티놀 · AHA 조합 체크',
+        onTap: onRoutine,
+      ),
+      (
+        key: const Key('core-hook-compare'),
+        index: '03',
+        icon: Icons.compare_arrows_rounded,
+        title: '후보 3개\n이유까지 비교',
+        caption: '내 차트 기준 스마트 비교',
+        onTap: onCompare,
+      ),
+    ];
+
+    return Padding(
+      padding: const EdgeInsets.fromLTRB(20, 44, 20, 0),
+      child: Center(
+        child: ConstrainedBox(
+          constraints: const BoxConstraints(maxWidth: 1080),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              const SectionLabel('01', 'WHY LEXEM'),
+              const SizedBox(height: 8),
+              Text('내 피부에 필요한 기능만',
+                  style: Theme.of(context).textTheme.headlineMedium),
+              const SizedBox(height: 6),
+              const Text(
+                '짧게 확인하고 바로 시작하세요.',
+                style: TextStyle(color: AppColors.muted, fontSize: 12),
+              ),
+              const SizedBox(height: 16),
+              LayoutBuilder(builder: (context, constraints) {
+                final wide = constraints.maxWidth >= 820;
+                final cards = hooks
+                    .map((hook) => _HookCard(
+                          key: hook.key,
+                          index: hook.index,
+                          icon: hook.icon,
+                          title: hook.title,
+                          caption: hook.caption,
+                          onTap: hook.onTap,
+                        ))
+                    .toList();
+                if (wide) {
+                  return Row(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      for (var i = 0; i < cards.length; i++) ...[
+                        Expanded(child: cards[i]),
+                        if (i < cards.length - 1) const SizedBox(width: 12),
+                      ],
+                    ],
+                  );
+                }
+                return SizedBox(
+                  height: 158,
+                  child: ListView.separated(
+                    scrollDirection: Axis.horizontal,
+                    clipBehavior: Clip.none,
+                    itemCount: cards.length,
+                    separatorBuilder: (_, __) => const SizedBox(width: 10),
+                    itemBuilder: (_, index) =>
+                        SizedBox(width: 238, child: cards[index]),
+                  ),
+                );
+              }),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+}
+
+class _HookCard extends StatelessWidget {
+  const _HookCard({
+    required this.index,
+    required this.icon,
+    required this.title,
+    required this.caption,
+    required this.onTap,
+    super.key,
+  });
+
+  final String index;
+  final IconData icon;
+  final String title;
+  final String caption;
+  final VoidCallback onTap;
+
+  @override
+  Widget build(BuildContext context) => Material(
+        color: AppColors.surface,
+        borderRadius: BorderRadius.circular(AppRadii.card),
+        clipBehavior: Clip.antiAlias,
+        child: InkWell(
+          onTap: onTap,
+          child: Container(
+            padding: const EdgeInsets.all(15),
+            decoration: BoxDecoration(
+              border: Border.all(color: AppColors.line),
+              borderRadius: BorderRadius.circular(AppRadii.card),
+            ),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Row(
+                  children: [
+                    Container(
+                      width: 34,
+                      height: 34,
+                      alignment: Alignment.center,
+                      decoration: BoxDecoration(
+                        color: AppColors.blush,
+                        borderRadius: BorderRadius.circular(11),
+                      ),
+                      child: Icon(icon, color: AppColors.berry, size: 18),
+                    ),
+                    const Spacer(),
+                    Text(index,
+                        style: const TextStyle(
+                            color: AppColors.fuchsia,
+                            fontSize: 11,
+                            fontWeight: FontWeight.w700)),
+                  ],
+                ),
+                const Spacer(),
+                Text(title,
+                    style: const TextStyle(
+                        color: AppColors.ink,
+                        fontSize: 17,
+                        height: 1.25,
+                        fontWeight: FontWeight.w700,
+                        letterSpacing: -.35)),
+                const SizedBox(height: 8),
+                Row(
+                  children: [
+                    Expanded(
+                      child: Text(caption,
+                          maxLines: 1,
+                          overflow: TextOverflow.ellipsis,
+                          style: const TextStyle(
+                              color: AppColors.muted, fontSize: 10)),
+                    ),
+                    const Icon(Icons.arrow_forward_rounded,
+                        color: AppColors.berry, size: 16),
+                  ],
+                ),
+              ],
+            ),
+          ),
+        ),
+      );
+}
+
+class _BrandStory extends StatelessWidget {
+  const _BrandStory();
+
+  static const _serviceLanguage = [
+    ('01', 'SKIN PROFILE', '피부의 문맥'),
+    ('02', 'INGREDIENT DICTIONARY', '성분의 단어'),
+    ('03', 'WHY THIS PRODUCT', '추천의 해석'),
+    ('04', 'COMPARE', '선택의 근거'),
+    ('05', 'ROUTINE BUILDER', '나만의 문장'),
+  ];
+
+  static const _brandLines = [
+    'LEXEM / BARRIER',
+    'LEXEM / HYDRATION',
+    'LEXEM / CALM',
+    'LEXEM / INGREDIENT INDEX',
+    'LEXEM / SKIN NOTE',
+  ];
+
+  @override
+  Widget build(BuildContext context) => Padding(
+        padding: const EdgeInsets.fromLTRB(14, 54, 14, 0),
+        child: Center(
+          child: ConstrainedBox(
+            constraints: const BoxConstraints(maxWidth: 1080),
+            child: Container(
+              key: const Key('brand-story-section'),
+              padding: const EdgeInsets.fromLTRB(22, 22, 22, 26),
+              decoration: BoxDecoration(
+                color: AppColors.surface,
+                borderRadius: BorderRadius.circular(AppRadii.feature),
+                border: Border.all(color: AppColors.line),
+              ),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Row(
+                    children: [
+                      Container(
+                        width: 8,
+                        height: 8,
+                        decoration: const BoxDecoration(
+                          color: AppColors.fuchsia,
+                          shape: BoxShape.circle,
+                        ),
+                      ),
+                      const SizedBox(width: 8),
+                      const Text(
+                        'LEXEM / BRAND STORY',
+                        style: TextStyle(
+                          color: AppColors.berry,
+                          fontSize: 9,
+                          fontWeight: FontWeight.w700,
+                          letterSpacing: 1.4,
+                        ),
+                      ),
+                      const Spacer(),
+                      const Text(
+                        'READ YOUR SKIN.',
+                        style: TextStyle(
+                          color: AppColors.ink,
+                          fontSize: 9,
+                          fontWeight: FontWeight.w700,
+                          letterSpacing: 1.2,
+                        ),
+                      ),
+                    ],
+                  ),
+                  const SizedBox(height: 26),
+                  Container(
+                    width: double.infinity,
+                    height: 106,
+                    padding: const EdgeInsets.symmetric(
+                        horizontal: 24, vertical: 16),
+                    decoration: BoxDecoration(
+                      color: AppColors.paper,
+                      borderRadius: BorderRadius.circular(16),
+                    ),
+                    child: Image.asset(
+                      'assets/branding/lexem-wordmark.png',
+                      fit: BoxFit.contain,
+                      filterQuality: FilterQuality.high,
+                      semanticLabel: 'LEXEM, READ YOUR SKIN 브랜드 워드마크',
+                    ),
+                  ),
+                  const SizedBox(height: 30),
+                  Text(
+                    '화장품 성분은\n하나의 언어다.',
+                    style: Theme.of(context).textTheme.headlineLarge,
+                  ),
+                  const SizedBox(height: 16),
+                  const Text(
+                    '각 성분은 단어가 되고, 성분의 조합은 문장이 되며, '
+                    '스킨케어 루틴은 피부를 위한 하나의 이야기로 완성됩니다.',
+                    style: TextStyle(
+                      color: AppColors.ink,
+                      fontSize: 14,
+                      height: 1.7,
+                      fontWeight: FontWeight.w600,
+                    ),
+                  ),
+                  const SizedBox(height: 10),
+                  const Text(
+                    'LEXEM은 어려운 성분 정보를 해석하고, 사용자의 피부에 '
+                    '필요한 의미만 남깁니다.',
+                    style: TextStyle(
+                      color: AppColors.muted,
+                      fontSize: 13,
+                      height: 1.65,
+                    ),
+                  ),
+                  const SizedBox(height: 32),
+                  const Divider(height: 1),
+                  const SizedBox(height: 28),
+                  const Text(
+                    'THE LANGUAGE SYSTEM',
+                    style: TextStyle(
+                      color: AppColors.berry,
+                      fontSize: 9,
+                      fontWeight: FontWeight.w700,
+                      letterSpacing: 1.4,
+                    ),
+                  ),
+                  const SizedBox(height: 7),
+                  const Text(
+                    '피부를 읽는 다섯 가지 문법',
+                    style: TextStyle(
+                      color: AppColors.ink,
+                      fontSize: 19,
+                      fontWeight: FontWeight.w700,
+                      letterSpacing: -.3,
+                    ),
+                  ),
+                  const SizedBox(height: 16),
+                  LayoutBuilder(builder: (context, constraints) {
+                    final itemWidth = constraints.maxWidth >= 680
+                        ? (constraints.maxWidth - 12) / 2
+                        : constraints.maxWidth;
+                    return Wrap(
+                      spacing: 12,
+                      runSpacing: 10,
+                      children: [
+                        for (final item in _serviceLanguage)
+                          SizedBox(
+                            width: itemWidth,
+                            child: Container(
+                              padding: const EdgeInsets.all(15),
+                              decoration: BoxDecoration(
+                                color: AppColors.paper,
+                                borderRadius: BorderRadius.circular(14),
+                                border: Border.all(color: AppColors.line),
+                              ),
+                              child: Row(
+                                children: [
+                                  Text(
+                                    item.$1,
+                                    style: const TextStyle(
+                                      color: AppColors.fuchsia,
+                                      fontSize: 10,
+                                      fontWeight: FontWeight.w700,
+                                    ),
+                                  ),
+                                  const SizedBox(width: 13),
+                                  Expanded(
+                                    child: Column(
+                                      crossAxisAlignment:
+                                          CrossAxisAlignment.start,
+                                      children: [
+                                        Text(
+                                          item.$2,
+                                          style: const TextStyle(
+                                            color: AppColors.ink,
+                                            fontSize: 10,
+                                            fontWeight: FontWeight.w700,
+                                            letterSpacing: .5,
+                                          ),
+                                        ),
+                                        const SizedBox(height: 3),
+                                        Text(
+                                          item.$3,
+                                          style: const TextStyle(
+                                            color: AppColors.muted,
+                                            fontSize: 12,
+                                            fontWeight: FontWeight.w600,
+                                          ),
+                                        ),
+                                      ],
+                                    ),
+                                  ),
+                                  const Icon(
+                                    Icons.arrow_outward_rounded,
+                                    size: 16,
+                                    color: AppColors.rose,
+                                  ),
+                                ],
+                              ),
+                            ),
+                          ),
+                      ],
+                    );
+                  }),
+                  const SizedBox(height: 30),
+                  const Text(
+                    'LEXEM LIBRARY',
+                    style: TextStyle(
+                      color: AppColors.muted,
+                      fontSize: 9,
+                      fontWeight: FontWeight.w700,
+                      letterSpacing: 1.4,
+                    ),
+                  ),
+                  const SizedBox(height: 12),
+                  Wrap(
+                    spacing: 8,
+                    runSpacing: 8,
+                    children: [
+                      for (final label in _brandLines)
+                        Container(
+                          padding: const EdgeInsets.symmetric(
+                              horizontal: 12, vertical: 9),
+                          decoration: BoxDecoration(
+                            color: AppColors.blush,
+                            borderRadius: BorderRadius.circular(12),
+                          ),
+                          child: Text(
+                            label,
+                            style: const TextStyle(
+                              color: AppColors.berry,
+                              fontSize: 9,
+                              fontWeight: FontWeight.w700,
+                              letterSpacing: .35,
+                            ),
+                          ),
+                        ),
+                    ],
+                  ),
+                ],
+              ),
+            ),
           ),
         ),
       );
@@ -373,37 +842,37 @@ class _QuickAction extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) => Material(
-        color: color,
-        borderRadius: BorderRadius.circular(22),
+        color: AppColors.surface,
+        borderRadius: BorderRadius.circular(16),
         clipBehavior: Clip.antiAlias,
         child: InkWell(
           onTap: onTap,
-          child: SizedBox(
-            height: 94,
-            child: Padding(
-              padding: const EdgeInsets.fromLTRB(10, 13, 8, 11),
-              child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Container(
-                      width: 34,
-                      height: 34,
-                      alignment: Alignment.center,
-                      decoration: BoxDecoration(
-                          color: Colors.white.withValues(alpha: .72),
-                          shape: BoxShape.circle),
-                      child: Icon(icon, color: AppColors.ink, size: 18),
-                    ),
-                    const Spacer(),
-                    Text(label,
-                        maxLines: 2,
-                        style: const TextStyle(
-                            color: AppColors.ink,
-                            fontSize: 11,
-                            height: 1.2,
-                            fontWeight: FontWeight.w800)),
-                  ]),
+          child: Container(
+            height: 92,
+            padding: const EdgeInsets.fromLTRB(10, 12, 8, 10),
+            decoration: BoxDecoration(
+              borderRadius: BorderRadius.circular(16),
+              border: Border.all(color: AppColors.line),
             ),
+            child:
+                Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
+              Container(
+                width: 32,
+                height: 32,
+                alignment: Alignment.center,
+                decoration: BoxDecoration(
+                    color: color, borderRadius: BorderRadius.circular(10)),
+                child: Icon(icon, color: AppColors.berry, size: 18),
+              ),
+              const Spacer(),
+              Text(label,
+                  maxLines: 2,
+                  style: const TextStyle(
+                      color: AppColors.ink,
+                      fontSize: 11,
+                      height: 1.2,
+                      fontWeight: FontWeight.w700)),
+            ]),
           ),
         ),
       );
@@ -513,10 +982,12 @@ class _ConcernPulse extends StatelessWidget {
 class _MatchPicks extends StatelessWidget {
   const _MatchPicks(
       {required this.products,
+      required this.profile,
       required this.compareIds,
       required this.onOpen,
       required this.onCompare});
   final List<BeautyProduct> products;
+  final SkinProfile profile;
   final Set<int> compareIds;
   final ValueChanged<BeautyProduct> onOpen;
   final ValueChanged<BeautyProduct> onCompare;
@@ -530,14 +1001,36 @@ class _MatchPicks extends StatelessWidget {
                   child: ConstrainedBox(
                       constraints: const BoxConstraints(maxWidth: 1080),
                       child: Row(children: [
-                        Text('MATCH PICKS',
-                            style: Theme.of(context).textTheme.headlineMedium),
-                        const Spacer(),
+                        Expanded(
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Text(
+                                  profile.isComplete
+                                      ? '${profile.profileName} MATCH'
+                                      : 'MATCH PICKS',
+                                  style: Theme.of(context)
+                                      .textTheme
+                                      .headlineMedium),
+                              if (profile.isComplete) ...[
+                                const SizedBox(height: 5),
+                                Text(
+                                  '${profile.primaryConcern} 차트 기준 · ${profile.recommendedIngredients}',
+                                  style: const TextStyle(
+                                    color: AppColors.muted,
+                                    fontSize: 10,
+                                  ),
+                                ),
+                              ],
+                            ],
+                          ),
+                        ),
+                        const SizedBox(width: 10),
                         Text('${products.length} PICKS',
                             style: const TextStyle(
                                 color: AppColors.violet,
                                 fontSize: 10,
-                                fontWeight: FontWeight.w900))
+                                fontWeight: FontWeight.w700))
                       ])))),
           const SizedBox(height: 18),
           SizedBox(
@@ -554,7 +1047,7 @@ class _MatchPicks extends StatelessWidget {
                   width: 270,
                   child: Material(
                     color: AppColors.surface,
-                    borderRadius: BorderRadius.circular(28),
+                    borderRadius: BorderRadius.circular(20),
                     clipBehavior: Clip.antiAlias,
                     child: InkWell(
                       onTap: () => onOpen(product),
@@ -569,15 +1062,15 @@ class _MatchPicks extends StatelessWidget {
                                       horizontal: 10, vertical: 7),
                                   decoration: BoxDecoration(
                                       color: AppColors.lime,
-                                      borderRadius: BorderRadius.circular(30)),
+                                      borderRadius: BorderRadius.circular(10)),
                                   child: Text('${product.match}% MATCH',
                                       style: const TextStyle(
                                           fontSize: 9,
-                                          fontWeight: FontWeight.w900)))),
+                                          fontWeight: FontWeight.w700)))),
                           Positioned(
                               right: 10,
                               top: 10,
-                              child: IconButton.filledTonal(
+                              child: IconButton(
                                   onPressed: () => onCompare(product),
                                   icon: Icon(
                                       selected
@@ -596,7 +1089,7 @@ class _MatchPicks extends StatelessWidget {
                                           style: const TextStyle(
                                               color: AppColors.violet,
                                               fontSize: 8,
-                                              fontWeight: FontWeight.w900,
+                                              fontWeight: FontWeight.w700,
                                               letterSpacing: .8)),
                                       const SizedBox(height: 7),
                                       Text(product.name,
@@ -604,7 +1097,7 @@ class _MatchPicks extends StatelessWidget {
                                           overflow: TextOverflow.ellipsis,
                                           style: const TextStyle(
                                               fontSize: 17,
-                                              fontWeight: FontWeight.w900)),
+                                              fontWeight: FontWeight.w700)),
                                       const SizedBox(height: 8),
                                       Text(
                                           product.ingredients
@@ -618,15 +1111,10 @@ class _MatchPicks extends StatelessWidget {
                                         Text(product.formattedPrice,
                                             style: const TextStyle(
                                                 fontSize: 13,
-                                                fontWeight: FontWeight.w900)),
+                                                fontWeight: FontWeight.w700)),
                                         const Spacer(),
-                                        const CircleAvatar(
-                                            radius: 16,
-                                            backgroundColor: AppColors.ink,
-                                            child: Icon(
-                                                Icons.arrow_outward_rounded,
-                                                color: Colors.white,
-                                                size: 16))
+                                        const Icon(Icons.arrow_outward_rounded,
+                                            color: AppColors.ink, size: 18)
                                       ]),
                                     ]))),
                       ]),
@@ -650,7 +1138,7 @@ class _IngredientPulse extends StatelessWidget {
         decoration: BoxDecoration(
             gradient: const LinearGradient(
                 colors: [AppColors.violet, Color(0xFF4D34D8)]),
-            borderRadius: BorderRadius.circular(32)),
+            borderRadius: BorderRadius.circular(AppRadii.feature)),
         child: Center(
             child: ConstrainedBox(
           constraints: const BoxConstraints(maxWidth: 1000),
@@ -720,7 +1208,8 @@ class _RoutinePreview extends StatelessWidget {
                   padding: const EdgeInsets.all(16),
                   decoration: BoxDecoration(
                       color: AppColors.surface,
-                      borderRadius: BorderRadius.circular(22)),
+                      borderRadius: BorderRadius.circular(16),
+                      border: Border.all(color: AppColors.line)),
                   child: Row(children: [
                     Container(
                         width: 42,
@@ -731,7 +1220,7 @@ class _RoutinePreview extends StatelessWidget {
                             borderRadius: BorderRadius.circular(14)),
                         child: Text(item.$1,
                             style: const TextStyle(
-                                fontSize: 10, fontWeight: FontWeight.w900))),
+                                fontSize: 10, fontWeight: FontWeight.w700))),
                     const SizedBox(width: 14),
                     Expanded(
                         child: Text(item.$2,
@@ -764,7 +1253,7 @@ class _SectionTitle extends StatelessWidget {
             style: const TextStyle(
                 color: AppColors.violet,
                 fontSize: 10,
-                fontWeight: FontWeight.w900,
+                fontWeight: FontWeight.w700,
                 letterSpacing: 1.1)),
         const SizedBox(height: 9),
         Text(title, style: Theme.of(context).textTheme.headlineLarge),
@@ -784,7 +1273,7 @@ class _StatusPill extends StatelessWidget {
         padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
         decoration: BoxDecoration(
             color: Colors.white.withValues(alpha: .1),
-            borderRadius: BorderRadius.circular(30),
+            borderRadius: BorderRadius.circular(12),
             border: Border.all(color: Colors.white.withValues(alpha: .15))),
         child: Row(mainAxisSize: MainAxisSize.min, children: [
           Icon(icon, color: AppColors.lime, size: 15),
@@ -793,7 +1282,7 @@ class _StatusPill extends StatelessWidget {
               style: const TextStyle(
                   color: Colors.white,
                   fontSize: 9,
-                  fontWeight: FontWeight.w900,
+                  fontWeight: FontWeight.w700,
                   letterSpacing: .8))
         ]),
       );
@@ -815,18 +1304,18 @@ class _BriefCard extends StatelessWidget {
   Widget build(BuildContext context) => Container(
         padding: const EdgeInsets.all(18),
         decoration: BoxDecoration(
-            color: color, borderRadius: BorderRadius.circular(24)),
+            color: color, borderRadius: BorderRadius.circular(16)),
         child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
           Icon(icon, size: 20),
           const Spacer(),
           Text(value,
               style: const TextStyle(
                   fontSize: 28,
-                  fontWeight: FontWeight.w900,
+                  fontWeight: FontWeight.w700,
                   letterSpacing: -1.5)),
           Text(label,
               style:
-                  const TextStyle(fontSize: 11, fontWeight: FontWeight.w900)),
+                  const TextStyle(fontSize: 11, fontWeight: FontWeight.w700)),
           const SizedBox(height: 4),
           Text(caption,
               style: const TextStyle(color: AppColors.muted, fontSize: 9))
@@ -844,15 +1333,15 @@ class _PulseMini extends StatelessWidget {
   Widget build(BuildContext context) => Container(
         padding: const EdgeInsets.all(16),
         decoration: BoxDecoration(
-            color: color, borderRadius: BorderRadius.circular(20)),
+            color: color, borderRadius: BorderRadius.circular(14)),
         child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
           Text(value,
               style:
-                  const TextStyle(fontSize: 28, fontWeight: FontWeight.w900)),
+                  const TextStyle(fontSize: 28, fontWeight: FontWeight.w700)),
           const SizedBox(height: 3),
           Text(label,
               style: const TextStyle(
-                  fontSize: 8, fontWeight: FontWeight.w900, letterSpacing: .7))
+                  fontSize: 8, fontWeight: FontWeight.w700, letterSpacing: .7))
         ]),
       );
 }

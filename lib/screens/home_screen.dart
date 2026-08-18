@@ -4,27 +4,31 @@ import '../catalog.dart';
 import '../models.dart';
 import '../theme.dart';
 import '../widgets/brand_widgets.dart';
-import 'profile_screen.dart';
 import 'routine_builder_screen.dart';
+import 'skin_weather_screen.dart';
 
 part 'home_sections.dart';
 
 class HomeScreen extends StatefulWidget {
   const HomeScreen({
+    required this.skinProfile,
     required this.compareIds,
     required this.onToggleCompare,
     required this.onShowCompare,
     required this.onOpenProduct,
     required this.onAskPharmacist,
+    required this.onEditProfile,
     required this.onDiscover,
     super.key,
   });
 
+  final SkinProfile skinProfile;
   final Set<int> compareIds;
   final ValueChanged<BeautyProduct> onToggleCompare;
   final VoidCallback onShowCompare;
   final ValueChanged<BeautyProduct> onOpenProduct;
   final VoidCallback onAskPharmacist;
+  final Future<SkinProfile?> Function() onEditProfile;
   final VoidCallback onDiscover;
 
   @override
@@ -32,7 +36,22 @@ class HomeScreen extends StatefulWidget {
 }
 
 class _HomeScreenState extends State<HomeScreen> {
-  String selectedConcern = concerns.first;
+  late String selectedConcern;
+
+  @override
+  void initState() {
+    super.initState();
+    selectedConcern = widget.skinProfile.primaryConcern;
+  }
+
+  @override
+  void didUpdateWidget(covariant HomeScreen oldWidget) {
+    super.didUpdateWidget(oldWidget);
+    if (oldWidget.skinProfile != widget.skinProfile &&
+        widget.skinProfile.isComplete) {
+      selectedConcern = widget.skinProfile.primaryConcern;
+    }
+  }
 
   List<BeautyProduct> get matches {
     final result = [...products];
@@ -45,24 +64,49 @@ class _HomeScreenState extends State<HomeScreen> {
   }
 
   Future<void> openProfile() async {
-    final result = await Navigator.push<String>(
-        context, MaterialPageRoute(builder: (_) => const SkinProfileScreen()));
-    if (result != null) setState(() => selectedConcern = result);
+    final result = await widget.onEditProfile();
+    if (result != null && mounted) {
+      setState(() => selectedConcern = result.primaryConcern);
+    }
+  }
+
+  void openSkinWeather() {
+    Navigator.push(
+      context,
+      MaterialPageRoute(
+        builder: (_) => SkinWeatherScreen(
+          profile: widget.skinProfile,
+          onOpenProduct: widget.onOpenProduct,
+        ),
+      ),
+    );
   }
 
   @override
   Widget build(BuildContext context) {
     return Stack(children: [
       CustomScrollView(slivers: [
-        SliverToBoxAdapter(child: _Hero(onProfile: openProfile)),
+        SliverToBoxAdapter(
+            child:
+                _Hero(profile: widget.skinProfile, onProfile: openSkinWeather)),
+        SliverToBoxAdapter(
+            child: _SkinChartCard(
+                profile: widget.skinProfile, onOpen: openProfile)),
         SliverToBoxAdapter(
             child: _SelfCareManifesto(
                 onProfile: openProfile,
                 onDiscover: widget.onDiscover,
                 onAsk: widget.onAskPharmacist)),
-        const SliverToBoxAdapter(child: _DailyBrief()),
         SliverToBoxAdapter(
-            child: _AskPharmacist(onOpen: widget.onAskPharmacist)),
+            child: _CoreHooks(
+                onProfile: openProfile,
+                onRoutine: () => Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                        builder: (_) => const RoutineBuilderScreen())),
+                onCompare: widget.onShowCompare)),
+        const SliverToBoxAdapter(child: _BrandStory()),
+        const SliverToBoxAdapter(child: _DailyBrief()),
         SliverToBoxAdapter(
             child: _ConcernPulse(
                 selected: selectedConcern,
@@ -70,6 +114,7 @@ class _HomeScreenState extends State<HomeScreen> {
         SliverToBoxAdapter(
             child: _MatchPicks(
                 products: matches.take(4).toList(),
+                profile: widget.skinProfile,
                 compareIds: widget.compareIds,
                 onOpen: widget.onOpenProduct,
                 onCompare: widget.onToggleCompare)),
@@ -106,7 +151,7 @@ class _HomeScreenState extends State<HomeScreen> {
                       decoration: const BoxDecoration(
                           color: AppColors.champagne, shape: BoxShape.circle),
                       child: Text('${widget.compareIds.length}',
-                          style: const TextStyle(fontWeight: FontWeight.w900))),
+                          style: const TextStyle(fontWeight: FontWeight.w700))),
                   const SizedBox(width: 12),
                   const Expanded(
                       child: Text('비교할 제품이 준비됐어요',

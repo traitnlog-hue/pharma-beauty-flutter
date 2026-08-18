@@ -1,11 +1,11 @@
 {
-    "name": "pharma_beauty",
-    "short_name": "pharma_beauty",
+    "name": "LEXEM — READ YOUR SKIN.",
+    "short_name": "LEXEM",
     "start_url": ".",
     "display": "standalone",
-    "background_color": "#0175C2",
-    "theme_color": "#0175C2",
-    "description": "A new Flutter project.",
+    "background_color": "#F8F8FA",
+    "theme_color": "#6C5CE7",
+    "description": "성분의 언어를 읽고 피부에 필요한 의미만 남기는 뷰티 큐레이션.",
     "orientation": "portrait-primary",
     "prefer_related_applications": false,
     "icons": [

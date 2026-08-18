@@ -68,12 +68,9 @@ class _ShopScreenState extends State<ShopScreen> {
         margin: const EdgeInsets.fromLTRB(14, 4, 14, 34),
         padding: const EdgeInsets.fromLTRB(22, 34, 22, 28),
         decoration: BoxDecoration(
-          gradient: const LinearGradient(
-              colors: [AppColors.pearl, AppColors.paper2, AppColors.blush],
-              begin: Alignment.topLeft,
-              end: Alignment.bottomRight),
-          borderRadius: BorderRadius.circular(32),
-          border: Border.all(color: Colors.white, width: .8),
+          color: AppColors.surface,
+          borderRadius: BorderRadius.circular(AppRadii.feature),
+          border: Border.all(color: AppColors.line),
         ),
         child: Center(
             child: ConstrainedBox(
@@ -84,7 +81,7 @@ class _ShopScreenState extends State<ShopScreen> {
                 style: TextStyle(
                     color: AppColors.berry,
                     fontSize: 10,
-                    fontWeight: FontWeight.w900,
+                    fontWeight: FontWeight.w700,
                     letterSpacing: 1.1)),
             const SizedBox(height: 18),
             Text('예쁜 것보다,\n잘 맞는 것이\n나만의 취향.',
@@ -122,9 +119,9 @@ class _ShopScreenState extends State<ShopScreen> {
                               color: filter == value
                                   ? AppColors.berry
                                   : AppColors.surface,
-                              borderRadius: BorderRadius.circular(30),
+                              borderRadius: BorderRadius.circular(12),
                               child: InkWell(
-                                borderRadius: BorderRadius.circular(30),
+                                borderRadius: BorderRadius.circular(12),
                                 onTap: () => setState(() => filter = value),
                                 child: Padding(
                                   padding: const EdgeInsets.symmetric(
@@ -135,7 +132,7 @@ class _ShopScreenState extends State<ShopScreen> {
                                               ? Colors.white
                                               : AppColors.ink,
                                           fontSize: 11,
-                                          fontWeight: FontWeight.w800)),
+                                          fontWeight: FontWeight.w700)),
                                 ),
                               ),
                             ),
@@ -146,7 +143,7 @@ class _ShopScreenState extends State<ShopScreen> {
             Text('${visible.length} PRODUCTS',
                 style: const TextStyle(
                     fontSize: 9,
-                    fontWeight: FontWeight.w900,
+                    fontWeight: FontWeight.w700,
                     letterSpacing: 1.1)),
           ]),
         )),
@@ -174,15 +171,8 @@ class _ShopScreenState extends State<ShopScreen> {
                 clipBehavior: Clip.antiAlias,
                 decoration: BoxDecoration(
                   color: AppColors.surface,
-                  borderRadius: BorderRadius.circular(28),
-                  border: Border.all(
-                      color: AppColors.roseGold.withValues(alpha: .38)),
-                  boxShadow: const [
-                    BoxShadow(
-                        color: Color(0x183A1425),
-                        blurRadius: 22,
-                        offset: Offset(0, 10))
-                  ],
+                  borderRadius: BorderRadius.circular(AppRadii.card),
+                  border: Border.all(color: AppColors.line),
                 ),
                 child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
@@ -197,7 +187,7 @@ class _ShopScreenState extends State<ShopScreen> {
                         Positioned(
                             right: 8,
                             top: 8,
-                            child: IconButton.filledTonal(
+                            child: IconButton(
                                 onPressed: () => widget.onSave(product),
                                 icon: Icon(
                                     saved
@@ -223,7 +213,7 @@ class _ShopScreenState extends State<ShopScreen> {
                               Text(product.brand,
                                   style: const TextStyle(
                                       fontSize: 8,
-                                      fontWeight: FontWeight.w900,
+                                      fontWeight: FontWeight.w700,
                                       letterSpacing: .8)),
                               const SizedBox(height: 5),
                               Text(product.name,
@@ -231,7 +221,7 @@ class _ShopScreenState extends State<ShopScreen> {
                                   overflow: TextOverflow.ellipsis,
                                   style: const TextStyle(
                                       fontSize: 15,
-                                      fontWeight: FontWeight.w800)),
+                                      fontWeight: FontWeight.w700)),
                               const SizedBox(height: 6),
                               Text(product.ingredients.take(2).join(' · '),
                                   style: const TextStyle(

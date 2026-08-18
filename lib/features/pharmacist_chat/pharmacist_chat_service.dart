@@ -2,7 +2,7 @@ class PharmacistChatService {
   const PharmacistChatService();
 
   static const welcomeMessage =
-      '안녕하세요, PHARMA BEAUTY의 리아 AI 약사 챗봇이에요. 피부 고민이나 성분 궁합을 편하게 물어보세요.';
+      '안녕하세요, LEXEM의 리아 AI 약사 챗봇이에요. 피부 고민이나 성분 궁합을 편하게 물어보세요.';
 
   static const prompts = [
     '성분 궁합 확인',

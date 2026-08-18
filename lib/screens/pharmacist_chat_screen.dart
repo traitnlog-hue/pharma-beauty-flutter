@@ -82,7 +82,7 @@ class _PharmacistChatScreenState extends State<PharmacistChatScreen> {
             SizedBox(width: 11),
             Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
               Text('리아 AI 약사',
-                  style: TextStyle(fontSize: 16, fontWeight: FontWeight.w900)),
+                  style: TextStyle(fontSize: 16, fontWeight: FontWeight.w700)),
               SizedBox(height: 2),
               Row(children: [
                 CircleAvatar(radius: 3, backgroundColor: AppColors.fuchsia),

@@ -1,5 +1,3 @@
-import 'dart:ui';
-
 import 'package:flutter/material.dart';
 
 import '../models.dart';
@@ -60,7 +58,7 @@ class _AppShellState extends State<AppShell> {
                       title: const Text('SMART COMPARE',
                           style: TextStyle(
                               fontSize: 11,
-                              fontWeight: FontWeight.w900,
+                              fontWeight: FontWeight.w700,
                               letterSpacing: 1.3))),
                   body: CompareScreen(
                       products: appState.comparedProducts,
@@ -68,10 +66,11 @@ class _AppShellState extends State<AppShell> {
                 )));
   }
 
-  Future<void> editProfile() async {
-    final result = await Navigator.push<String>(
+  Future<SkinProfile?> editProfile() async {
+    final result = await Navigator.push<SkinProfile>(
         context, MaterialPageRoute(builder: (_) => const SkinProfileScreen()));
-    if (result != null) appState.updateProfileConcern(result);
+    if (result != null) appState.updateSkinProfile(result);
+    return result;
   }
 
   void openProduct(BeautyProduct product) {
@@ -104,11 +103,13 @@ class _AppShellState extends State<AppShell> {
   Widget build(BuildContext context) {
     final pages = [
       HomeScreen(
+          skinProfile: appState.skinProfile,
           compareIds: appState.compareIds,
           onToggleCompare: toggleCompare,
           onShowCompare: openCompare,
           onOpenProduct: openProduct,
           onAskPharmacist: openPharmacistChat,
+          onEditProfile: editProfile,
           onDiscover: () => setState(() => currentIndex = 2)),
       ShopScreen(
           compareIds: appState.compareIds,
@@ -118,6 +119,7 @@ class _AppShellState extends State<AppShell> {
           onOpenProduct: openProduct),
       const DiscoverScreen(),
       MySkinScreen(
+          skinProfile: appState.skinProfile,
           profileConcern: appState.profileConcern,
           savedIds: appState.savedIds,
           recentIds: appState.recentIds,
@@ -133,23 +135,16 @@ class _AppShellState extends State<AppShell> {
         titleSpacing: 20,
         title: const BrandLogo(),
         actions: [
-          IconButton.filledTonal(
+          IconButton(
               onPressed: openSearch,
-              icon: const Icon(Icons.search, size: 22),
+              icon: const Icon(Icons.search_rounded),
               tooltip: '검색'),
-          Badge(
-            isLabelVisible: appState.compareIds.isNotEmpty,
-            label: Text('${appState.compareIds.length}'),
-            child: IconButton.filledTonal(
-                onPressed: openCompare,
-                icon: const Icon(Icons.compare_arrows, size: 21),
-                tooltip: '제품 비교'),
-          ),
           Stack(children: [
-            IconButton.filledTonal(
+            IconButton(
                 onPressed: () => ScaffoldMessenger.of(context).showSnackBar(
                     const SnackBar(content: Text('장바구니가 비어 있어요.'))),
-                icon: const Icon(Icons.shopping_bag_outlined, size: 21)),
+                tooltip: '장바구니',
+                icon: const Icon(Icons.shopping_bag_outlined)),
             const Positioned(
                 right: 7,
                 top: 8,
@@ -159,85 +154,86 @@ class _AppShellState extends State<AppShell> {
                     child: Text('0',
                         style: TextStyle(color: Colors.white, fontSize: 7)))),
           ]),
+          IconButton(
+              onPressed: () => setState(() => currentIndex = 3),
+              tooltip: '마이페이지',
+              icon: const Icon(Icons.person_outline_rounded)),
           const SizedBox(width: 6),
         ],
       ),
       body: IndexedStack(index: currentIndex, children: pages),
       floatingActionButton: currentIndex == 0
-          ? null
+          ? FloatingActionButton.small(
+              key: const Key('pharmacist-chat-fab'),
+              heroTag: 'pharmacist-chat-home',
+              onPressed: openPharmacistChat,
+              tooltip: 'AI 약사 챗봇',
+              backgroundColor: AppColors.fuchsia,
+              foregroundColor: Colors.white,
+              elevation: 2,
+              child: const Icon(Icons.chat_bubble_outline_rounded, size: 19),
+            )
           : FloatingActionButton.extended(
               key: const Key('pharmacist-chat-fab'),
               heroTag: 'pharmacist-chat',
               onPressed: openPharmacistChat,
               backgroundColor: AppColors.fuchsia,
               foregroundColor: Colors.white,
-              elevation: 8,
-              icon: const CircleAvatar(
-                radius: 16,
-                backgroundColor: AppColors.blush,
-                backgroundImage:
-                    AssetImage('assets/editorial/ai-molecule-violet-3d.png'),
-              ),
+              elevation: 2,
+              icon: const Icon(Icons.chat_bubble_outline_rounded, size: 19),
               label: const Text('AI 약사 챗봇',
-                  style: TextStyle(fontSize: 10, fontWeight: FontWeight.w900)),
+                  style: TextStyle(fontSize: 11, fontWeight: FontWeight.w700)),
             ),
       bottomNavigationBar: SafeArea(
-        minimum: const EdgeInsets.fromLTRB(14, 0, 14, 12),
-        child: ClipRRect(
-          borderRadius: BorderRadius.circular(26),
-          child: BackdropFilter(
-            filter: ImageFilter.blur(sigmaX: 18, sigmaY: 18),
-            child: Container(
-              decoration: BoxDecoration(
-                color: AppColors.pearl.withValues(alpha: .88),
-                borderRadius: BorderRadius.circular(26),
-                border: Border.all(color: AppColors.line),
-                boxShadow: const [
-                  BoxShadow(
-                      color: Color(0x20252123),
-                      blurRadius: 28,
-                      offset: Offset(0, 10))
-                ],
+        minimum: const EdgeInsets.fromLTRB(12, 0, 12, 10),
+        child: Container(
+          decoration: BoxDecoration(
+            color: AppColors.surface,
+            borderRadius: BorderRadius.circular(20),
+            border: Border.all(color: AppColors.line),
+          ),
+          child: ClipRRect(
+            borderRadius: BorderRadius.circular(20),
+            child: NavigationBar(
+              selectedIndex: currentIndex,
+              onDestinationSelected: (index) =>
+                  setState(() => currentIndex = index),
+              height: 64,
+              backgroundColor: AppColors.surface,
+              surfaceTintColor: Colors.transparent,
+              indicatorColor: AppColors.blush,
+              indicatorShape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(12),
               ),
-              child: NavigationBar(
-                selectedIndex: currentIndex,
-                onDestinationSelected: (index) =>
-                    setState(() => currentIndex = index),
-                height: 66,
-                backgroundColor: Colors.transparent,
-                surfaceTintColor: Colors.transparent,
-                indicatorColor: AppColors.fuchsia.withValues(alpha: .13),
-                indicatorShape: const StadiumBorder(),
-                labelBehavior: NavigationDestinationLabelBehavior.alwaysShow,
-                labelTextStyle:
-                    WidgetStateProperty.resolveWith((states) => TextStyle(
-                          fontSize: 9,
-                          fontWeight: states.contains(WidgetState.selected)
-                              ? FontWeight.w900
-                              : FontWeight.w700,
-                          color: states.contains(WidgetState.selected)
-                              ? AppColors.ink
-                              : AppColors.muted,
-                        )),
-                destinations: const [
-                  NavigationDestination(
-                      icon: Icon(Icons.home_outlined),
-                      selectedIcon: Icon(Icons.home_rounded),
-                      label: '홈'),
-                  NavigationDestination(
-                      icon: Icon(Icons.grid_view_rounded),
-                      selectedIcon: Icon(Icons.grid_view_rounded),
-                      label: '쇼핑'),
-                  NavigationDestination(
-                      icon: Icon(Icons.bubble_chart_outlined),
-                      selectedIcon: Icon(Icons.bubble_chart_rounded),
-                      label: '트렌드'),
-                  NavigationDestination(
-                      icon: Icon(Icons.face_outlined),
-                      selectedIcon: Icon(Icons.face_rounded),
-                      label: '마이스킨'),
-                ],
-              ),
+              labelBehavior: NavigationDestinationLabelBehavior.alwaysShow,
+              labelTextStyle:
+                  WidgetStateProperty.resolveWith((states) => TextStyle(
+                        fontSize: 10,
+                        fontWeight: states.contains(WidgetState.selected)
+                            ? FontWeight.w700
+                            : FontWeight.w600,
+                        color: states.contains(WidgetState.selected)
+                            ? AppColors.ink
+                            : AppColors.muted,
+                      )),
+              destinations: const [
+                NavigationDestination(
+                    icon: Icon(Icons.home_outlined),
+                    selectedIcon: Icon(Icons.home_rounded),
+                    label: '홈'),
+                NavigationDestination(
+                    icon: Icon(Icons.grid_view_outlined),
+                    selectedIcon: Icon(Icons.grid_view_rounded),
+                    label: '쇼핑'),
+                NavigationDestination(
+                    icon: Icon(Icons.science_outlined),
+                    selectedIcon: Icon(Icons.science_rounded),
+                    label: '트렌드'),
+                NavigationDestination(
+                    icon: Icon(Icons.person_outline_rounded),
+                    selectedIcon: Icon(Icons.person_rounded),
+                    label: '마이스킨'),
+              ],
             ),
           ),
         ),

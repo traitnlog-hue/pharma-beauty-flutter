@@ -2,6 +2,8 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:pharma_beauty/main.dart';
 import 'package:pharma_beauty/catalog.dart';
 import 'package:pharma_beauty/features/pharmacist_chat/pharmacist_chat_service.dart';
+import 'package:pharma_beauty/features/skin_weather/skin_weather_service.dart';
+import 'package:pharma_beauty/models.dart';
 import 'package:pharma_beauty/screens/routine_builder_screen.dart';
 import 'package:pharma_beauty/state/app_state.dart';
 import 'package:pharma_beauty/theme.dart';
@@ -28,6 +30,25 @@ void main() {
     state.dispose();
   });
 
+  test('skin chart updates the primary curation concern', () {
+    final state = AppState();
+    const profile = SkinProfile(
+      skinType: '민감성',
+      concerns: ['민감·진정', '보습'],
+      sensitivity: '매우 예민함',
+      triggerHistory: '향료·에센셜 오일',
+      duration: '반복적으로 발생',
+    );
+
+    state.updateSkinProfile(profile);
+
+    expect(state.skinProfile.isComplete, isTrue);
+    expect(state.profileConcern, '민감·진정');
+    expect(state.skinProfile.recommendedIngredients, contains('판테놀'));
+
+    state.dispose();
+  });
+
   test('pharmacist service keeps high-risk guidance explicit', () {
     const service = PharmacistChatService();
 
@@ -35,11 +56,82 @@ void main() {
     expect(service.answerFor('레티날 사용법'), contains('주 2회'));
   });
 
-  testWidgets('shows the PHARMA BEAUTY home experience', (tester) async {
+  test('skin weather converts environment signals into recommendations', () {
+    const service = SkinWeatherService();
+    final weather = service.loadDemoSnapshot();
+
+    expect(weather.airQuality, '나쁨');
+    expect(weather.uvLevel, '높음');
+    expect(weather.skinRiskScore, greaterThanOrEqualTo(55));
+    expect(service.recommendedProductIds(weather, const SkinProfile.empty()),
+        containsAll([1, 3, 6]));
+  });
+
+  testWidgets('shows the LEXEM home experience', (tester) async {
     await tester.pumpWidget(const PharmaBeautyApp());
 
-    expect(find.text('PHARMA\nBEAUTY'), findsOneWidget);
+    expect(find.byKey(const Key('lexem-brand-logo')), findsOneWidget);
     expect(find.textContaining('오늘 피부'), findsOneWidget);
+  });
+
+  testWidgets('opens weather-based skin recommendations', (tester) async {
+    await tester.pumpWidget(const PharmaBeautyApp());
+
+    await tester.tap(find.byKey(const Key('skin-weather-update')));
+    await tester.pumpAndSettle();
+
+    expect(find.text('오늘의 자극 요인'), findsOneWidget);
+    expect(find.textContaining('PM2.5'), findsWidgets);
+    expect(find.textContaining('오늘 날씨 기준 추천'), findsOneWidget);
+  });
+
+  testWidgets('shows the LEXEM brand story and service language',
+      (tester) async {
+    await tester.pumpWidget(const PharmaBeautyApp());
+
+    await tester.scrollUntilVisible(
+      find.byKey(const Key('brand-story-section')),
+      420,
+      scrollable: find.byType(Scrollable).first,
+    );
+    await tester.pumpAndSettle();
+
+    expect(find.text('화장품 성분은\n하나의 언어다.'), findsOneWidget);
+    expect(find.text('INGREDIENT DICTIONARY'), findsOneWidget);
+    expect(find.text('나만의 문장'), findsOneWidget);
+  });
+
+  testWidgets('completes the five-step skin chart from home', (tester) async {
+    await tester.pumpWidget(const PharmaBeautyApp());
+
+    await tester.ensureVisible(find.byKey(const Key('skin-chart-start')));
+    await tester.pumpAndSettle();
+    await tester.tap(find.byKey(const Key('skin-chart-start')));
+    await tester.pumpAndSettle();
+
+    await tester.tap(find.byKey(const Key('skin-chart-option-0-0')));
+    await tester.pumpAndSettle();
+    await tester.tap(find.byKey(const Key('skin-chart-option-1-0')));
+    await tester.pumpAndSettle();
+    await tester.tap(find.byKey(const Key('skin-chart-concern-next')));
+    await tester.pumpAndSettle();
+    await tester.tap(find.byKey(const Key('skin-chart-option-2-0')));
+    await tester.pumpAndSettle();
+    await tester.tap(find.byKey(const Key('skin-chart-option-3-0')));
+    await tester.pumpAndSettle();
+    await tester.tap(find.byKey(const Key('skin-chart-option-4-0')));
+    await tester.pumpAndSettle();
+
+    expect(find.text('장벽 회복형'), findsOneWidget);
+    expect(find.textContaining('세라마이드 · 판테놀'), findsOneWidget);
+
+    await tester.drag(find.byType(ListView).last, const Offset(0, -320));
+    await tester.pumpAndSettle();
+    await tester.tap(find.byKey(const Key('skin-chart-complete')));
+    await tester.pumpAndSettle();
+
+    expect(find.byKey(const Key('skin-chart-edit')), findsOneWidget);
+    expect(find.textContaining('장벽 회복형'), findsOneWidget);
   });
 
   testWidgets('opens the ingredient discovery experience', (tester) async {

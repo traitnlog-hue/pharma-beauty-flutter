@@ -74,7 +74,7 @@ class _CompareColumn extends StatelessWidget {
             Positioned(
                 right: 8,
                 top: 8,
-                child: IconButton.filledTonal(
+                child: IconButton(
                     onPressed: onRemove,
                     icon: const Icon(Icons.close, size: 17))),
           ]),

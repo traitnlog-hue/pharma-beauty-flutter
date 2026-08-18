@@ -13,7 +13,7 @@ class PharmaBeautyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-      title: 'PHARMA BEAUTY',
+      title: 'LEXEM — READ YOUR SKIN.',
       debugShowCheckedModeBanner: false,
       theme: buildAppTheme(),
       home: const AppShell(),

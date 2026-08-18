@@ -189,7 +189,7 @@ class _WhyProduct extends StatelessWidget {
                             style: const TextStyle(
                                 color: AppColors.lime,
                                 fontSize: 9,
-                                fontWeight: FontWeight.w900)),
+                                fontWeight: FontWeight.w700)),
                       ],
                     ),
                   )),

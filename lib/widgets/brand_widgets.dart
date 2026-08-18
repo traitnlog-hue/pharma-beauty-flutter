@@ -10,40 +10,20 @@ class BrandLogo extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Row(
-      mainAxisSize: MainAxisSize.min,
-      children: [
-        Container(
-          width: 34,
-          height: 34,
-          alignment: Alignment.center,
-          decoration: BoxDecoration(
-            gradient: const LinearGradient(
-                colors: [AppColors.berry, AppColors.fuchsia],
-                begin: Alignment.topLeft,
-                end: Alignment.bottomRight),
-            borderRadius: BorderRadius.circular(12),
-            border: Border.all(color: Colors.white, width: 1.2),
-            boxShadow: const [
-              BoxShadow(
-                  color: Color(0x336C5CE7),
-                  blurRadius: 16,
-                  offset: Offset(0, 6))
-            ],
-          ),
-          child: const Icon(Icons.auto_awesome_rounded,
-              color: Colors.white, size: 16),
+    return Semantics(
+      label: 'LEXEM, READ YOUR SKIN',
+      child: SizedBox(
+        key: const Key('lexem-brand-logo'),
+        width: compact ? 72 : 116,
+        height: compact ? 30 : 44,
+        child: Image.asset(
+          'assets/branding/lexem-wordmark.png',
+          fit: BoxFit.contain,
+          alignment: Alignment.centerLeft,
+          filterQuality: FilterQuality.high,
+          semanticLabel: 'LEXEM, READ YOUR SKIN 브랜드 로고',
         ),
-        if (!compact) ...[
-          const SizedBox(width: 9),
-          const Text('PHARMA\nBEAUTY',
-              style: TextStyle(
-                  fontSize: 9,
-                  height: 1.05,
-                  fontWeight: FontWeight.w900,
-                  letterSpacing: 1.2)),
-        ],
-      ],
+      ),
     );
   }
 }
@@ -112,7 +92,7 @@ class MatchPill extends StatelessWidget {
       padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 7),
       decoration: BoxDecoration(
         color: dark ? AppColors.champagne : AppColors.berry,
-        borderRadius: BorderRadius.circular(999),
+        borderRadius: BorderRadius.circular(10),
         border: Border.all(
             color: dark ? AppColors.pearl : AppColors.champagne, width: .7),
       ),
@@ -121,7 +101,7 @@ class MatchPill extends StatelessWidget {
         style: TextStyle(
             color: dark ? AppColors.deep : Colors.white,
             fontSize: 9,
-            fontWeight: FontWeight.w900,
+            fontWeight: FontWeight.w700,
             letterSpacing: .4),
       ),
     );

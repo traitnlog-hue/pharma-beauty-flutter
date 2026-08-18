@@ -63,7 +63,7 @@ class _RoutineBuilderScreenState extends State<RoutineBuilderScreen> {
           title: const Text('MY ROUTINE',
               style: TextStyle(
                   fontSize: 11,
-                  fontWeight: FontWeight.w900,
+                  fontWeight: FontWeight.w700,
                   letterSpacing: 1.4))),
       body: ListView(
         padding: const EdgeInsets.fromLTRB(24, 24, 24, 80),
@@ -72,7 +72,7 @@ class _RoutineBuilderScreenState extends State<RoutineBuilderScreen> {
               style: TextStyle(
                   color: AppColors.violet,
                   fontSize: 10,
-                  fontWeight: FontWeight.w900,
+                  fontWeight: FontWeight.w700,
                   letterSpacing: 1.1)),
           const SizedBox(height: 18),
           Text('제품을 담으면\n성분 궁합을 확인해요.',
@@ -155,7 +155,8 @@ class _RoutineSlot extends StatelessWidget {
           SizedBox(
               width: 84,
               child: Text(label,
-                  style: const TextStyle(fontFamily: 'serif', fontSize: 12))),
+                  style: const TextStyle(
+                      fontSize: 12, fontWeight: FontWeight.w600))),
           Expanded(
               child: Text(product?.name ?? '제품을 추가해 주세요',
                   maxLines: 1,

@@ -9,15 +9,12 @@ class _TrendHero extends StatelessWidget {
         margin: const EdgeInsets.fromLTRB(14, 4, 14, 0),
         padding: const EdgeInsets.fromLTRB(22, 32, 22, 26),
         decoration: BoxDecoration(
-          borderRadius: BorderRadius.circular(32),
-          gradient: const LinearGradient(
-              colors: [AppColors.deep, AppColors.berry, AppColors.fuchsia],
-              begin: Alignment.topLeft,
-              end: Alignment.bottomRight),
-          border: Border.all(color: Colors.white, width: .7),
+          borderRadius: BorderRadius.circular(AppRadii.feature),
+          color: AppColors.deep,
+          border: Border.all(color: AppColors.line),
           boxShadow: const [
             BoxShadow(
-                color: Color(0x24252123), blurRadius: 32, offset: Offset(0, 14))
+                color: Color(0x1617171B), blurRadius: 20, offset: Offset(0, 8))
           ],
         ),
         child: Center(
@@ -81,7 +78,7 @@ class _ModernSectionHeader extends StatelessWidget {
             style: const TextStyle(
                 color: AppColors.violet,
                 fontSize: 10,
-                fontWeight: FontWeight.w900,
+                fontWeight: FontWeight.w700,
                 letterSpacing: 1.2)),
         const SizedBox(height: 10),
         Text(title, style: Theme.of(context).textTheme.headlineLarge),
@@ -108,7 +105,7 @@ class _TrendCard extends StatelessWidget {
         width: 250,
         child: Material(
           color: meta.color,
-          borderRadius: BorderRadius.circular(28),
+          borderRadius: BorderRadius.circular(18),
           clipBehavior: Clip.antiAlias,
           child: InkWell(
             onTap: onTap,
@@ -120,7 +117,7 @@ class _TrendCard extends StatelessWidget {
                     Row(children: [
                       Text('#0$rank',
                           style: const TextStyle(
-                              fontSize: 12, fontWeight: FontWeight.w900)),
+                              fontSize: 12, fontWeight: FontWeight.w700)),
                       const Spacer(),
                       _DeltaPill(value: meta.delta)
                     ]),
@@ -128,15 +125,15 @@ class _TrendCard extends StatelessWidget {
                     Text(meta.signal,
                         style: const TextStyle(
                             fontSize: 9,
-                            fontWeight: FontWeight.w900,
+                            fontWeight: FontWeight.w700,
                             letterSpacing: 1)),
                     const SizedBox(height: 7),
                     Text(ingredient.englishName,
                         style: const TextStyle(
                             fontSize: 26,
                             height: .95,
-                            fontWeight: FontWeight.w900,
-                            letterSpacing: -1.4)),
+                            fontWeight: FontWeight.w700,
+                            letterSpacing: -.7)),
                     const SizedBox(height: 5),
                     Text(ingredient.name,
                         style: const TextStyle(
@@ -147,7 +144,7 @@ class _TrendCard extends StatelessWidget {
                     Row(children: [
                       Text('PULSE ${meta.score}',
                           style: const TextStyle(
-                              fontSize: 9, fontWeight: FontWeight.w900)),
+                              fontSize: 9, fontWeight: FontWeight.w700)),
                       const Spacer(),
                       const Icon(Icons.arrow_outward_rounded, size: 18)
                     ]),
@@ -168,7 +165,7 @@ class _SignalCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) => Material(
         color: AppColors.surface,
-        borderRadius: BorderRadius.circular(24),
+        borderRadius: BorderRadius.circular(18),
         clipBehavior: Clip.antiAlias,
         child: InkWell(
           onTap: onTap,
@@ -186,7 +183,7 @@ class _SignalCard extends StatelessWidget {
                 Text(meta.signal,
                     style: const TextStyle(
                         fontSize: 9,
-                        fontWeight: FontWeight.w900,
+                        fontWeight: FontWeight.w700,
                         letterSpacing: .7)),
                 const Spacer(),
                 _DeltaPill(value: meta.delta)
@@ -196,8 +193,8 @@ class _SignalCard extends StatelessWidget {
                   style: const TextStyle(
                       fontSize: 24,
                       height: 1,
-                      fontWeight: FontWeight.w900,
-                      letterSpacing: -1.2)),
+                      fontWeight: FontWeight.w700,
+                      letterSpacing: -.6)),
               const SizedBox(height: 5),
               Text(ingredient.name,
                   style: const TextStyle(
@@ -211,7 +208,7 @@ class _SignalCard extends StatelessWidget {
                 const SizedBox(width: 12),
                 Text('${meta.score}',
                     style: const TextStyle(
-                        fontSize: 13, fontWeight: FontWeight.w900))
+                        fontSize: 13, fontWeight: FontWeight.w700))
               ]),
             ]),
           ),
@@ -246,9 +243,9 @@ class _DeltaPill extends StatelessWidget {
         padding: const EdgeInsets.symmetric(horizontal: 9, vertical: 6),
         decoration: BoxDecoration(
             color: Colors.white.withValues(alpha: .72),
-            borderRadius: BorderRadius.circular(30)),
+            borderRadius: BorderRadius.circular(10)),
         child: Text('↗ $value%',
-            style: const TextStyle(fontSize: 9, fontWeight: FontWeight.w900)),
+            style: const TextStyle(fontSize: 9, fontWeight: FontWeight.w700)),
       );
 }
 
@@ -263,7 +260,7 @@ class _LivePill extends StatelessWidget {
             color: dark
                 ? AppColors.ink.withValues(alpha: .16)
                 : Colors.white.withValues(alpha: .14),
-            borderRadius: BorderRadius.circular(30),
+            borderRadius: BorderRadius.circular(10),
             border: Border.all(color: Colors.white.withValues(alpha: .22))),
         child: Row(mainAxisSize: MainAxisSize.min, children: [
           Container(
@@ -276,7 +273,7 @@ class _LivePill extends StatelessWidget {
               style: TextStyle(
                   color: dark ? AppColors.ink : Colors.white,
                   fontSize: 9,
-                  fontWeight: FontWeight.w900,
+                  fontWeight: FontWeight.w700,
                   letterSpacing: .8))
         ]),
       );
@@ -312,7 +309,7 @@ class _RelationCard extends StatelessWidget {
               Text(title,
                   style: const TextStyle(
                       fontSize: 10,
-                      fontWeight: FontWeight.w900,
+                      fontWeight: FontWeight.w700,
                       letterSpacing: .8)),
               Text(subtitle,
                   style: const TextStyle(color: AppColors.muted, fontSize: 10))
@@ -338,7 +335,8 @@ class _RoutineForecast extends StatelessWidget {
         margin: const EdgeInsets.symmetric(horizontal: 14),
         padding: const EdgeInsets.all(24),
         decoration: BoxDecoration(
-            color: AppColors.deep, borderRadius: BorderRadius.circular(32)),
+            color: AppColors.deep,
+            borderRadius: BorderRadius.circular(AppRadii.feature)),
         child: Center(
             child: ConstrainedBox(
           constraints: const BoxConstraints(maxWidth: 1000),
@@ -369,13 +367,13 @@ class _RoutineForecast extends StatelessWidget {
                                 style: TextStyle(
                                     color: AppColors.cyan,
                                     fontSize: 9,
-                                    fontWeight: FontWeight.w900)),
+                                    fontWeight: FontWeight.w700)),
                             SizedBox(height: 7),
                             Text('03',
                                 style: TextStyle(
                                     color: Colors.white,
                                     fontSize: 28,
-                                    fontWeight: FontWeight.w900))
+                                    fontWeight: FontWeight.w700))
                           ]))),
               const SizedBox(width: 10),
               Expanded(
@@ -391,13 +389,13 @@ class _RoutineForecast extends StatelessWidget {
                                 style: TextStyle(
                                     color: AppColors.coral,
                                     fontSize: 9,
-                                    fontWeight: FontWeight.w900)),
+                                    fontWeight: FontWeight.w700)),
                             SizedBox(height: 7),
                             Text('01',
                                 style: TextStyle(
                                     color: Colors.white,
                                     fontSize: 28,
-                                    fontWeight: FontWeight.w900))
+                                    fontWeight: FontWeight.w700))
                           ]))),
             ]),
             const SizedBox(height: 22),
@@ -463,7 +461,7 @@ class _TrendReports extends StatelessWidget {
                             borderRadius: BorderRadius.circular(15)),
                         child: Text(item.$1,
                             style:
-                                const TextStyle(fontWeight: FontWeight.w900))),
+                                const TextStyle(fontWeight: FontWeight.w700))),
                     const SizedBox(width: 14),
                     Expanded(
                         child: Column(
@@ -471,7 +469,7 @@ class _TrendReports extends StatelessWidget {
                             children: [
                           Text(item.$2,
                               style: const TextStyle(
-                                  fontSize: 14, fontWeight: FontWeight.w900)),
+                                  fontSize: 14, fontWeight: FontWeight.w700)),
                           const SizedBox(height: 5),
                           Text(item.$3,
                               style: const TextStyle(
