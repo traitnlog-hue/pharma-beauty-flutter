@@ -23,12 +23,17 @@ class AppState extends ChangeNotifier {
   final Set<int> _compareIds = {};
   final Set<int> _savedIds;
   final List<int> _recentIds;
+  String? _userEmail;
+  String? _userName;
 
   SkinProfile get skinProfile => _skinProfile;
   String get profileConcern => _profileConcern;
   UnmodifiableSetView<int> get compareIds => UnmodifiableSetView(_compareIds);
   UnmodifiableSetView<int> get savedIds => UnmodifiableSetView(_savedIds);
   UnmodifiableListView<int> get recentIds => UnmodifiableListView(_recentIds);
+  bool get isSignedIn => _userEmail != null;
+  String get userName => _userName ?? '회원';
+  String? get userEmail => _userEmail;
 
   List<BeautyProduct> get comparedProducts => products
       .where((product) => _compareIds.contains(product.id))
@@ -66,6 +71,18 @@ class AppState extends ChangeNotifier {
     _recentIds.remove(product.id);
     _recentIds.insert(0, product.id);
     if (_recentIds.length > 5) _recentIds.removeLast();
+    notifyListeners();
+  }
+
+  void signIn({required String email, required String name}) {
+    _userEmail = email;
+    _userName = name.trim().isEmpty ? email.split('@').first : name.trim();
+    notifyListeners();
+  }
+
+  void signOut() {
+    _userEmail = null;
+    _userName = null;
     notifyListeners();
   }
 }

@@ -43,6 +43,7 @@ enum IngredientRelation { synergy, caution, neutral }
 
 class SkinProfile {
   const SkinProfile({
+    this.displayName = '',
     required this.skinType,
     required this.concerns,
     required this.sensitivity,
@@ -51,12 +52,14 @@ class SkinProfile {
   });
 
   const SkinProfile.empty()
-      : skinType = '',
+      : displayName = '',
+        skinType = '',
         concerns = const [],
         sensitivity = '',
         triggerHistory = '',
         duration = '';
 
+  final String displayName;
   final String skinType;
   final List<String> concerns;
   final String sensitivity;

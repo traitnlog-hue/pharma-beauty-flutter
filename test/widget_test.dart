@@ -30,6 +30,18 @@ void main() {
     state.dispose();
   });
 
+  test('app state signs in and signs out a local session', () {
+    final state = AppState();
+
+    state.signIn(email: 'jimin@example.com', name: '지민');
+    expect(state.isSignedIn, isTrue);
+    expect(state.userName, '지민');
+
+    state.signOut();
+    expect(state.isSignedIn, isFalse);
+    state.dispose();
+  });
+
   test('skin chart updates the primary curation concern', () {
     final state = AppState();
     const profile = SkinProfile(
@@ -65,21 +77,48 @@ void main() {
     expect(weather.skinRiskScore, greaterThanOrEqualTo(55));
     expect(service.recommendedProductIds(weather, const SkinProfile.empty()),
         containsAll([1, 3, 6]));
+    final advice = service.adviceFor(
+      weather,
+      const SkinProfile(
+        skinType: '민감성',
+        concerns: ['민감·진정'],
+        sensitivity: '매우 예민함',
+        triggerHistory: '',
+        duration: '',
+      ),
+    );
+    expect(advice.cautions.join(), contains('자외선'));
+    expect(advice.recommendations.join(), contains('SPF 50+'));
+  });
+
+  testWidgets('shows the LEXEM intro before entering the home experience',
+      (tester) async {
+    await tester.pumpWidget(const PharmaBeautyApp());
+
+    expect(find.text('READ\nYOUR SKIN.'), findsOneWidget);
+    await tester.tap(find.byKey(const Key('intro-start-button')));
+    await tester.pumpAndSettle();
+
+    expect(find.byKey(const Key('ingredient-trend-hero')), findsOneWidget);
   });
 
   testWidgets('shows the LEXEM home experience', (tester) async {
-    await tester.pumpWidget(const PharmaBeautyApp());
+    await tester.pumpWidget(const PharmaBeautyApp(showIntro: false));
 
     expect(find.byKey(const Key('lexem-brand-logo')), findsOneWidget);
     expect(find.byKey(const Key('ingredient-trend-hero')), findsOneWidget);
     expect(find.textContaining('이번 주, 레티날이'), findsOneWidget);
-    expect(find.byKey(const Key('skin-weather-hero')), findsNothing);
+    expect(find.byKey(const Key('skin-weather-hero')), findsOneWidget);
+    expect(find.textContaining('회원님의 피부 기상 리포트'), findsOneWidget);
+    await tester.tap(find.byKey(const Key('ingredient-trend-tab-1')));
+    await tester.pumpAndSettle();
+    expect(find.textContaining('세라마이드를'), findsOneWidget);
   });
 
   testWidgets('opens weather-based skin recommendations', (tester) async {
-    await tester.pumpWidget(const PharmaBeautyApp());
+    await tester.pumpWidget(const PharmaBeautyApp(showIntro: false));
 
-    await tester.tap(find.text('마이스킨'));
+    await tester.tap(find.text('MY SKIN'));
     await tester.pumpAndSettle();
     final weatherEntry = find.byKey(const Key('skin-weather-entry'));
     tester.widget<InkWell>(weatherEntry).onTap!.call();
@@ -92,7 +131,7 @@ void main() {
 
   testWidgets('shows the LEXEM brand story and service language',
       (tester) async {
-    await tester.pumpWidget(const PharmaBeautyApp());
+    await tester.pumpWidget(const PharmaBeautyApp(showIntro: false));
 
     await tester.scrollUntilVisible(
       find.byKey(const Key('brand-story-section')),
@@ -107,9 +146,13 @@ void main() {
   });
 
   testWidgets('completes the five-step skin chart from home', (tester) async {
-    await tester.pumpWidget(const PharmaBeautyApp());
+    await tester.pumpWidget(const PharmaBeautyApp(showIntro: false));
 
-    await tester.ensureVisible(find.byKey(const Key('skin-chart-start')));
+    await tester.scrollUntilVisible(
+      find.byKey(const Key('skin-chart-start')),
+      420,
+      scrollable: find.byType(Scrollable).first,
+    );
     await tester.pumpAndSettle();
     await tester.tap(find.byKey(const Key('skin-chart-start')));
     await tester.pumpAndSettle();
@@ -140,9 +183,9 @@ void main() {
   });
 
   testWidgets('opens the ingredient discovery experience', (tester) async {
-    await tester.pumpWidget(const PharmaBeautyApp());
+    await tester.pumpWidget(const PharmaBeautyApp(showIntro: false));
 
-    await tester.tap(find.text('트렌드'));
+    await tester.tap(find.text('TREND'));
     await tester.pumpAndSettle();
 
     expect(find.text('지금 뜨는 성분'), findsOneWidget);
@@ -150,9 +193,9 @@ void main() {
   });
 
   testWidgets('asks Lia pharmacist about retinal', (tester) async {
-    await tester.pumpWidget(const PharmaBeautyApp());
+    await tester.pumpWidget(const PharmaBeautyApp(showIntro: false));
 
-    await tester.tap(find.text('쇼핑'));
+    await tester.tap(find.text('SHOP'));
     await tester.pumpAndSettle();
     await tester.tap(find.byKey(const Key('pharmacist-chat-fab')));
     await tester.pumpAndSettle();

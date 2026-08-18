@@ -237,27 +237,42 @@ class _FactorCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) => Container(
-        height: 128,
+        height: 132,
         padding: const EdgeInsets.all(12),
         decoration: BoxDecoration(
           color: color,
-          borderRadius: BorderRadius.circular(15),
+          borderRadius: BorderRadius.circular(18),
         ),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Icon(icon, color: AppColors.berry, size: 18),
+            Container(
+              width: 34,
+              height: 34,
+              alignment: Alignment.center,
+              decoration: BoxDecoration(
+                color: Colors.white.withValues(alpha: .58),
+                shape: BoxShape.circle,
+                border: Border.all(color: Colors.white.withValues(alpha: .65)),
+              ),
+              child: Icon(icon, color: AppColors.berry, size: 18),
+            ),
             const Spacer(),
             Text(value,
                 style: const TextStyle(
                     color: AppColors.ink,
-                    fontSize: 22,
-                    fontWeight: FontWeight.w700)),
-            const SizedBox(height: 2),
+                    fontSize: 24,
+                    fontWeight: FontWeight.w800,
+                    letterSpacing: -.4)),
+            const SizedBox(height: 3),
             Text('$label · $status',
                 maxLines: 1,
                 overflow: TextOverflow.ellipsis,
-                style: const TextStyle(color: AppColors.muted, fontSize: 8)),
+                style: const TextStyle(
+                    color: AppColors.muted,
+                    fontSize: 8,
+                    fontWeight: FontWeight.w700,
+                    letterSpacing: .25)),
           ],
         ),
       );

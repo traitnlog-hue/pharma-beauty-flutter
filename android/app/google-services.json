@@ -1,0 +1,39 @@
+{
+  "project_info": {
+    "project_number": "733633562926",
+    "project_id": "pharma-beauty-flutter",
+    "storage_bucket": "pharma-beauty-flutter.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:733633562926:android:cd1e1b11982397350a92bf",
+        "android_client_info": {
+          "package_name": "com.example.pharma_beauty"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "733633562926-d777c4i2froma31gd3rc1v2cn351oi4n.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCcj3YaCHmiHEDIsGQ_d9dV9V1RQPzeWps"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "733633562926-d777c4i2froma31gd3rc1v2cn351oi4n.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

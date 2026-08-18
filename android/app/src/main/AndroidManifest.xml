@@ -1,4 +1,6 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android">
+    <!-- 날씨·대기질을 현재 지역 기준으로 표시하기 위한 대략적 위치 권한입니다. -->
+    <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION" />
     <application
         android:label="LEXEM"
         android:name="${applicationName}"

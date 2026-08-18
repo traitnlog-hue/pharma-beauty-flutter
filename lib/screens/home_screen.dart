@@ -1,10 +1,14 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
 
 import '../catalog.dart';
+import '../features/skin_weather/skin_weather_service.dart';
 import '../models.dart';
 import '../theme.dart';
 import '../widgets/brand_widgets.dart';
 import 'routine_builder_screen.dart';
+import 'skin_weather_screen.dart';
 
 part 'home_sections.dart';
 
@@ -74,6 +78,20 @@ class _HomeScreenState extends State<HomeScreen> {
     return Stack(children: [
       CustomScrollView(slivers: [
         SliverToBoxAdapter(child: _Hero(onOpen: widget.onDiscover)),
+        SliverToBoxAdapter(
+          child: _HomeSkinWeather(
+            profile: widget.skinProfile,
+            onOpen: () => Navigator.push(
+              context,
+              MaterialPageRoute(
+                builder: (_) => SkinWeatherScreen(
+                  profile: widget.skinProfile,
+                  onOpenProduct: widget.onOpenProduct,
+                ),
+              ),
+            ),
+          ),
+        ),
         SliverToBoxAdapter(
             child: _SkinChartCard(
                 profile: widget.skinProfile, onOpen: openProfile)),

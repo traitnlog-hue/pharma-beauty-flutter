@@ -1,9 +1,56 @@
 part of 'home_screen.dart';
 
-class _Hero extends StatelessWidget {
+class _Hero extends StatefulWidget {
   const _Hero({required this.onOpen});
 
   final VoidCallback onOpen;
+
+  @override
+  State<_Hero> createState() => _HeroState();
+}
+
+class _HeroState extends State<_Hero> {
+  final controller = PageController();
+  Timer? timer;
+  int selected = 0;
+  static const slides = [
+    (
+      'TREND #01 · +31%',
+      '이번 주, 레티날이\n빠르게 뜨고 있어요.',
+      '탄력·피부결 검색량 상승 · 함께 쓰는 성분까지 확인'
+    ),
+    (
+      'TREND #02 · +24%',
+      '장벽 케어의 중심,\n세라마이드를 읽어요.',
+      '건조한 날씨에 찾는 보습 성분 · 판테놀 궁합 확인'
+    ),
+    (
+      'TREND #03 · +18%',
+      '비타민C, 아침 루틴에\n다시 주목해요.',
+      '칙칙함 케어 검색량 상승 · 자외선 차단과 함께'
+    ),
+  ];
+
+  @override
+  void initState() {
+    super.initState();
+    timer = Timer.periodic(const Duration(seconds: 5), (_) {
+      if (!mounted) return;
+      controller.animateToPage((selected + 1) % slides.length,
+          duration: const Duration(milliseconds: 520),
+          curve: Curves.easeOutCubic);
+    });
+  }
+
+  @override
+  void dispose() {
+    timer?.cancel();
+    controller.dispose();
+    super.dispose();
+  }
+
+  void select(int index) => controller.animateToPage(index,
+      duration: const Duration(milliseconds: 360), curve: Curves.easeOutCubic);
 
   @override
   Widget build(BuildContext context) => Padding(
@@ -19,12 +66,16 @@ class _Hero extends StatelessWidget {
                   clipBehavior: Clip.antiAlias,
                   child: InkWell(
                     key: const Key('ingredient-trend-hero'),
-                    onTap: onOpen,
+                    onTap: widget.onOpen,
                     child: SizedBox(
-                      height: 304,
-                      child: Stack(
-                        fit: StackFit.expand,
-                        children: [
+                      height: 214,
+                      child: PageView.builder(
+                        controller: controller,
+                        itemCount: slides.length,
+                        onPageChanged: (index) =>
+                            setState(() => selected = index),
+                        itemBuilder: (context, index) =>
+                            Stack(fit: StackFit.expand, children: [
                           Image.asset(
                             'assets/editorial/ai-molecule-violet-3d.png',
                             fit: BoxFit.cover,
@@ -84,8 +135,8 @@ class _Hero extends StatelessWidget {
                                       ),
                                     ),
                                     const Spacer(),
-                                    const Text(
-                                      '01 / 03',
+                                    Text(
+                                      '0${index + 1} / 03',
                                       style: TextStyle(
                                         color: Colors.white,
                                         fontSize: 9,
@@ -95,8 +146,8 @@ class _Hero extends StatelessWidget {
                                   ],
                                 ),
                                 const Spacer(),
-                                const Text(
-                                  'TREND #01 · +31%',
+                                Text(
+                                  slides[index].$1,
                                   style: TextStyle(
                                     color: AppColors.ballerina,
                                     fontSize: 9,
@@ -105,26 +156,26 @@ class _Hero extends StatelessWidget {
                                   ),
                                 ),
                                 const SizedBox(height: 8),
-                                const Text(
-                                  '이번 주, 레티날이\n빠르게 뜨고 있어요.',
+                                Text(
+                                  slides[index].$2,
                                   style: TextStyle(
                                     color: Colors.white,
-                                    fontSize: 29,
+                                    fontSize: 22,
                                     height: 1.12,
                                     fontWeight: FontWeight.w700,
                                     letterSpacing: -.9,
                                   ),
                                 ),
                                 const SizedBox(height: 8),
-                                const Text(
-                                  '탄력·피부결 검색량 상승 · 함께 쓰는 성분까지 확인',
+                                Text(
+                                  slides[index].$3,
                                   style: TextStyle(
                                     color: Color(0xFFE8E6F7),
                                     fontSize: 11,
                                     height: 1.45,
                                   ),
                                 ),
-                                const SizedBox(height: 13),
+                                const SizedBox(height: 10),
                                 const Row(
                                   children: [
                                     Text(
@@ -143,13 +194,32 @@ class _Hero extends StatelessWidget {
                               ],
                             ),
                           ),
-                        ],
+                        ]),
                       ),
                     ),
                   ),
                 ),
-                const SizedBox(height: 13),
-                _TrendShortcuts(onOpen: onOpen),
+                const SizedBox(height: 10),
+                Row(children: [
+                  for (var i = 0; i < slides.length; i++) ...[
+                    Expanded(
+                        child: InkWell(
+                      key: Key('ingredient-trend-tab-$i'),
+                      onTap: () => select(i),
+                      borderRadius: BorderRadius.circular(8),
+                      child: AnimatedContainer(
+                        duration: const Duration(milliseconds: 220),
+                        height: 4,
+                        decoration: BoxDecoration(
+                            color: i == selected
+                                ? AppColors.fuchsia
+                                : AppColors.paper2,
+                            borderRadius: BorderRadius.circular(8)),
+                      ),
+                    )),
+                    if (i < slides.length - 1) const SizedBox(width: 6),
+                  ],
+                ]),
               ],
             ),
           ),
@@ -215,6 +285,475 @@ class _TrendShortcuts extends StatelessWidget {
       ],
     );
   }
+}
+
+class _HomeSkinWeather extends StatefulWidget {
+  const _HomeSkinWeather({required this.profile, required this.onOpen});
+
+  final SkinProfile profile;
+  final VoidCallback onOpen;
+
+  @override
+  State<_HomeSkinWeather> createState() => _HomeSkinWeatherState();
+}
+
+class _HomeSkinWeatherState extends State<_HomeSkinWeather> {
+  static const _refreshInterval = Duration(minutes: 15);
+  final _service = const SkinWeatherService();
+  late Future<SkinWeatherSnapshot> _weatherFuture;
+  Timer? _refreshTimer;
+
+  @override
+  void initState() {
+    super.initState();
+    _weatherFuture = _service.loadCurrentSnapshot();
+    _refreshTimer = Timer.periodic(_refreshInterval, (_) => _refresh());
+  }
+
+  void _refresh() {
+    if (mounted)
+      setState(() => _weatherFuture = _service.loadCurrentSnapshot());
+  }
+
+  @override
+  void dispose() {
+    _refreshTimer?.cancel();
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return FutureBuilder<SkinWeatherSnapshot>(
+      future: _weatherFuture,
+      builder: (context, snapshot) {
+        final weather = snapshot.data ?? _service.loadDemoSnapshot();
+        final advice = _service.adviceFor(weather, widget.profile);
+        final skinType = widget.profile.skinType.isEmpty
+            ? '피부 타입 미등록'
+            : widget.profile.skinType;
+        final userName = widget.profile.displayName.isEmpty
+            ? '회원'
+            : widget.profile.displayName;
+
+        return Padding(
+          padding: const EdgeInsets.fromLTRB(14, 28, 14, 0),
+          child: Center(
+            child: ConstrainedBox(
+              constraints: const BoxConstraints(maxWidth: 1080),
+              child: InkWell(
+                key: const Key('skin-weather-hero'),
+                onTap: widget.onOpen,
+                borderRadius: BorderRadius.circular(AppRadii.hero),
+                child: Ink(
+                  decoration: BoxDecoration(
+                    color: AppColors.surface,
+                    borderRadius: BorderRadius.circular(AppRadii.hero),
+                    border: Border.all(color: const Color(0xFFDFDDFA)),
+                    boxShadow: [
+                      BoxShadow(
+                        color: AppColors.fuchsia.withValues(alpha: .09),
+                        blurRadius: 24,
+                        offset: const Offset(0, 10),
+                      ),
+                    ],
+                  ),
+                  child: Padding(
+                    padding: const EdgeInsets.all(14),
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        _WeatherSkyHero(
+                            weather: weather,
+                            skinType: skinType,
+                            userName: userName),
+                        const SizedBox(height: 12),
+                        _WeatherMetricGrid(
+                            weather: weather, skinType: skinType),
+                        const SizedBox(height: 12),
+                        _WeatherAdvice(
+                          weather: weather,
+                          advice: advice,
+                          skinType: skinType,
+                          userName: userName,
+                        ),
+                      ],
+                    ),
+                  ),
+                ),
+              ),
+            ),
+          ),
+        );
+      },
+    );
+  }
+}
+
+class _WeatherSkyHero extends StatelessWidget {
+  const _WeatherSkyHero(
+      {required this.weather, required this.skinType, required this.userName});
+
+  final SkinWeatherSnapshot weather;
+  final String skinType;
+  final String userName;
+
+  @override
+  Widget build(BuildContext context) => Container(
+        height: 220,
+        clipBehavior: Clip.antiAlias,
+        decoration: BoxDecoration(
+          borderRadius: BorderRadius.circular(21),
+          gradient: const LinearGradient(
+            colors: [Color(0xFF9089E8), Color(0xFFD3C7F4), Color(0xFFFFD9CC)],
+            begin: Alignment.topLeft,
+            end: Alignment.bottomRight,
+          ),
+        ),
+        child: Stack(
+          fit: StackFit.expand,
+          children: [
+            const Positioned(
+              right: -44,
+              top: -42,
+              child: _SkyOrb(size: 180, color: Color(0x55FFF7E8)),
+            ),
+            const Positioned(
+              right: 44,
+              bottom: -70,
+              child: _SkyOrb(size: 190, color: Color(0x3A594AC7)),
+            ),
+            Positioned(
+              left: -20,
+              bottom: -86,
+              child: Transform.rotate(
+                angle: -.13,
+                child: Container(
+                  width: 310,
+                  height: 160,
+                  decoration: const BoxDecoration(
+                    color: Color(0x446051B5),
+                    borderRadius: BorderRadius.all(Radius.elliptical(220, 100)),
+                  ),
+                ),
+              ),
+            ),
+            // 텍스트와 겹치지 않도록 오른쪽에만 배치한 투명 날씨 일러스트입니다.
+            const Positioned(
+              right: 6,
+              bottom: -18,
+              child: _FloatingWeatherIllustration(),
+            ),
+            Padding(
+              padding: const EdgeInsets.all(18),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Row(
+                    children: [
+                      Container(
+                        padding: const EdgeInsets.symmetric(
+                            horizontal: 9, vertical: 6),
+                        decoration: BoxDecoration(
+                          color: Colors.white.withValues(alpha: .22),
+                          borderRadius: BorderRadius.circular(10),
+                        ),
+                        child: Row(
+                          mainAxisSize: MainAxisSize.min,
+                          children: [
+                            Icon(Icons.location_on_outlined,
+                                color: Colors.white, size: 13),
+                            SizedBox(width: 4),
+                            Text(
+                                weather.isLive
+                                    ? 'SEOUL · LIVE DATA'
+                                    : 'SEOUL · 업데이트 중',
+                                style: TextStyle(
+                                    color: Colors.white,
+                                    fontSize: 8,
+                                    fontWeight: FontWeight.w800,
+                                    letterSpacing: .7)),
+                          ],
+                        ),
+                      ),
+                      const Spacer(),
+                      const Icon(Icons.wb_sunny_rounded,
+                          color: Color(0xFFFFF7D2), size: 25),
+                    ],
+                  ),
+                  const Spacer(),
+                  Text('${weather.temperature}°',
+                      style: const TextStyle(
+                          color: Colors.white,
+                          fontSize: 56,
+                          height: .9,
+                          fontWeight: FontWeight.w500,
+                          letterSpacing: -3)),
+                  const SizedBox(height: 7),
+                  Text('$userName님의 피부 기상 리포트',
+                      style: TextStyle(
+                          color: Colors.white,
+                          fontSize: 17,
+                          fontWeight: FontWeight.w800)),
+                  const SizedBox(height: 4),
+                  Text(
+                      '$skinType 피부 · UV ${weather.uvIndex} · PM2.5 ${weather.pm25}',
+                      style: const TextStyle(
+                          color: Color(0xFFF8F5FF),
+                          fontSize: 11,
+                          fontWeight: FontWeight.w600)),
+                ],
+              ),
+            ),
+          ],
+        ),
+      );
+}
+
+class _SkyOrb extends StatelessWidget {
+  const _SkyOrb({required this.size, required this.color});
+
+  final double size;
+  final Color color;
+
+  @override
+  Widget build(BuildContext context) => Container(
+        width: size,
+        height: size,
+        decoration: BoxDecoration(color: color, shape: BoxShape.circle),
+      );
+}
+
+class _FloatingWeatherIllustration extends StatefulWidget {
+  const _FloatingWeatherIllustration();
+
+  @override
+  State<_FloatingWeatherIllustration> createState() =>
+      _FloatingWeatherIllustrationState();
+}
+
+class _FloatingWeatherIllustrationState
+    extends State<_FloatingWeatherIllustration> {
+  Timer? _floatTimer;
+  bool _isRaised = false;
+
+  @override
+  void initState() {
+    super.initState();
+    _floatTimer = Timer.periodic(const Duration(milliseconds: 2200), (_) {
+      if (mounted) setState(() => _isRaised = !_isRaised);
+    });
+  }
+
+  @override
+  void dispose() {
+    _floatTimer?.cancel();
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) => IgnorePointer(
+        child: AnimatedSlide(
+          offset: Offset(0, _isRaised ? -.026 : .026),
+          duration: const Duration(milliseconds: 1100),
+          curve: Curves.easeInOut,
+          child: const Image(
+            image: AssetImage('assets/editorial/skin-weather-hero-cute-v1.png'),
+            width: 350,
+            fit: BoxFit.contain,
+          ),
+        ),
+      );
+}
+
+class _WeatherMetricGrid extends StatelessWidget {
+  const _WeatherMetricGrid({required this.weather, required this.skinType});
+
+  final SkinWeatherSnapshot weather;
+  final String skinType;
+
+  @override
+  Widget build(BuildContext context) {
+    final items = [
+      (
+        Icons.wb_sunny_outlined,
+        '자외선',
+        'UV ${weather.uvIndex}',
+        weather.uvLevel
+      ),
+      (Icons.grain_rounded, '미세먼지', '${weather.pm25}㎍/㎥', weather.airQuality),
+      (
+        Icons.air_rounded,
+        '공기질',
+        'AQI ${weather.airQualityIndex}',
+        weather.airQuality
+      ),
+      (
+        Icons.face_retouching_natural_outlined,
+        '피부 주의',
+        'RISK ${weather.skinRiskScore}',
+        skinType == '피부 타입 미등록' ? '프로필 미등록' : '$skinType 반영',
+      ),
+    ];
+    return Container(
+      padding: const EdgeInsets.all(6),
+      decoration: BoxDecoration(
+        color: const Color(0xFFF8F8FF),
+        borderRadius: BorderRadius.circular(18),
+      ),
+      child: LayoutBuilder(
+        builder: (context, constraints) {
+          final columns = constraints.maxWidth >= 700 ? 4 : 2;
+          // 전역 가독성 스케일(112%)에서도 정보가 잘리지 않는 카드 높이입니다.
+          const cardHeight = 98.0;
+          const gap = 5.0;
+          final rows = (items.length / columns).ceil();
+
+          // GridView의 shrinkWrap 높이 계산에 의존하지 않아 카드 아래에
+          // 불필요한 빈 공간이 남지 않도록 행 수를 명확하게 고정합니다.
+          return SizedBox(
+            height: rows * cardHeight + (rows - 1) * gap,
+            child: GridView.builder(
+              physics: const NeverScrollableScrollPhysics(),
+              itemCount: items.length,
+              gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+                crossAxisCount: columns,
+                mainAxisSpacing: gap,
+                crossAxisSpacing: gap,
+                mainAxisExtent: cardHeight,
+              ),
+              itemBuilder: (context, index) {
+                final item = items[index];
+                return Container(
+                  padding:
+                      const EdgeInsets.symmetric(horizontal: 10, vertical: 8),
+                  decoration: BoxDecoration(
+                    color: Colors.white,
+                    borderRadius: BorderRadius.circular(13),
+                    border: Border.all(color: const Color(0xFFE7E5F4)),
+                  ),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Icon(item.$1, color: AppColors.fuchsia, size: 16),
+                      const SizedBox(height: 7),
+                      Text(item.$2,
+                          style: const TextStyle(
+                              color: AppColors.muted,
+                              fontSize: 9,
+                              fontWeight: FontWeight.w700)),
+                      const SizedBox(height: 1),
+                      Text(item.$3,
+                          maxLines: 1,
+                          overflow: TextOverflow.ellipsis,
+                          style: const TextStyle(
+                              color: AppColors.ink,
+                              fontSize: 13,
+                              fontWeight: FontWeight.w800)),
+                      Text(item.$4,
+                          maxLines: 1,
+                          overflow: TextOverflow.ellipsis,
+                          style: const TextStyle(
+                              color: AppColors.fuchsia,
+                              fontSize: 8,
+                              fontWeight: FontWeight.w700)),
+                    ],
+                  ),
+                );
+              },
+            ),
+          );
+        },
+      ),
+    );
+  }
+}
+
+class _WeatherAdvice extends StatelessWidget {
+  const _WeatherAdvice(
+      {required this.weather,
+      required this.advice,
+      required this.skinType,
+      required this.userName});
+
+  final SkinWeatherSnapshot weather;
+  final SkinWeatherAdvice advice;
+  final String skinType;
+  final String userName;
+
+  @override
+  Widget build(BuildContext context) => Container(
+        padding: const EdgeInsets.all(16),
+        decoration: BoxDecoration(
+          color: AppColors.deep,
+          borderRadius: BorderRadius.circular(18),
+        ),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Row(
+              children: [
+                const Icon(Icons.auto_awesome_rounded,
+                    color: AppColors.ballerina, size: 16),
+                const SizedBox(width: 7),
+                Expanded(
+                  child: Text('$userName님의 $skinType 피부 × 오늘 날씨',
+                      style: const TextStyle(
+                          color: Colors.white,
+                          fontSize: 12,
+                          fontWeight: FontWeight.w800)),
+                ),
+                Text('RISK ${weather.skinRiskScore}',
+                    style: const TextStyle(
+                        color: AppColors.ballerina,
+                        fontSize: 8,
+                        fontWeight: FontWeight.w800)),
+              ],
+            ),
+            const SizedBox(height: 13),
+            _AdviceBullet(
+                icon: Icons.warning_amber_rounded,
+                label: '주의',
+                body: advice.cautions.first),
+            const SizedBox(height: 9),
+            _AdviceBullet(
+                icon: Icons.favorite_outline_rounded,
+                label: '추천',
+                body: advice.recommendations.first),
+            const SizedBox(height: 12),
+            const Text('탭하여 전체 날씨 리포트와 맞춤 제품을 확인하세요.',
+                style: TextStyle(color: Color(0xFFC9C7DD), fontSize: 9)),
+          ],
+        ),
+      );
+}
+
+class _AdviceBullet extends StatelessWidget {
+  const _AdviceBullet(
+      {required this.icon, required this.label, required this.body});
+
+  final IconData icon;
+  final String label;
+  final String body;
+
+  @override
+  Widget build(BuildContext context) => Row(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Icon(icon, color: AppColors.ballerina, size: 16),
+          const SizedBox(width: 8),
+          SizedBox(
+              width: 28,
+              child: Text(label,
+                  style: const TextStyle(
+                      color: AppColors.ballerina,
+                      fontSize: 9,
+                      fontWeight: FontWeight.w800))),
+          Expanded(
+              child: Text(body,
+                  style: const TextStyle(
+                      color: Color(0xFFF0EFF9), fontSize: 10, height: 1.45))),
+        ],
+      );
 }
 
 class _SkinChartCard extends StatelessWidget {
@@ -553,7 +1092,7 @@ class _HookCard extends StatelessWidget {
                             fontWeight: FontWeight.w700)),
                   ],
                 ),
-                const Spacer(),
+                const SizedBox(height: 18),
                 Text(title,
                     style: const TextStyle(
                         color: AppColors.ink,

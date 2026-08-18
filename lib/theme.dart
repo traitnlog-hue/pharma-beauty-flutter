@@ -71,15 +71,15 @@ ThemeData buildAppTheme() {
         fontWeight: FontWeight.w700,
         letterSpacing: -.7),
     titleLarge: TextStyle(
-        fontSize: 20, fontWeight: FontWeight.w700, letterSpacing: -.35),
+        fontSize: 21, fontWeight: FontWeight.w700, letterSpacing: -.35),
     titleMedium: TextStyle(
-        fontSize: 16, fontWeight: FontWeight.w700, letterSpacing: -.2),
-    bodyLarge: TextStyle(fontSize: 16, height: 1.58),
-    bodyMedium: TextStyle(fontSize: 14, height: 1.55),
+        fontSize: 17, fontWeight: FontWeight.w700, letterSpacing: -.2),
+    bodyLarge: TextStyle(fontSize: 17, height: 1.58),
+    bodyMedium: TextStyle(fontSize: 15, height: 1.55),
     labelLarge:
-        TextStyle(fontSize: 13, fontWeight: FontWeight.w700, letterSpacing: 0),
+        TextStyle(fontSize: 14, fontWeight: FontWeight.w700, letterSpacing: 0),
     labelMedium:
-        TextStyle(fontSize: 11, fontWeight: FontWeight.w600, letterSpacing: .1),
+        TextStyle(fontSize: 12, fontWeight: FontWeight.w600, letterSpacing: .1),
   );
 
   return ThemeData(
@@ -136,7 +136,7 @@ ThemeData buildAppTheme() {
           borderRadius: BorderRadius.circular(AppRadii.control),
         ),
         padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 15),
-        textStyle: const TextStyle(fontSize: 13, fontWeight: FontWeight.w700),
+        textStyle: const TextStyle(fontSize: 14, fontWeight: FontWeight.w700),
       ),
     ),
     outlinedButtonTheme: OutlinedButtonThemeData(
@@ -159,9 +159,9 @@ ThemeData buildAppTheme() {
       selectedColor: AppColors.berry,
       padding: EdgeInsets.symmetric(horizontal: 8, vertical: 7),
       labelStyle: TextStyle(
-          color: AppColors.ink, fontSize: 12, fontWeight: FontWeight.w600),
+          color: AppColors.ink, fontSize: 13, fontWeight: FontWeight.w600),
       secondaryLabelStyle: TextStyle(
-          color: Colors.white, fontSize: 12, fontWeight: FontWeight.w700),
+          color: Colors.white, fontSize: 13, fontWeight: FontWeight.w700),
     ),
     inputDecorationTheme: InputDecorationTheme(
       filled: true,

@@ -18,6 +18,13 @@ class _SkinProfileScreenState extends State<SkinProfileScreen> {
   String sensitivity = '';
   String triggerHistory = '';
   String duration = '';
+  final nameController = TextEditingController();
+
+  @override
+  void dispose() {
+    nameController.dispose();
+    super.dispose();
+  }
 
   static const questions = [
     (
@@ -75,6 +82,7 @@ class _SkinProfileScreenState extends State<SkinProfileScreen> {
   bool get done => step >= questions.length;
 
   SkinProfile get profile => SkinProfile(
+        displayName: nameController.text.trim(),
         skinType: skinType,
         concerns: selectedConcerns.toList(growable: false),
         sensitivity: sensitivity,
@@ -204,6 +212,19 @@ class _SkinProfileScreenState extends State<SkinProfileScreen> {
       key: ValueKey(step),
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
+        if (step == 0) ...[
+          TextField(
+            controller: nameController,
+            textInputAction: TextInputAction.next,
+            maxLength: 12,
+            decoration: const InputDecoration(
+              labelText: '이름 또는 닉네임 (선택)',
+              hintText: '예: 지민',
+              counterText: '',
+            ),
+          ),
+          const SizedBox(height: 16),
+        ],
         Text(question.$1, style: Theme.of(context).textTheme.headlineLarge),
         const SizedBox(height: 10),
         Text(

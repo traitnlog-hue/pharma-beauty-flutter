@@ -14,10 +14,10 @@ class BrandLogo extends StatelessWidget {
       label: 'LEXEM, READ YOUR SKIN',
       child: SizedBox(
         key: const Key('lexem-brand-logo'),
-        width: compact ? 72 : 116,
-        height: compact ? 30 : 44,
+        width: compact ? 76 : 122,
+        height: compact ? 26 : 32,
         child: Image.asset(
-          'assets/branding/lexem-wordmark.png',
+          'assets/branding/lexem-wordmark-v2.png',
           fit: BoxFit.contain,
           alignment: Alignment.centerLeft,
           filterQuality: FilterQuality.high,

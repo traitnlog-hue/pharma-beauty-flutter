@@ -23,6 +23,7 @@ android/key.properties
 /build/
 /coverage/
 /dist/
+worker/.wrangler/
 android/.gradle/
 android/local.properties
 ios/Flutter/ephemeral/
