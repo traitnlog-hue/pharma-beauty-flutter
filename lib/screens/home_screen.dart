@@ -5,7 +5,6 @@ import '../models.dart';
 import '../theme.dart';
 import '../widgets/brand_widgets.dart';
 import 'routine_builder_screen.dart';
-import 'skin_weather_screen.dart';
 
 part 'home_sections.dart';
 
@@ -70,25 +69,11 @@ class _HomeScreenState extends State<HomeScreen> {
     }
   }
 
-  void openSkinWeather() {
-    Navigator.push(
-      context,
-      MaterialPageRoute(
-        builder: (_) => SkinWeatherScreen(
-          profile: widget.skinProfile,
-          onOpenProduct: widget.onOpenProduct,
-        ),
-      ),
-    );
-  }
-
   @override
   Widget build(BuildContext context) {
     return Stack(children: [
       CustomScrollView(slivers: [
-        SliverToBoxAdapter(
-            child:
-                _Hero(profile: widget.skinProfile, onProfile: openSkinWeather)),
+        SliverToBoxAdapter(child: _Hero(onOpen: widget.onDiscover)),
         SliverToBoxAdapter(
             child: _SkinChartCard(
                 profile: widget.skinProfile, onOpen: openProfile)),

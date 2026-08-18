@@ -5,6 +5,7 @@ import '../models.dart';
 import '../theme.dart';
 import '../widgets/brand_widgets.dart';
 import 'routine_builder_screen.dart';
+import 'skin_weather_screen.dart';
 
 class MySkinScreen extends StatelessWidget {
   const MySkinScreen({
@@ -120,6 +121,56 @@ class MySkinScreen extends StatelessWidget {
                           foregroundColor: AppColors.berry),
                     ),
                   ]),
+            ),
+            const SizedBox(height: 12),
+            Material(
+              color: AppColors.surface,
+              borderRadius: BorderRadius.circular(16),
+              clipBehavior: Clip.antiAlias,
+              child: InkWell(
+                key: const Key('skin-weather-entry'),
+                onTap: () => Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder: (_) => SkinWeatherScreen(
+                      profile: skinProfile,
+                      onOpenProduct: onOpenProduct,
+                    ),
+                  ),
+                ),
+                child: Container(
+                  padding: const EdgeInsets.all(15),
+                  decoration: BoxDecoration(
+                    borderRadius: BorderRadius.circular(16),
+                    border: Border.all(color: AppColors.line),
+                  ),
+                  child: const Row(
+                    children: [
+                      Icon(Icons.wb_sunny_outlined,
+                          color: AppColors.berry, size: 20),
+                      SizedBox(width: 12),
+                      Expanded(
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Text('오늘의 환경 케어',
+                                style: TextStyle(
+                                    color: AppColors.ink,
+                                    fontSize: 14,
+                                    fontWeight: FontWeight.w700)),
+                            SizedBox(height: 3),
+                            Text('미세먼지 · 자외선 · 습도 기반 추천',
+                                style: TextStyle(
+                                    color: AppColors.muted, fontSize: 10)),
+                          ],
+                        ),
+                      ),
+                      Icon(Icons.arrow_forward_rounded,
+                          color: AppColors.berry, size: 18),
+                    ],
+                  ),
+                ),
+              ),
             ),
             const SizedBox(height: 48),
             const Text('01 · MY ROUTINE',

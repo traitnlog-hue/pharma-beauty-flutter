@@ -1,221 +1,220 @@
 part of 'home_screen.dart';
 
 class _Hero extends StatelessWidget {
-  const _Hero({required this.profile, required this.onProfile});
+  const _Hero({required this.onOpen});
 
-  final SkinProfile profile;
-  final VoidCallback onProfile;
+  final VoidCallback onOpen;
 
   @override
-  Widget build(BuildContext context) {
-    final concern = profile.isComplete ? profile.primaryConcern : '수분 부족';
-    return Padding(
-      padding: const EdgeInsets.fromLTRB(14, 4, 14, 0),
-      child: Center(
-        child: ConstrainedBox(
-          constraints: const BoxConstraints(maxWidth: 1080),
-          child: Container(
-            key: const Key('skin-weather-hero'),
-            height: 370,
-            clipBehavior: Clip.antiAlias,
-            decoration: BoxDecoration(
-              gradient: const LinearGradient(
-                colors: [Color(0xFFF1F0FF), Color(0xFFC8C7FF)],
-                begin: Alignment.topLeft,
-                end: Alignment.bottomRight,
-              ),
-              borderRadius: BorderRadius.circular(AppRadii.hero),
-              border: Border.all(color: AppColors.line),
-            ),
-            child: Stack(
-              fit: StackFit.expand,
+  Widget build(BuildContext context) => Padding(
+        padding: const EdgeInsets.fromLTRB(14, 4, 14, 0),
+        child: Center(
+          child: ConstrainedBox(
+            constraints: const BoxConstraints(maxWidth: 1080),
+            child: Column(
               children: [
-                const CustomPaint(painter: _SkinWeatherPainter()),
-                Padding(
-                  padding: const EdgeInsets.fromLTRB(22, 20, 22, 20),
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Row(
+                Material(
+                  color: AppColors.deep,
+                  borderRadius: BorderRadius.circular(AppRadii.hero),
+                  clipBehavior: Clip.antiAlias,
+                  child: InkWell(
+                    key: const Key('ingredient-trend-hero'),
+                    onTap: onOpen,
+                    child: SizedBox(
+                      height: 304,
+                      child: Stack(
+                        fit: StackFit.expand,
                         children: [
-                          Container(
-                            padding: const EdgeInsets.symmetric(
-                                horizontal: 11, vertical: 8),
+                          Image.asset(
+                            'assets/editorial/ai-molecule-violet-3d.png',
+                            fit: BoxFit.cover,
+                            alignment: const Alignment(.55, 0),
+                          ),
+                          const DecoratedBox(
                             decoration: BoxDecoration(
-                              color: Colors.white.withValues(alpha: .72),
-                              borderRadius: BorderRadius.circular(11),
+                              gradient: LinearGradient(
+                                colors: [
+                                  Color(0xF2111115),
+                                  Color(0xA6111115),
+                                  Color(0x2B493A9A),
+                                ],
+                                begin: Alignment.centerLeft,
+                                end: Alignment.centerRight,
+                              ),
                             ),
-                            child: const Row(
+                          ),
+                          const DecoratedBox(
+                            decoration: BoxDecoration(
+                              gradient: LinearGradient(
+                                colors: [
+                                  Colors.transparent,
+                                  Color(0xD9111115),
+                                ],
+                                begin: Alignment.topCenter,
+                                end: Alignment.bottomCenter,
+                              ),
+                            ),
+                          ),
+                          Padding(
+                            padding: const EdgeInsets.all(20),
+                            child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
                               children: [
-                                Icon(Icons.wb_sunny_outlined,
-                                    size: 15, color: AppColors.berry),
-                                SizedBox(width: 7),
-                                Text('TODAY · SKIN WEATHER',
-                                    style: TextStyle(
-                                        color: AppColors.berry,
+                                Row(
+                                  children: [
+                                    Container(
+                                      padding: const EdgeInsets.symmetric(
+                                          horizontal: 10, vertical: 7),
+                                      decoration: BoxDecoration(
+                                        color:
+                                            Colors.white.withValues(alpha: .12),
+                                        borderRadius: BorderRadius.circular(10),
+                                        border: Border.all(
+                                            color: Colors.white
+                                                .withValues(alpha: .18)),
+                                      ),
+                                      child: const Text(
+                                        'LIVE · INGREDIENT TREND',
+                                        style: TextStyle(
+                                          color: AppColors.ballerina,
+                                          fontSize: 9,
+                                          fontWeight: FontWeight.w700,
+                                          letterSpacing: .8,
+                                        ),
+                                      ),
+                                    ),
+                                    const Spacer(),
+                                    const Text(
+                                      '01 / 03',
+                                      style: TextStyle(
+                                        color: Colors.white,
                                         fontSize: 9,
                                         fontWeight: FontWeight.w700,
-                                        letterSpacing: .8)),
+                                      ),
+                                    ),
+                                  ],
+                                ),
+                                const Spacer(),
+                                const Text(
+                                  'TREND #01 · +31%',
+                                  style: TextStyle(
+                                    color: AppColors.ballerina,
+                                    fontSize: 9,
+                                    fontWeight: FontWeight.w700,
+                                    letterSpacing: .9,
+                                  ),
+                                ),
+                                const SizedBox(height: 8),
+                                const Text(
+                                  '이번 주, 레티날이\n빠르게 뜨고 있어요.',
+                                  style: TextStyle(
+                                    color: Colors.white,
+                                    fontSize: 29,
+                                    height: 1.12,
+                                    fontWeight: FontWeight.w700,
+                                    letterSpacing: -.9,
+                                  ),
+                                ),
+                                const SizedBox(height: 8),
+                                const Text(
+                                  '탄력·피부결 검색량 상승 · 함께 쓰는 성분까지 확인',
+                                  style: TextStyle(
+                                    color: Color(0xFFE8E6F7),
+                                    fontSize: 11,
+                                    height: 1.45,
+                                  ),
+                                ),
+                                const SizedBox(height: 13),
+                                const Row(
+                                  children: [
+                                    Text(
+                                      '지금 뜨는 성분 보기',
+                                      style: TextStyle(
+                                        color: Colors.white,
+                                        fontSize: 11,
+                                        fontWeight: FontWeight.w700,
+                                      ),
+                                    ),
+                                    SizedBox(width: 6),
+                                    Icon(Icons.arrow_forward_rounded,
+                                        color: Colors.white, size: 16),
+                                  ],
+                                ),
                               ],
                             ),
                           ),
-                          const Spacer(),
-                          const Text('08.18',
-                              style: TextStyle(
-                                  color: AppColors.berry,
-                                  fontSize: 10,
-                                  fontWeight: FontWeight.w600,
-                                  letterSpacing: .8)),
                         ],
                       ),
-                      const SizedBox(height: 26),
-                      const Text('오늘 피부 날씨',
-                          style: TextStyle(
-                              color: AppColors.berry,
-                              fontSize: 12,
-                              fontWeight: FontWeight.w700)),
-                      const SizedBox(height: 6),
-                      Text('$concern 주의',
-                          style: const TextStyle(
-                              color: AppColors.ink,
-                              fontSize: 34,
-                              height: 1.08,
-                              fontWeight: FontWeight.w700,
-                              letterSpacing: -1.2)),
-                      const SizedBox(height: 8),
-                      const Text('수분 신호가 낮아요. 오늘은 회복과 보습에 집중하세요.',
-                          style: TextStyle(
-                              color: AppColors.berry,
-                              fontSize: 12,
-                              height: 1.45)),
-                      const Spacer(),
-                      Container(
-                        padding: const EdgeInsets.fromLTRB(14, 13, 10, 13),
-                        decoration: BoxDecoration(
-                          color: Colors.white.withValues(alpha: .82),
-                          borderRadius: BorderRadius.circular(16),
-                          border: Border.all(
-                              color: Colors.white.withValues(alpha: .9)),
-                        ),
-                        child: Row(
-                          children: [
-                            const Expanded(
-                                child: _WeatherMetric(
-                                    icon: Icons.water_drop_outlined,
-                                    label: '수분',
-                                    value: '42%')),
-                            const _WeatherDivider(),
-                            const Expanded(
-                                child: _WeatherMetric(
-                                    icon: Icons.air_rounded,
-                                    label: 'PM2.5',
-                                    value: '38 나쁨')),
-                            const _WeatherDivider(),
-                            const Expanded(
-                                child: _WeatherMetric(
-                                    icon: Icons.light_mode_outlined,
-                                    label: 'UV',
-                                    value: '높음')),
-                            IconButton(
-                              key: const Key('skin-weather-update'),
-                              tooltip: '오늘 피부 상태 업데이트',
-                              onPressed: onProfile,
-                              icon: const Icon(Icons.arrow_forward_rounded,
-                                  color: AppColors.berry),
-                            ),
-                          ],
-                        ),
-                      ),
-                    ],
+                    ),
                   ),
                 ),
+                const SizedBox(height: 13),
+                _TrendShortcuts(onOpen: onOpen),
               ],
             ),
           ),
         ),
-      ),
+      );
+}
+
+class _TrendShortcuts extends StatelessWidget {
+  const _TrendShortcuts({required this.onOpen});
+
+  final VoidCallback onOpen;
+
+  @override
+  Widget build(BuildContext context) {
+    const items = [
+      (Icons.shield_outlined, '세라마이드', Color(0xFFEFEDFF)),
+      (Icons.spa_outlined, '판테놀', Color(0xFFF0F1F4)),
+      (Icons.auto_awesome_outlined, '레티날', Color(0xFFFFE9D6)),
+      (Icons.light_mode_outlined, '비타민C', Color(0xFFFFF0C9)),
+      (Icons.water_drop_outlined, 'BHA', Color(0xFFE6F0F5)),
+    ];
+    return Row(
+      children: [
+        for (var i = 0; i < items.length; i++) ...[
+          Expanded(
+            child: InkWell(
+              key: Key('trend-shortcut-$i'),
+              borderRadius: BorderRadius.circular(14),
+              onTap: onOpen,
+              child: Padding(
+                padding: const EdgeInsets.symmetric(vertical: 6),
+                child: Column(
+                  children: [
+                    Container(
+                      width: 42,
+                      height: 42,
+                      alignment: Alignment.center,
+                      decoration: BoxDecoration(
+                        color: items[i].$3,
+                        shape: BoxShape.circle,
+                      ),
+                      child:
+                          Icon(items[i].$1, color: AppColors.berry, size: 19),
+                    ),
+                    const SizedBox(height: 7),
+                    Text(
+                      items[i].$2,
+                      maxLines: 1,
+                      overflow: TextOverflow.ellipsis,
+                      style: const TextStyle(
+                        color: AppColors.ink,
+                        fontSize: 9,
+                        fontWeight: FontWeight.w600,
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+            ),
+          ),
+          if (i < items.length - 1) const SizedBox(width: 3),
+        ],
+      ],
     );
   }
-}
-
-class _WeatherMetric extends StatelessWidget {
-  const _WeatherMetric(
-      {required this.icon, required this.label, required this.value});
-
-  final IconData icon;
-  final String label;
-  final String value;
-
-  @override
-  Widget build(BuildContext context) => Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Row(children: [
-            Icon(icon, size: 13, color: AppColors.berry),
-            const SizedBox(width: 4),
-            Text(label,
-                style: const TextStyle(
-                    color: AppColors.muted,
-                    fontSize: 9,
-                    fontWeight: FontWeight.w600)),
-          ]),
-          const SizedBox(height: 4),
-          Text(value,
-              maxLines: 1,
-              overflow: TextOverflow.ellipsis,
-              style: const TextStyle(
-                  color: AppColors.ink,
-                  fontSize: 13,
-                  fontWeight: FontWeight.w700)),
-        ],
-      );
-}
-
-class _WeatherDivider extends StatelessWidget {
-  const _WeatherDivider();
-
-  @override
-  Widget build(BuildContext context) => Container(
-        width: 1,
-        height: 34,
-        margin: const EdgeInsets.symmetric(horizontal: 8),
-        color: AppColors.line,
-      );
-}
-
-class _SkinWeatherPainter extends CustomPainter {
-  const _SkinWeatherPainter();
-
-  @override
-  void paint(Canvas canvas, Size size) {
-    canvas.drawCircle(Offset(size.width * .82, size.height * .28),
-        size.width * .17, Paint()..color = Colors.white.withValues(alpha: .28));
-
-    final back = Path()
-      ..moveTo(0, size.height * .7)
-      ..quadraticBezierTo(size.width * .28, size.height * .42, size.width * .56,
-          size.height * .66)
-      ..quadraticBezierTo(
-          size.width * .78, size.height * .48, size.width, size.height * .58)
-      ..lineTo(size.width, size.height)
-      ..lineTo(0, size.height)
-      ..close();
-    canvas.drawPath(back, Paint()..color = const Color(0x267064DB));
-
-    final front = Path()
-      ..moveTo(0, size.height * .82)
-      ..quadraticBezierTo(size.width * .27, size.height * .61, size.width * .52,
-          size.height * .78)
-      ..quadraticBezierTo(
-          size.width * .76, size.height * .63, size.width, size.height * .72)
-      ..lineTo(size.width, size.height)
-      ..lineTo(0, size.height)
-      ..close();
-    canvas.drawPath(front, Paint()..color = const Color(0x1F493A9A));
-  }
-
-  @override
-  bool shouldRepaint(covariant CustomPainter oldDelegate) => false;
 }
 
 class _SkinChartCard extends StatelessWidget {

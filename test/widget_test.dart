@@ -71,13 +71,18 @@ void main() {
     await tester.pumpWidget(const PharmaBeautyApp());
 
     expect(find.byKey(const Key('lexem-brand-logo')), findsOneWidget);
-    expect(find.textContaining('오늘 피부'), findsOneWidget);
+    expect(find.byKey(const Key('ingredient-trend-hero')), findsOneWidget);
+    expect(find.textContaining('이번 주, 레티날이'), findsOneWidget);
+    expect(find.byKey(const Key('skin-weather-hero')), findsNothing);
   });
 
   testWidgets('opens weather-based skin recommendations', (tester) async {
     await tester.pumpWidget(const PharmaBeautyApp());
 
-    await tester.tap(find.byKey(const Key('skin-weather-update')));
+    await tester.tap(find.text('마이스킨'));
+    await tester.pumpAndSettle();
+    final weatherEntry = find.byKey(const Key('skin-weather-entry'));
+    tester.widget<InkWell>(weatherEntry).onTap!.call();
     await tester.pumpAndSettle();
 
     expect(find.text('오늘의 자극 요인'), findsOneWidget);
