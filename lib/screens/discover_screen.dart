@@ -190,10 +190,13 @@ class _DiscoverScreenState extends State<DiscoverScreen> {
         child: Center(
             child: ConstrainedBox(
           constraints: const BoxConstraints(maxWidth: 1080),
-          child: const _ModernSectionHeader(
-              eyebrow: '01 · LIVE SIGNAL',
-              title: '지금 뜨는 성분',
-              subtitle: '검색량·저장·루틴 등록 데이터를 조합한 이번 주 트렌드'),
+          child: const SizedBox(
+            width: double.infinity,
+            child: _ModernSectionHeader(
+                eyebrow: '01 · LIVE SIGNAL',
+                title: '지금 뜨는 성분',
+                subtitle: '검색량·저장·루틴 등록 데이터를 조합한 이번 주 트렌드'),
+          ),
         )),
       )),
       SliverToBoxAdapter(
@@ -220,33 +223,33 @@ class _DiscoverScreenState extends State<DiscoverScreen> {
         child: Center(
             child: ConstrainedBox(
           constraints: const BoxConstraints(maxWidth: 1080),
-          child:
-              Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
-            const _ModernSectionHeader(
-                eyebrow: '02 · INGREDIENT RADAR',
-                title: '내 피부를 위한 성분 신호',
-                subtitle: '효능, 상승세, 궁합까지 한 번에 탐색하세요.'),
-            const SizedBox(height: 22),
-            SingleChildScrollView(
-              scrollDirection: Axis.horizontal,
-              child: Row(
+          child: SizedBox(
+            width: double.infinity,
+            child:
+                Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
+              const _ModernSectionHeader(
+                  eyebrow: '02 · INGREDIENT RADAR',
+                  title: '내 피부를 위한 성분 신호',
+                  subtitle: '효능, 상승세, 궁합까지 한 번에 탐색하세요.'),
+              const SizedBox(height: 22),
+              Wrap(
+                  spacing: 8,
+                  runSpacing: 8,
                   children: categories.map((value) {
-                final selected = category == value;
-                return Padding(
-                  padding: const EdgeInsets.only(right: 8),
-                  child: ChoiceChip(
-                    label: Text(value),
-                    showCheckmark: false,
-                    selected: selected,
-                    labelStyle: TextStyle(
-                        color: selected ? Colors.white : AppColors.ink,
-                        fontWeight: FontWeight.w800),
-                    onSelected: (_) => setState(() => category = value),
-                  ),
-                );
-              }).toList()),
-            ),
-          ]),
+                    final selected = category == value;
+                    return ChoiceChip(
+                      label: Text(value),
+                      labelPadding: const EdgeInsets.symmetric(horizontal: 10),
+                      showCheckmark: false,
+                      selected: selected,
+                      labelStyle: TextStyle(
+                          color: selected ? Colors.white : AppColors.ink,
+                          fontWeight: FontWeight.w800),
+                      onSelected: (_) => setState(() => category = value),
+                    );
+                  }).toList()),
+            ]),
+          ),
         )),
       )),
       SliverPadding(

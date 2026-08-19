@@ -68,7 +68,7 @@ class _HeroState extends State<_Hero> {
                     key: const Key('ingredient-trend-hero'),
                     onTap: widget.onOpen,
                     child: SizedBox(
-                      height: 214,
+                      height: 226,
                       child: PageView.builder(
                         controller: controller,
                         itemCount: slides.length,
@@ -176,20 +176,47 @@ class _HeroState extends State<_Hero> {
                                   ),
                                 ),
                                 const SizedBox(height: 10),
-                                const Row(
-                                  children: [
-                                    Text(
-                                      '지금 뜨는 성분 보기',
-                                      style: TextStyle(
-                                        color: Colors.white,
-                                        fontSize: 11,
-                                        fontWeight: FontWeight.w700,
+                                Align(
+                                  alignment: Alignment.centerRight,
+                                  child: Container(
+                                    padding: const EdgeInsets.only(left: 12),
+                                    decoration: BoxDecoration(
+                                      color: Colors.white.withValues(alpha: .1),
+                                      borderRadius: BorderRadius.circular(20),
+                                      border: Border.all(
+                                        color:
+                                            Colors.white.withValues(alpha: .2),
                                       ),
                                     ),
-                                    SizedBox(width: 6),
-                                    Icon(Icons.arrow_forward_rounded,
-                                        color: Colors.white, size: 16),
-                                  ],
+                                    child: Row(
+                                      mainAxisSize: MainAxisSize.min,
+                                      children: [
+                                        const Text(
+                                          '지금 뜨는 성분 보기',
+                                          style: TextStyle(
+                                            color: Colors.white,
+                                            fontSize: 11,
+                                            fontWeight: FontWeight.w700,
+                                          ),
+                                        ),
+                                        const SizedBox(width: 8),
+                                        Container(
+                                          width: 30,
+                                          height: 30,
+                                          alignment: Alignment.center,
+                                          decoration: const BoxDecoration(
+                                            color: Colors.white,
+                                            shape: BoxShape.circle,
+                                          ),
+                                          child: const Icon(
+                                            Icons.north_east_rounded,
+                                            color: AppColors.deep,
+                                            size: 17,
+                                          ),
+                                        ),
+                                      ],
+                                    ),
+                                  ),
                                 ),
                               ],
                             ),
@@ -1140,6 +1167,51 @@ class _BrandStory extends StatelessWidget {
     'LEXEM / SKIN NOTE',
   ];
 
+  void _openLanguageNote(BuildContext context, (String, String, String) item) {
+    showModalBottomSheet<void>(
+      context: context,
+      backgroundColor: Colors.transparent,
+      builder: (context) => Container(
+        padding: const EdgeInsets.fromLTRB(24, 14, 24, 38),
+        decoration: const BoxDecoration(
+          color: AppColors.paper,
+          borderRadius: BorderRadius.vertical(top: Radius.circular(28)),
+        ),
+        child: Column(mainAxisSize: MainAxisSize.min, children: [
+          Container(
+            width: 38,
+            height: 4,
+            decoration: BoxDecoration(
+              color: AppColors.champagne,
+              borderRadius: BorderRadius.circular(4),
+            ),
+          ),
+          const SizedBox(height: 26),
+          Align(
+            alignment: Alignment.centerLeft,
+            child: Text('${item.$1} · ${item.$2}',
+                style: const TextStyle(
+                    color: AppColors.fuchsia,
+                    fontSize: 11,
+                    fontWeight: FontWeight.w800,
+                    letterSpacing: 1.1)),
+          ),
+          const SizedBox(height: 10),
+          Align(
+            alignment: Alignment.centerLeft,
+            child: Text(item.$3,
+                style: Theme.of(context).textTheme.headlineMedium),
+          ),
+          const SizedBox(height: 12),
+          const Text(
+            'LEXEM은 이 정보를 피부 상태와 성분 조합, 루틴의 맥락 안에서 읽기 쉽게 정리합니다.',
+            style: TextStyle(color: AppColors.muted, fontSize: 15, height: 1.6),
+          ),
+        ]),
+      ),
+    );
+  }
+
   @override
   Widget build(BuildContext context) => Padding(
         padding: const EdgeInsets.fromLTRB(14, 54, 14, 0),
@@ -1266,56 +1338,72 @@ class _BrandStory extends StatelessWidget {
                         for (final item in _serviceLanguage)
                           SizedBox(
                             width: itemWidth,
-                            child: Container(
-                              padding: const EdgeInsets.all(15),
-                              decoration: BoxDecoration(
-                                color: AppColors.paper,
-                                borderRadius: BorderRadius.circular(14),
-                                border: Border.all(color: AppColors.line),
-                              ),
-                              child: Row(
-                                children: [
-                                  Text(
-                                    item.$1,
-                                    style: const TextStyle(
-                                      color: AppColors.fuchsia,
-                                      fontSize: 10,
-                                      fontWeight: FontWeight.w700,
-                                    ),
+                            child: Material(
+                              color: AppColors.paper,
+                              borderRadius: BorderRadius.circular(14),
+                              clipBehavior: Clip.antiAlias,
+                              child: InkWell(
+                                onTap: () => _openLanguageNote(context, item),
+                                child: Container(
+                                  padding: const EdgeInsets.all(15),
+                                  decoration: BoxDecoration(
+                                    borderRadius: BorderRadius.circular(14),
+                                    border: Border.all(color: AppColors.line),
                                   ),
-                                  const SizedBox(width: 13),
-                                  Expanded(
-                                    child: Column(
-                                      crossAxisAlignment:
-                                          CrossAxisAlignment.start,
-                                      children: [
-                                        Text(
-                                          item.$2,
-                                          style: const TextStyle(
-                                            color: AppColors.ink,
-                                            fontSize: 10,
-                                            fontWeight: FontWeight.w700,
-                                            letterSpacing: .5,
-                                          ),
+                                  child: Row(
+                                    children: [
+                                      Text(
+                                        item.$1,
+                                        style: const TextStyle(
+                                          color: AppColors.fuchsia,
+                                          fontSize: 10,
+                                          fontWeight: FontWeight.w700,
                                         ),
-                                        const SizedBox(height: 3),
-                                        Text(
-                                          item.$3,
-                                          style: const TextStyle(
-                                            color: AppColors.muted,
-                                            fontSize: 12,
-                                            fontWeight: FontWeight.w600,
-                                          ),
+                                      ),
+                                      const SizedBox(width: 13),
+                                      Expanded(
+                                        child: Column(
+                                          crossAxisAlignment:
+                                              CrossAxisAlignment.start,
+                                          children: [
+                                            Text(
+                                              item.$2,
+                                              style: const TextStyle(
+                                                color: AppColors.ink,
+                                                fontSize: 10,
+                                                fontWeight: FontWeight.w700,
+                                                letterSpacing: .5,
+                                              ),
+                                            ),
+                                            const SizedBox(height: 3),
+                                            Text(
+                                              item.$3,
+                                              style: const TextStyle(
+                                                color: AppColors.muted,
+                                                fontSize: 12,
+                                                fontWeight: FontWeight.w600,
+                                              ),
+                                            ),
+                                          ],
                                         ),
-                                      ],
-                                    ),
+                                      ),
+                                      Container(
+                                        width: 30,
+                                        height: 30,
+                                        alignment: Alignment.center,
+                                        decoration: const BoxDecoration(
+                                          color: AppColors.blush,
+                                          shape: BoxShape.circle,
+                                        ),
+                                        child: const Icon(
+                                          Icons.north_east_rounded,
+                                          size: 16,
+                                          color: AppColors.fuchsia,
+                                        ),
+                                      ),
+                                    ],
                                   ),
-                                  const Icon(
-                                    Icons.arrow_outward_rounded,
-                                    size: 16,
-                                    color: AppColors.rose,
-                                  ),
-                                ],
+                                ),
                               ),
                             ),
                           ),
@@ -1416,66 +1504,124 @@ class _QuickAction extends StatelessWidget {
       );
 }
 
-class _DailyBrief extends StatelessWidget {
+class _DailyBrief extends StatefulWidget {
   const _DailyBrief();
+
   @override
-  Widget build(BuildContext context) => Padding(
-        padding: const EdgeInsets.fromLTRB(20, 46, 20, 0),
-        child: Center(
-            child: ConstrainedBox(
-          constraints: const BoxConstraints(maxWidth: 1080),
-          child:
-              Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
-            const _SectionTitle(
-                kicker: 'TODAY · SKIN BRIEF',
-                title: '오늘의 피부 브리핑',
-                subtitle: '프로필과 계절 신호를 바탕으로 우선순위를 정리했어요.'),
-            const SizedBox(height: 20),
-            LayoutBuilder(builder: (context, constraints) {
-              final wide = constraints.maxWidth > 700;
-              final cards = [
-                const _BriefCard(
-                    color: AppColors.mint,
-                    icon: Icons.water_drop_rounded,
-                    value: '42%',
-                    label: '수분 방어력',
-                    caption: '보습 레이어 +1 권장'),
-                const _BriefCard(
-                    color: AppColors.butter,
-                    icon: Icons.shield_moon_rounded,
-                    value: 'LOW',
-                    label: '자극 리스크',
-                    caption: '액티브 성분 1개만'),
-                const _BriefCard(
-                    color: Color(0xFFE1DBFF),
-                    icon: Icons.nights_stay_rounded,
-                    value: 'PM',
-                    label: '집중 루틴',
-                    caption: '장벽 회복 · 진정'),
-              ];
-              return wide
-                  ? SizedBox(
-                      height: 168,
-                      child: Row(children: [
-                        for (var i = 0; i < cards.length; i++) ...[
-                          Expanded(child: cards[i]),
-                          if (i < cards.length - 1) const SizedBox(width: 10)
-                        ]
-                      ]),
-                    )
-                  : SizedBox(
-                      height: 168,
-                      child: ListView.separated(
-                          scrollDirection: Axis.horizontal,
+  State<_DailyBrief> createState() => _DailyBriefState();
+}
+
+class _DailyBriefState extends State<_DailyBrief> {
+  final PageController _controller = PageController(viewportFraction: .84);
+  Timer? _timer;
+  int _page = 0;
+
+  @override
+  void initState() {
+    super.initState();
+    _timer = Timer.periodic(const Duration(seconds: 4), (_) {
+      if (!mounted || !_controller.hasClients) return;
+      final next = (_page + 1) % 3;
+      _controller.animateToPage(next,
+          duration: const Duration(milliseconds: 440),
+          curve: Curves.easeOutCubic);
+    });
+  }
+
+  @override
+  void dispose() {
+    _timer?.cancel();
+    _controller.dispose();
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    const cards = [
+      _BriefCard(
+          color: AppColors.mint,
+          icon: Icons.water_drop_rounded,
+          value: '42%',
+          label: '수분 방어력',
+          caption: '보습 레이어 +1 권장'),
+      _BriefCard(
+          color: AppColors.butter,
+          icon: Icons.shield_moon_rounded,
+          value: 'LOW',
+          label: '자극 리스크',
+          caption: '액티브 성분 1개만'),
+      _BriefCard(
+          color: Color(0xFFE1DBFF),
+          icon: Icons.nights_stay_rounded,
+          value: 'PM',
+          label: '집중 루틴',
+          caption: '장벽 회복 · 진정'),
+    ];
+    return Padding(
+      padding: const EdgeInsets.fromLTRB(20, 46, 20, 0),
+      child: Center(
+          child: ConstrainedBox(
+        constraints: const BoxConstraints(maxWidth: 1080),
+        child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
+          const _SectionTitle(
+              kicker: 'TODAY · SKIN BRIEF',
+              title: '오늘의 피부 브리핑',
+              subtitle: '프로필과 계절 신호를 바탕으로 우선순위를 정리했어요.'),
+          const SizedBox(height: 20),
+          LayoutBuilder(builder: (context, constraints) {
+            final wide = constraints.maxWidth > 700;
+            return wide
+                ? SizedBox(
+                    height: 168,
+                    child: Row(children: [
+                      for (var i = 0; i < cards.length; i++) ...[
+                        Expanded(child: cards[i]),
+                        if (i < cards.length - 1) const SizedBox(width: 10)
+                      ]
+                    ]),
+                  )
+                : SizedBox(
+                    height: 184,
+                    child: Column(children: [
+                      Expanded(
+                        child: PageView.builder(
+                          controller: _controller,
                           itemCount: cards.length,
-                          separatorBuilder: (_, __) =>
-                              const SizedBox(width: 10),
-                          itemBuilder: (_, index) =>
-                              SizedBox(width: 210, child: cards[index])));
-            }),
-          ]),
-        )),
-      );
+                          padEnds: false,
+                          onPageChanged: (value) =>
+                              setState(() => _page = value),
+                          itemBuilder: (_, index) => Padding(
+                            padding: EdgeInsets.only(
+                                right: index == cards.length - 1 ? 0 : 10),
+                            child: cards[index],
+                          ),
+                        ),
+                      ),
+                      const SizedBox(height: 10),
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: List.generate(
+                          cards.length,
+                          (index) => AnimatedContainer(
+                            duration: const Duration(milliseconds: 220),
+                            width: index == _page ? 18 : 6,
+                            height: 6,
+                            margin: const EdgeInsets.symmetric(horizontal: 3),
+                            decoration: BoxDecoration(
+                              color: index == _page
+                                  ? AppColors.fuchsia
+                                  : AppColors.champagne,
+                              borderRadius: BorderRadius.circular(6),
+                            ),
+                          ),
+                        ),
+                      ),
+                    ]));
+          }),
+        ]),
+      )),
+    );
+  }
 }
 
 class _ConcernPulse extends StatelessWidget {
@@ -1495,23 +1641,22 @@ class _ConcernPulse extends StatelessWidget {
                 title: '어떤 신호가 가장 신경 쓰이나요?',
                 subtitle: '고민을 탭하면 매치 결과가 실시간으로 바뀝니다.'),
             const SizedBox(height: 20),
-            SingleChildScrollView(
-                scrollDirection: Axis.horizontal,
-                child: Row(
-                    children: concerns.map((value) {
-                  final active = selected == value;
-                  return Padding(
-                    padding: const EdgeInsets.only(right: 9),
-                    child: ChoiceChip(
-                        label: Text(value),
-                        selected: active,
-                        showCheckmark: false,
-                        labelStyle: TextStyle(
-                            color: active ? Colors.white : AppColors.ink,
-                            fontWeight: FontWeight.w800),
-                        onSelected: (_) => onSelect(value)),
-                  );
-                }).toList())),
+            Wrap(
+              spacing: 9,
+              runSpacing: 9,
+              children: concerns.map((value) {
+                final active = selected == value;
+                return ChoiceChip(
+                    label: Text(value),
+                    labelPadding: const EdgeInsets.symmetric(horizontal: 10),
+                    selected: active,
+                    showCheckmark: false,
+                    labelStyle: TextStyle(
+                        color: active ? Colors.white : AppColors.ink,
+                        fontWeight: FontWeight.w800),
+                    onSelected: (_) => onSelect(value));
+              }).toList(),
+            ),
           ]),
         )),
       );

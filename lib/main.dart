@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 
@@ -23,11 +25,23 @@ class PharmaBeautyApp extends StatefulWidget {
 
 class _PharmaBeautyAppState extends State<PharmaBeautyApp> {
   late bool _showIntro;
+  Timer? _introTimer;
 
   @override
   void initState() {
     super.initState();
     _showIntro = widget.showIntro;
+    if (_showIntro) {
+      _introTimer = Timer(const Duration(milliseconds: 800), () {
+        if (mounted) setState(() => _showIntro = false);
+      });
+    }
+  }
+
+  @override
+  void dispose() {
+    _introTimer?.cancel();
+    super.dispose();
   }
 
   @override
@@ -47,12 +61,11 @@ class _PharmaBeautyAppState extends State<PharmaBeautyApp> {
         );
       },
       home: AnimatedSwitcher(
-        duration: const Duration(milliseconds: 360),
+        duration: const Duration(milliseconds: 420),
+        switchInCurve: Curves.easeOut,
+        switchOutCurve: Curves.easeIn,
         child: _showIntro
-            ? IntroScreen(
-                key: const ValueKey('intro-screen'),
-                onStart: () => setState(() => _showIntro = false),
-              )
+            ? const IntroScreen(key: ValueKey('intro-screen'))
             : const AppShell(key: ValueKey('app-shell')),
       ),
     );

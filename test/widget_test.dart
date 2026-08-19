@@ -91,12 +91,11 @@ void main() {
     expect(advice.recommendations.join(), contains('SPF 50+'));
   });
 
-  testWidgets('shows the LEXEM intro before entering the home experience',
-      (tester) async {
+  testWidgets('auto-dismisses the LEXEM intro before home', (tester) async {
     await tester.pumpWidget(const PharmaBeautyApp());
 
-    expect(find.text('READ\nYOUR SKIN.'), findsOneWidget);
-    await tester.tap(find.byKey(const Key('intro-start-button')));
+    expect(find.text('YOUR SKIN, YOUR LANGUAGE'), findsOneWidget);
+    await tester.pump(const Duration(milliseconds: 800));
     await tester.pumpAndSettle();
 
     expect(find.byKey(const Key('ingredient-trend-hero')), findsOneWidget);

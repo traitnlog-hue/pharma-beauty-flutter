@@ -413,74 +413,132 @@ class _RoutineForecast extends StatelessWidget {
 
 class _TrendReports extends StatelessWidget {
   const _TrendReports();
+
+  void _openReport(
+      BuildContext context, (String, String, String, Color) report) {
+    showModalBottomSheet<void>(
+      context: context,
+      backgroundColor: Colors.transparent,
+      builder: (context) => Container(
+        padding: const EdgeInsets.fromLTRB(24, 14, 24, 38),
+        decoration: const BoxDecoration(
+          color: AppColors.paper,
+          borderRadius: BorderRadius.vertical(top: Radius.circular(28)),
+        ),
+        child: Column(mainAxisSize: MainAxisSize.min, children: [
+          Container(
+            width: 38,
+            height: 4,
+            decoration: BoxDecoration(
+              color: AppColors.champagne,
+              borderRadius: BorderRadius.circular(4),
+            ),
+          ),
+          const SizedBox(height: 26),
+          Align(
+            alignment: Alignment.centerLeft,
+            child: Text('WEEKLY REPORT ${report.$1}',
+                style: const TextStyle(
+                    color: AppColors.fuchsia,
+                    fontSize: 11,
+                    fontWeight: FontWeight.w800,
+                    letterSpacing: 1.1)),
+          ),
+          const SizedBox(height: 10),
+          Align(
+            alignment: Alignment.centerLeft,
+            child: Text(report.$2,
+                style: Theme.of(context).textTheme.headlineMedium),
+          ),
+          const SizedBox(height: 14),
+          Text(report.$3,
+              style: const TextStyle(
+                  color: AppColors.muted, fontSize: 15, height: 1.6)),
+        ]),
+      ),
+    );
+  }
+
   @override
   Widget build(BuildContext context) => Padding(
         padding: const EdgeInsets.fromLTRB(20, 68, 20, 0),
         child: Center(
             child: ConstrainedBox(
           constraints: const BoxConstraints(maxWidth: 1080),
-          child:
-              Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
-            const _ModernSectionHeader(
-                eyebrow: '03 · EDITORIAL SIGNAL',
-                title: '이번 주 성분 리포트',
-                subtitle: '짧게 읽고 바로 루틴에 적용하는 에디터 큐레이션'),
-            const SizedBox(height: 22),
-            ...const [
-              (
-                '01',
-                '장벽 성분의 세대교체',
-                '세라마이드 단독보다 지질 조합과 전달 시스템이 선택 기준이 되고 있어요.',
-                AppColors.cyan
-              ),
-              (
-                '02',
-                '저자극 레티노이드 루틴',
-                '강도 경쟁보다 빈도와 완충 조합을 설계하는 스킨 사이클링이 다시 주목받아요.',
-                AppColors.violet
-              ),
-              (
-                '03',
-                '멀티 액티브의 피로감',
-                '효능을 쌓기보다 루틴을 단순화하고 충돌을 줄이는 스킨 미니멀리즘이 상승 중이에요.',
-                AppColors.butter
-              ),
-            ].map((item) => Container(
-                  margin: const EdgeInsets.only(bottom: 10),
-                  padding: const EdgeInsets.all(18),
-                  decoration: BoxDecoration(
-                      color: AppColors.surface,
-                      borderRadius: BorderRadius.circular(22)),
-                  child: Row(children: [
-                    Container(
-                        width: 46,
-                        height: 46,
-                        alignment: Alignment.center,
+          child: SizedBox(
+            width: double.infinity,
+            child:
+                Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
+              const _ModernSectionHeader(
+                  eyebrow: '03 · EDITORIAL SIGNAL',
+                  title: '이번 주 성분 리포트',
+                  subtitle: '짧게 읽고 바로 루틴에 적용하는 에디터 큐레이션'),
+              const SizedBox(height: 22),
+              ...const [
+                (
+                  '01',
+                  '장벽 성분의 세대교체',
+                  '세라마이드 단독보다 지질 조합과 전달 시스템이 선택 기준이 되고 있어요.',
+                  AppColors.cyan
+                ),
+                (
+                  '02',
+                  '저자극 레티노이드 루틴',
+                  '강도 경쟁보다 빈도와 완충 조합을 설계하는 스킨 사이클링이 다시 주목받아요.',
+                  AppColors.violet
+                ),
+                (
+                  '03',
+                  '멀티 액티브의 피로감',
+                  '효능을 쌓기보다 루틴을 단순화하고 충돌을 줄이는 스킨 미니멀리즘이 상승 중이에요.',
+                  AppColors.butter
+                ),
+              ].map((item) => Material(
+                    color: Colors.transparent,
+                    borderRadius: BorderRadius.circular(22),
+                    child: InkWell(
+                      onTap: () => _openReport(context, item),
+                      borderRadius: BorderRadius.circular(22),
+                      child: Container(
+                        margin: const EdgeInsets.only(bottom: 10),
+                        padding: const EdgeInsets.all(18),
                         decoration: BoxDecoration(
-                            color: item.$4,
-                            borderRadius: BorderRadius.circular(15)),
-                        child: Text(item.$1,
-                            style:
-                                const TextStyle(fontWeight: FontWeight.w700))),
-                    const SizedBox(width: 14),
-                    Expanded(
-                        child: Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                          Text(item.$2,
-                              style: const TextStyle(
-                                  fontSize: 14, fontWeight: FontWeight.w700)),
-                          const SizedBox(height: 5),
-                          Text(item.$3,
-                              style: const TextStyle(
-                                  color: AppColors.muted,
-                                  fontSize: 11,
-                                  height: 1.5))
-                        ])),
-                    const Icon(Icons.arrow_forward_rounded, size: 18)
-                  ]),
-                )),
-          ]),
+                            color: AppColors.surface,
+                            borderRadius: BorderRadius.circular(22)),
+                        child: Row(children: [
+                          Container(
+                              width: 46,
+                              height: 46,
+                              alignment: Alignment.center,
+                              decoration: BoxDecoration(
+                                  color: item.$4,
+                                  borderRadius: BorderRadius.circular(15)),
+                              child: Text(item.$1,
+                                  style: const TextStyle(
+                                      fontWeight: FontWeight.w700))),
+                          const SizedBox(width: 14),
+                          Expanded(
+                              child: Column(
+                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                  children: [
+                                Text(item.$2,
+                                    style: const TextStyle(
+                                        fontSize: 14,
+                                        fontWeight: FontWeight.w700)),
+                                const SizedBox(height: 5),
+                                Text(item.$3,
+                                    style: const TextStyle(
+                                        color: AppColors.muted,
+                                        fontSize: 11,
+                                        height: 1.5))
+                              ])),
+                          const Icon(Icons.north_east_rounded, size: 19)
+                        ]),
+                      ),
+                    ),
+                  )),
+            ]),
+          ),
         )),
       );
 }
