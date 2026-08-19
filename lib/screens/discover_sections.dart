@@ -1,8 +1,15 @@
 part of 'discover_screen.dart';
 
 class _TrendHero extends StatelessWidget {
-  const _TrendHero({required this.onSearch});
+  const _TrendHero(
+      {required this.query,
+      required this.results,
+      required this.onSearch,
+      required this.onOpen});
+  final String query;
+  final List<IngredientInfo> results;
   final ValueChanged<String> onSearch;
+  final ValueChanged<IngredientInfo> onOpen;
 
   @override
   Widget build(BuildContext context) => Container(
@@ -50,7 +57,9 @@ class _TrendHero extends StatelessWidget {
                       fontWeight: FontWeight.w600)),
               const SizedBox(height: 26),
               TextField(
+                key: const Key('ingredient-dictionary-search'),
                 onChanged: onSearch,
+                textInputAction: TextInputAction.search,
                 decoration: InputDecoration(
                   hintText: '성분, 효능, 피부 고민 검색',
                   prefixIcon: const Icon(Icons.search_rounded),
@@ -58,6 +67,69 @@ class _TrendHero extends StatelessWidget {
                   fillColor: Colors.white.withValues(alpha: .94),
                 ),
               ),
+              if (query.trim().isNotEmpty) ...[
+                const SizedBox(height: 12),
+                Container(
+                  key: const Key('ingredient-search-results'),
+                  padding: const EdgeInsets.fromLTRB(14, 8, 14, 10),
+                  decoration: BoxDecoration(
+                    color: Colors.white,
+                    borderRadius: BorderRadius.circular(16),
+                  ),
+                  child: results.isEmpty
+                      ? const Padding(
+                          padding: EdgeInsets.symmetric(vertical: 10),
+                          child: Text('일치하는 성분을 찾지 못했어요.',
+                              style: TextStyle(color: AppColors.muted)),
+                        )
+                      : Column(
+                          children: [
+                            Align(
+                              alignment: Alignment.centerLeft,
+                              child: Text('성분 백과 검색 결과 ${results.length}개',
+                                  style: const TextStyle(
+                                      color: AppColors.berry,
+                                      fontSize: 11,
+                                      fontWeight: FontWeight.w800)),
+                            ),
+                            const SizedBox(height: 5),
+                            for (final ingredient in results.take(4))
+                              InkWell(
+                                onTap: () => onOpen(ingredient),
+                                borderRadius: BorderRadius.circular(10),
+                                child: Padding(
+                                  padding:
+                                      const EdgeInsets.symmetric(vertical: 9),
+                                  child: Row(children: [
+                                    const Icon(Icons.menu_book_outlined,
+                                        size: 17, color: AppColors.fuchsia),
+                                    const SizedBox(width: 10),
+                                    Expanded(
+                                      child: Column(
+                                        crossAxisAlignment:
+                                            CrossAxisAlignment.start,
+                                        children: [
+                                          Text(ingredient.name,
+                                              style: const TextStyle(
+                                                  color: AppColors.ink,
+                                                  fontSize: 13,
+                                                  fontWeight: FontWeight.w800)),
+                                          Text(ingredient.englishName,
+                                              style: const TextStyle(
+                                                  color: AppColors.muted,
+                                                  fontSize: 10)),
+                                        ],
+                                      ),
+                                    ),
+                                    const Icon(Icons.north_east_rounded,
+                                        size: 16, color: AppColors.berry),
+                                  ]),
+                                ),
+                              ),
+                          ],
+                        ),
+                ),
+              ],
             ]),
           ]),
         )),

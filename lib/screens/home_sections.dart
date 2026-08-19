@@ -14,21 +14,9 @@ class _HeroState extends State<_Hero> {
   Timer? timer;
   int selected = 0;
   static const slides = [
-    (
-      'TREND #01 · +31%',
-      '이번 주, 레티날이\n빠르게 뜨고 있어요.',
-      '탄력·피부결 검색량 상승 · 함께 쓰는 성분까지 확인'
-    ),
-    (
-      'TREND #02 · +24%',
-      '장벽 케어의 중심,\n세라마이드를 읽어요.',
-      '건조한 날씨에 찾는 보습 성분 · 판테놀 궁합 확인'
-    ),
-    (
-      'TREND #03 · +18%',
-      '비타민C, 아침 루틴에\n다시 주목해요.',
-      '칙칙함 케어 검색량 상승 · 자외선 차단과 함께'
-    ),
+    ('이번 주, 레티날이\n빠르게 뜨고 있어요.', '탄력·피부결 검색량 상승 · 함께 쓰는 성분까지 확인'),
+    ('장벽 케어의 중심,\n세라마이드를 읽어요.', '건조한 날씨에 찾는 보습 성분 · 판테놀 궁합 확인'),
+    ('비타민C, 아침 루틴에\n다시 주목해요.', '칙칙함 케어 검색량 상승 · 자외선 차단과 함께'),
   ];
 
   @override
@@ -77,7 +65,7 @@ class _HeroState extends State<_Hero> {
                         itemBuilder: (context, index) =>
                             Stack(fit: StackFit.expand, children: [
                           Image.asset(
-                            'assets/editorial/ai-molecule-violet-3d.png',
+                            'assets/editorial/ingredient-trend-hero-editorial-v1.png',
                             fit: BoxFit.cover,
                             alignment: const Alignment(.55, 0),
                           ),
@@ -85,9 +73,9 @@ class _HeroState extends State<_Hero> {
                             decoration: BoxDecoration(
                               gradient: LinearGradient(
                                 colors: [
-                                  Color(0xF2111115),
-                                  Color(0xA6111115),
-                                  Color(0x2B493A9A),
+                                  Color(0xFF111115),
+                                  Color(0xE6111115),
+                                  Color(0x40493A9A),
                                 ],
                                 begin: Alignment.centerLeft,
                                 end: Alignment.centerRight,
@@ -149,16 +137,6 @@ class _HeroState extends State<_Hero> {
                                 Text(
                                   slides[index].$1,
                                   style: TextStyle(
-                                    color: AppColors.ballerina,
-                                    fontSize: 9,
-                                    fontWeight: FontWeight.w700,
-                                    letterSpacing: .9,
-                                  ),
-                                ),
-                                const SizedBox(height: 8),
-                                Text(
-                                  slides[index].$2,
-                                  style: TextStyle(
                                     color: Colors.white,
                                     fontSize: 22,
                                     height: 1.12,
@@ -168,7 +146,7 @@ class _HeroState extends State<_Hero> {
                                 ),
                                 const SizedBox(height: 8),
                                 Text(
-                                  slides[index].$3,
+                                  slides[index].$2,
                                   style: TextStyle(
                                     color: Color(0xFFE8E6F7),
                                     fontSize: 11,
@@ -226,27 +204,13 @@ class _HeroState extends State<_Hero> {
                     ),
                   ),
                 ),
-                const SizedBox(height: 10),
-                Row(children: [
-                  for (var i = 0; i < slides.length; i++) ...[
-                    Expanded(
-                        child: InkWell(
-                      key: Key('ingredient-trend-tab-$i'),
-                      onTap: () => select(i),
-                      borderRadius: BorderRadius.circular(8),
-                      child: AnimatedContainer(
-                        duration: const Duration(milliseconds: 220),
-                        height: 4,
-                        decoration: BoxDecoration(
-                            color: i == selected
-                                ? AppColors.fuchsia
-                                : AppColors.paper2,
-                            borderRadius: BorderRadius.circular(8)),
-                      ),
-                    )),
-                    if (i < slides.length - 1) const SizedBox(width: 6),
-                  ],
-                ]),
+                const SizedBox(height: 2),
+                PageIndicator(
+                  count: slides.length,
+                  selectedIndex: selected,
+                  onSelected: select,
+                  keyPrefix: 'ingredient-trend-tab',
+                ),
               ],
             ),
           ),
@@ -1308,7 +1272,7 @@ class _BrandStory extends StatelessWidget {
                   const Divider(height: 1),
                   const SizedBox(height: 28),
                   const Text(
-                    'THE LANGUAGE SYSTEM',
+                    'LEXEM CARE GUIDE',
                     style: TextStyle(
                       color: AppColors.berry,
                       fontSize: 9,
@@ -1318,7 +1282,7 @@ class _BrandStory extends StatelessWidget {
                   ),
                   const SizedBox(height: 7),
                   const Text(
-                    '피부를 읽는 다섯 가지 문법',
+                    '피부 케어, 이렇게 도와드려요',
                     style: TextStyle(
                       color: AppColors.ink,
                       fontSize: 19,
@@ -1326,84 +1290,57 @@ class _BrandStory extends StatelessWidget {
                       letterSpacing: -.3,
                     ),
                   ),
+                  const SizedBox(height: 6),
+                  const Text(
+                    '피부 상태부터 성분과 루틴까지, 필요한 것만 간단히 정리해요.',
+                    style: TextStyle(color: AppColors.muted, fontSize: 12),
+                  ),
                   const SizedBox(height: 16),
                   LayoutBuilder(builder: (context, constraints) {
+                    const items = [
+                      (
+                        Icons.face_retouching_natural_outlined,
+                        '피부 확인',
+                        '내 피부 상태'
+                      ),
+                      (Icons.science_outlined, '성분 해석', '어려운 성분을 쉽게'),
+                      (Icons.auto_awesome_outlined, '루틴 제안', '오늘의 케어 순서'),
+                    ];
                     final itemWidth = constraints.maxWidth >= 680
-                        ? (constraints.maxWidth - 12) / 2
-                        : constraints.maxWidth;
+                        ? (constraints.maxWidth - 16) / 3
+                        : (constraints.maxWidth - 8) / 2;
                     return Wrap(
-                      spacing: 12,
-                      runSpacing: 10,
+                      spacing: 8,
+                      runSpacing: 8,
                       children: [
-                        for (final item in _serviceLanguage)
+                        for (final item in items)
                           SizedBox(
                             width: itemWidth,
-                            child: Material(
-                              color: AppColors.paper,
-                              borderRadius: BorderRadius.circular(14),
-                              clipBehavior: Clip.antiAlias,
-                              child: InkWell(
-                                onTap: () => _openLanguageNote(context, item),
-                                child: Container(
-                                  padding: const EdgeInsets.all(15),
-                                  decoration: BoxDecoration(
-                                    borderRadius: BorderRadius.circular(14),
-                                    border: Border.all(color: AppColors.line),
-                                  ),
-                                  child: Row(
-                                    children: [
-                                      Text(
-                                        item.$1,
-                                        style: const TextStyle(
-                                          color: AppColors.fuchsia,
+                            child: Container(
+                              padding: const EdgeInsets.all(14),
+                              decoration: BoxDecoration(
+                                color: AppColors.paper,
+                                borderRadius: BorderRadius.circular(14),
+                                border: Border.all(color: AppColors.line),
+                              ),
+                              child: Column(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: [
+                                  Icon(item.$1,
+                                      size: 19, color: AppColors.fuchsia),
+                                  const SizedBox(height: 12),
+                                  Text(item.$2,
+                                      style: const TextStyle(
+                                          color: AppColors.ink,
+                                          fontSize: 12,
+                                          fontWeight: FontWeight.w800)),
+                                  const SizedBox(height: 3),
+                                  Text(item.$3,
+                                      style: const TextStyle(
+                                          color: AppColors.muted,
                                           fontSize: 10,
-                                          fontWeight: FontWeight.w700,
-                                        ),
-                                      ),
-                                      const SizedBox(width: 13),
-                                      Expanded(
-                                        child: Column(
-                                          crossAxisAlignment:
-                                              CrossAxisAlignment.start,
-                                          children: [
-                                            Text(
-                                              item.$2,
-                                              style: const TextStyle(
-                                                color: AppColors.ink,
-                                                fontSize: 10,
-                                                fontWeight: FontWeight.w700,
-                                                letterSpacing: .5,
-                                              ),
-                                            ),
-                                            const SizedBox(height: 3),
-                                            Text(
-                                              item.$3,
-                                              style: const TextStyle(
-                                                color: AppColors.muted,
-                                                fontSize: 12,
-                                                fontWeight: FontWeight.w600,
-                                              ),
-                                            ),
-                                          ],
-                                        ),
-                                      ),
-                                      Container(
-                                        width: 30,
-                                        height: 30,
-                                        alignment: Alignment.center,
-                                        decoration: const BoxDecoration(
-                                          color: AppColors.blush,
-                                          shape: BoxShape.circle,
-                                        ),
-                                        child: const Icon(
-                                          Icons.north_east_rounded,
-                                          size: 16,
-                                          color: AppColors.fuchsia,
-                                        ),
-                                      ),
-                                    ],
-                                  ),
-                                ),
+                                          fontWeight: FontWeight.w600)),
+                                ],
                               ),
                             ),
                           ),
@@ -1598,22 +1535,13 @@ class _DailyBriefState extends State<_DailyBrief> {
                         ),
                       ),
                       const SizedBox(height: 10),
-                      Row(
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        children: List.generate(
-                          cards.length,
-                          (index) => AnimatedContainer(
-                            duration: const Duration(milliseconds: 220),
-                            width: index == _page ? 18 : 6,
-                            height: 6,
-                            margin: const EdgeInsets.symmetric(horizontal: 3),
-                            decoration: BoxDecoration(
-                              color: index == _page
-                                  ? AppColors.fuchsia
-                                  : AppColors.champagne,
-                              borderRadius: BorderRadius.circular(6),
-                            ),
-                          ),
+                      PageIndicator(
+                        count: cards.length,
+                        selectedIndex: _page,
+                        onSelected: (index) => _controller.animateToPage(
+                          index,
+                          duration: const Duration(milliseconds: 360),
+                          curve: Curves.easeOutCubic,
                         ),
                       ),
                     ]));
@@ -1641,21 +1569,26 @@ class _ConcernPulse extends StatelessWidget {
                 title: '어떤 신호가 가장 신경 쓰이나요?',
                 subtitle: '고민을 탭하면 매치 결과가 실시간으로 바뀝니다.'),
             const SizedBox(height: 20),
-            Wrap(
-              spacing: 9,
-              runSpacing: 9,
-              children: concerns.map((value) {
-                final active = selected == value;
-                return ChoiceChip(
-                    label: Text(value),
-                    labelPadding: const EdgeInsets.symmetric(horizontal: 10),
-                    selected: active,
-                    showCheckmark: false,
-                    labelStyle: TextStyle(
-                        color: active ? Colors.white : AppColors.ink,
-                        fontWeight: FontWeight.w800),
-                    onSelected: (_) => onSelect(value));
-              }).toList(),
+            Container(
+              width: double.infinity,
+              padding: const EdgeInsets.all(2),
+              color: AppColors.paper,
+              child: Wrap(
+                spacing: 9,
+                runSpacing: 9,
+                children: concerns.map((value) {
+                  final active = selected == value;
+                  return ChoiceChip(
+                      label: Text(value),
+                      labelPadding: const EdgeInsets.symmetric(horizontal: 10),
+                      selected: active,
+                      showCheckmark: false,
+                      labelStyle: TextStyle(
+                          color: active ? Colors.white : AppColors.ink,
+                          fontWeight: FontWeight.w800),
+                      onSelected: (_) => onSelect(value));
+                }).toList(),
+              ),
             ),
           ]),
         )),

@@ -57,12 +57,28 @@ class _DiscoverScreenState extends State<DiscoverScreen> {
       ['ALL', ...ingredients.map((item) => item.category).toSet()];
 
   List<IngredientInfo> get filtered => ingredients.where((item) {
-        final normalized = query.toLowerCase();
-        final matchesQuery = item.name.contains(query) ||
-            item.englishName.toLowerCase().contains(normalized) ||
-            item.benefits.any((value) => value.contains(query));
+        final matchesQuery = _matchesQuery(item);
         return matchesQuery && (category == 'ALL' || item.category == category);
       }).toList();
+
+  List<IngredientInfo> get searchResults => query.trim().isEmpty
+      ? const []
+      : ingredients.where(_matchesQuery).toList();
+
+  bool _matchesQuery(IngredientInfo item) {
+    final normalized = query.trim().toLowerCase();
+    if (normalized.isEmpty) return true;
+    final corpus = [
+      item.name,
+      item.englishName,
+      item.category,
+      item.summary,
+      ...item.benefits,
+      ...item.goodWith,
+      ...item.cautionWith,
+    ].join(' ').toLowerCase();
+    return corpus.contains(normalized);
+  }
 
   void showIngredient(IngredientInfo ingredient) {
     final meta = trend[ingredient.name]!;
@@ -182,8 +198,11 @@ class _DiscoverScreenState extends State<DiscoverScreen> {
   Widget build(BuildContext context) {
     return CustomScrollView(slivers: [
       SliverToBoxAdapter(
-          child:
-              _TrendHero(onSearch: (value) => setState(() => query = value))),
+          child: _TrendHero(
+              query: query,
+              results: searchResults,
+              onSearch: (value) => setState(() => query = value),
+              onOpen: showIngredient)),
       SliverToBoxAdapter(
           child: Padding(
         padding: const EdgeInsets.fromLTRB(20, 54, 20, 20),

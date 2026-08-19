@@ -2,6 +2,29 @@ import 'package:flutter/material.dart';
 
 enum PackageForm { pump, jar, tube }
 
+enum DeliveryStatus { paid, preparing, shipping, delivered }
+
+class PurchaseOrder {
+  const PurchaseOrder({
+    required this.id,
+    required this.productIds,
+    required this.createdAt,
+    required this.status,
+  });
+
+  final String id;
+  final List<int> productIds;
+  final DateTime createdAt;
+  final DeliveryStatus status;
+
+  PurchaseOrder copyWith({DeliveryStatus? status}) => PurchaseOrder(
+        id: id,
+        productIds: productIds,
+        createdAt: createdAt,
+        status: status ?? this.status,
+      );
+}
+
 class BeautyProduct {
   const BeautyProduct({
     required this.id,

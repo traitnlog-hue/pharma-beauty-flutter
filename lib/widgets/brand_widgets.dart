@@ -49,6 +49,59 @@ class SectionLabel extends StatelessWidget {
   }
 }
 
+/// 앱 전반의 슬라이드에 공통으로 쓰는 페이지 인디케이터입니다.
+/// 선택 항목은 짧은 바이올렛 필, 나머지는 회색 원으로 표시합니다.
+class PageIndicator extends StatelessWidget {
+  const PageIndicator({
+    super.key,
+    required this.count,
+    required this.selectedIndex,
+    required this.onSelected,
+    this.keyPrefix,
+  });
+
+  final int count;
+  final int selectedIndex;
+  final ValueChanged<int> onSelected;
+  final String? keyPrefix;
+
+  @override
+  Widget build(BuildContext context) => Row(
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: [
+          for (var index = 0; index < count; index++)
+            Semantics(
+              button: true,
+              selected: index == selectedIndex,
+              label: '${index + 1}번 슬라이드 보기',
+              child: InkWell(
+                key: keyPrefix == null ? null : Key('$keyPrefix-$index'),
+                onTap: () => onSelected(index),
+                borderRadius: BorderRadius.circular(20),
+                child: SizedBox(
+                  width: 36,
+                  height: 36,
+                  child: Center(
+                    child: AnimatedContainer(
+                      duration: const Duration(milliseconds: 220),
+                      curve: Curves.easeOutCubic,
+                      width: index == selectedIndex ? 30 : 11,
+                      height: 11,
+                      decoration: BoxDecoration(
+                        color: index == selectedIndex
+                            ? AppColors.fuchsia
+                            : AppColors.champagne,
+                        borderRadius: BorderRadius.circular(20),
+                      ),
+                    ),
+                  ),
+                ),
+              ),
+            ),
+        ],
+      );
+}
+
 class ProductBottle extends StatelessWidget {
   const ProductBottle(
       {required this.product,

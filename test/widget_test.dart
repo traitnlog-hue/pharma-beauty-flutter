@@ -128,7 +128,7 @@ void main() {
     expect(find.textContaining('오늘 날씨 기준 추천'), findsOneWidget);
   });
 
-  testWidgets('shows the LEXEM brand story and service language',
+  testWidgets('shows the LEXEM brand story and concise care guide',
       (tester) async {
     await tester.pumpWidget(const PharmaBeautyApp(showIntro: false));
 
@@ -140,8 +140,8 @@ void main() {
     await tester.pumpAndSettle();
 
     expect(find.text('화장품 성분은\n하나의 언어다.'), findsOneWidget);
-    expect(find.text('INGREDIENT DICTIONARY'), findsOneWidget);
-    expect(find.text('나만의 문장'), findsOneWidget);
+    expect(find.text('피부 케어, 이렇게 도와드려요'), findsOneWidget);
+    expect(find.text('성분 해석'), findsOneWidget);
   });
 
   testWidgets('completes the five-step skin chart from home', (tester) async {
@@ -191,7 +191,7 @@ void main() {
     expect(find.textContaining('INGREDIENT'), findsWidgets);
   });
 
-  testWidgets('asks Lia pharmacist about retinal', (tester) async {
+  testWidgets('asks Remi pharmacist about retinal', (tester) async {
     await tester.pumpWidget(const PharmaBeautyApp(showIntro: false));
 
     await tester.tap(find.text('SHOP'));
@@ -199,7 +199,7 @@ void main() {
     await tester.tap(find.byKey(const Key('pharmacist-chat-fab')));
     await tester.pumpAndSettle();
 
-    expect(find.text('리아 AI 약사'), findsOneWidget);
+    expect(find.text('레미 AI 약사'), findsOneWidget);
     expect(find.textContaining('의료 진단·처방을 대신하지 않아요'), findsOneWidget);
 
     await tester.tap(find.text('레티날 사용법'));

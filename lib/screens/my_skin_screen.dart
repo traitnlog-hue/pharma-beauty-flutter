@@ -16,6 +16,8 @@ class MySkinScreen extends StatelessWidget {
     required this.onEditProfile,
     required this.onOpenProduct,
     required this.onToggleSave,
+    required this.orders,
+    required this.onOpenOrder,
     super.key,
   });
 
@@ -26,6 +28,8 @@ class MySkinScreen extends StatelessWidget {
   final VoidCallback onEditProfile;
   final ValueChanged<BeautyProduct> onOpenProduct;
   final ValueChanged<BeautyProduct> onToggleSave;
+  final List<PurchaseOrder> orders;
+  final ValueChanged<PurchaseOrder> onOpenOrder;
 
   @override
   Widget build(BuildContext context) {
@@ -231,6 +235,55 @@ class MySkinScreen extends StatelessWidget {
               ]),
             ),
             const SizedBox(height: 52),
+            if (orders.isNotEmpty) ...[
+              const Text('ORDER & DELIVERY',
+                  style: TextStyle(
+                      color: AppColors.violet,
+                      fontSize: 10,
+                      fontWeight: FontWeight.w700,
+                      letterSpacing: 1.1)),
+              const SizedBox(height: 12),
+              ...orders.map((order) => Padding(
+                    padding: const EdgeInsets.only(bottom: 10),
+                    child: Material(
+                      color: AppColors.surface,
+                      borderRadius: BorderRadius.circular(16),
+                      child: InkWell(
+                        onTap: () => onOpenOrder(order),
+                        borderRadius: BorderRadius.circular(16),
+                        child: Container(
+                          padding: const EdgeInsets.all(16),
+                          decoration: BoxDecoration(
+                              borderRadius: BorderRadius.circular(16),
+                              border: Border.all(color: AppColors.line)),
+                          child: Row(children: [
+                            const Icon(Icons.local_shipping_outlined,
+                                color: AppColors.fuchsia),
+                            const SizedBox(width: 12),
+                            Expanded(
+                                child: Column(
+                                    crossAxisAlignment:
+                                        CrossAxisAlignment.start,
+                                    children: [
+                                  Text('주문 ${order.id}',
+                                      style: const TextStyle(
+                                          fontSize: 13,
+                                          fontWeight: FontWeight.w700)),
+                                  const SizedBox(height: 3),
+                                  Text(_deliveryLabel(order.status),
+                                      style: const TextStyle(
+                                          color: AppColors.berry,
+                                          fontSize: 10)),
+                                ])),
+                            const Icon(Icons.arrow_forward_ios_rounded,
+                                size: 15),
+                          ]),
+                        ),
+                      ),
+                    ),
+                  )),
+              const SizedBox(height: 42),
+            ],
             _ProductShelf(
                 title: '저장한 제품',
                 empty: '저장한 제품이 없어요.',
@@ -252,6 +305,13 @@ class MySkinScreen extends StatelessWidget {
     );
   }
 }
+
+String _deliveryLabel(DeliveryStatus status) => switch (status) {
+      DeliveryStatus.paid => '결제 완료',
+      DeliveryStatus.preparing => '상품 준비 중',
+      DeliveryStatus.shipping => '배송 중',
+      DeliveryStatus.delivered => '배송 완료',
+    };
 
 class _ProfileTag extends StatelessWidget {
   const _ProfileTag(this.label);

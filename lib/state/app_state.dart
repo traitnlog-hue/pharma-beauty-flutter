@@ -23,6 +23,8 @@ class AppState extends ChangeNotifier {
   final Set<int> _compareIds = {};
   final Set<int> _savedIds;
   final List<int> _recentIds;
+  final Set<int> _cartIds = {};
+  final List<PurchaseOrder> _orders = [];
   String? _userEmail;
   String? _userName;
 
@@ -31,6 +33,9 @@ class AppState extends ChangeNotifier {
   UnmodifiableSetView<int> get compareIds => UnmodifiableSetView(_compareIds);
   UnmodifiableSetView<int> get savedIds => UnmodifiableSetView(_savedIds);
   UnmodifiableListView<int> get recentIds => UnmodifiableListView(_recentIds);
+  UnmodifiableSetView<int> get cartIds => UnmodifiableSetView(_cartIds);
+  UnmodifiableListView<PurchaseOrder> get orders =>
+      UnmodifiableListView(_orders);
   bool get isSignedIn => _userEmail != null;
   String get userName => _userName ?? '회원';
   String? get userEmail => _userEmail;
@@ -38,6 +43,47 @@ class AppState extends ChangeNotifier {
   List<BeautyProduct> get comparedProducts => products
       .where((product) => _compareIds.contains(product.id))
       .toList(growable: false);
+
+  List<BeautyProduct> get cartProducts => products
+      .where((product) => _cartIds.contains(product.id))
+      .toList(growable: false);
+
+  void addToCart(BeautyProduct product) {
+    _cartIds.add(product.id);
+    notifyListeners();
+  }
+
+  void removeFromCart(BeautyProduct product) {
+    _cartIds.remove(product.id);
+    notifyListeners();
+  }
+
+  PurchaseOrder checkout(Iterable<BeautyProduct> selected) {
+    final selectedIds = selected.map((product) => product.id).toList();
+    final order = PurchaseOrder(
+      id: 'LX${DateTime.now().millisecondsSinceEpoch.toString().substring(6)}',
+      productIds: selectedIds,
+      createdAt: DateTime.now(),
+      status: DeliveryStatus.preparing,
+    );
+    _cartIds.removeAll(selectedIds);
+    _orders.insert(0, order);
+    notifyListeners();
+    return order;
+  }
+
+  void advanceDelivery(String orderId) {
+    final index = _orders.indexWhere((order) => order.id == orderId);
+    if (index < 0) return;
+    final next = switch (_orders[index].status) {
+      DeliveryStatus.paid => DeliveryStatus.preparing,
+      DeliveryStatus.preparing => DeliveryStatus.shipping,
+      DeliveryStatus.shipping => DeliveryStatus.delivered,
+      DeliveryStatus.delivered => DeliveryStatus.delivered,
+    };
+    _orders[index] = _orders[index].copyWith(status: next);
+    notifyListeners();
+  }
 
   bool toggleCompare(BeautyProduct product) {
     if (_compareIds.remove(product.id)) {

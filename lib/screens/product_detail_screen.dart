@@ -10,12 +10,16 @@ class ProductDetailScreen extends StatefulWidget {
       required this.onCompare,
       required this.initiallySaved,
       required this.onToggleSaved,
+      required this.onAddToCart,
+      required this.onBuyNow,
       super.key});
 
   final BeautyProduct product;
   final VoidCallback onCompare;
   final bool initiallySaved;
   final VoidCallback onToggleSaved;
+  final VoidCallback onAddToCart;
+  final VoidCallback onBuyNow;
 
   @override
   State<ProductDetailScreen> createState() => _ProductDetailScreenState();
@@ -74,16 +78,21 @@ class _ProductDetailScreenState extends State<ProductDetailScreen> {
           decoration: const BoxDecoration(
               color: AppColors.paper,
               border: Border(top: BorderSide(color: AppColors.line))),
-          child: FilledButton(
-            onPressed: () => ScaffoldMessenger.of(context)
-                .showSnackBar(const SnackBar(content: Text('장바구니에 담았어요.'))),
-            child: Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: [
-                  Text('${widget.product.formattedPrice} · 장바구니 담기'),
-                  const Icon(Icons.add, size: 18)
-                ]),
-          ),
+          child: Row(children: [
+            Expanded(
+              child: OutlinedButton(
+                onPressed: widget.onAddToCart,
+                child: const Text('장바구니'),
+              ),
+            ),
+            const SizedBox(width: 10),
+            Expanded(
+              child: FilledButton(
+                onPressed: widget.onBuyNow,
+                child: Text('바로 구매 · ${widget.product.formattedPrice}'),
+              ),
+            ),
+          ]),
         ),
       ),
     );

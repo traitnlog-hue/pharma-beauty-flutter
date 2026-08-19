@@ -60,109 +60,151 @@ class _ShopScreenState extends State<ShopScreen> {
     };
   }
 
+  IconData categoryIcon(String value) => switch (value) {
+        '전체' => Icons.auto_awesome_rounded,
+        '세럼' => Icons.water_drop_outlined,
+        '크림' => Icons.layers_outlined,
+        '에센스' => Icons.spa_outlined,
+        '토너' => Icons.opacity_outlined,
+        '앰플' => Icons.science_outlined,
+        _ => Icons.face_retouching_natural_outlined,
+      };
+
+  void _selectCategory(String value) {
+    setState(() {
+      group = ShopFilterGroup.category;
+      filter = value;
+    });
+  }
+
+  void _openFilterSheet() {
+    showModalBottomSheet<void>(
+      context: context,
+      backgroundColor: Colors.transparent,
+      builder: (sheetContext) => SafeArea(
+        child: Container(
+          margin: const EdgeInsets.fromLTRB(14, 0, 14, 14),
+          padding: const EdgeInsets.fromLTRB(20, 18, 20, 22),
+          decoration: BoxDecoration(
+            color: AppColors.surface,
+            borderRadius: BorderRadius.circular(AppRadii.feature),
+          ),
+          child: Column(mainAxisSize: MainAxisSize.min, children: [
+            Row(children: [
+              const Text('상품 필터',
+                  style: TextStyle(fontSize: 17, fontWeight: FontWeight.w800)),
+              const Spacer(),
+              IconButton(
+                  tooltip: '닫기',
+                  onPressed: () => Navigator.pop(sheetContext),
+                  icon: const Icon(Icons.close_rounded)),
+            ]),
+            const SizedBox(height: 8),
+            Wrap(
+              spacing: 8,
+              runSpacing: 8,
+              children: ShopFilterGroup.values
+                  .map((value) => ChoiceChip(
+                        label: Text(switch (value) {
+                          ShopFilterGroup.concern => '피부 고민',
+                          ShopFilterGroup.category => '제품 타입',
+                          ShopFilterGroup.ingredient => '성분',
+                          ShopFilterGroup.brand => '브랜드',
+                        }),
+                        selected: group == value,
+                        onSelected: (_) => setState(() {
+                          group = value;
+                          filter = '전체';
+                        }),
+                      ))
+                  .toList(),
+            ),
+            const SizedBox(height: 14),
+            Align(
+              alignment: Alignment.centerLeft,
+              child: Wrap(
+                spacing: 7,
+                runSpacing: 7,
+                children: ['전체', ...options]
+                    .map((value) => ChoiceChip(
+                          label: Text(filterLabel(value)),
+                          selected: filter == value,
+                          onSelected: (_) => setState(() => filter = value),
+                        ))
+                    .toList(),
+              ),
+            ),
+          ]),
+        ),
+      ),
+    );
+  }
+
+  Widget _shopCategoryRail() => Container(
+        color: AppColors.surface,
+        child: Column(children: [
+          SizedBox(
+            height: 124,
+            child: Row(children: [
+              Expanded(
+                child: SingleChildScrollView(
+                  scrollDirection: Axis.horizontal,
+                  padding: const EdgeInsets.only(left: 14, right: 4),
+                  child: Row(
+                    children: [
+                      '전체',
+                      ...products.map((item) => item.category).toSet(),
+                    ]
+                        .map((value) => _ShopCategoryTab(
+                              label: value,
+                              icon: categoryIcon(value),
+                              selected: group == ShopFilterGroup.category &&
+                                  filter == value,
+                              onTap: () => _selectCategory(value),
+                            ))
+                        .toList(),
+                  ),
+                ),
+              ),
+              Padding(
+                padding: const EdgeInsets.only(right: 14),
+                child: Material(
+                  color: AppColors.surface,
+                  elevation: 5,
+                  shadowColor: AppColors.ink.withValues(alpha: .15),
+                  shape: const CircleBorder(),
+                  child: IconButton(
+                    tooltip: '필터',
+                    onPressed: _openFilterSheet,
+                    icon: const Icon(Icons.tune_rounded, size: 22),
+                  ),
+                ),
+              ),
+            ]),
+          ),
+          Container(height: 1, color: AppColors.line),
+        ]),
+      );
+
   @override
   Widget build(BuildContext context) {
     return CustomScrollView(slivers: [
-      SliverToBoxAdapter(
-          child: Container(
-        margin: const EdgeInsets.fromLTRB(14, 4, 14, 34),
-        padding: const EdgeInsets.fromLTRB(22, 34, 22, 28),
-        decoration: BoxDecoration(
-          color: AppColors.surface,
-          borderRadius: BorderRadius.circular(AppRadii.feature),
-          border: Border.all(color: AppColors.line),
-        ),
-        child: Center(
-            child: ConstrainedBox(
-          constraints: const BoxConstraints(maxWidth: 1040),
-          child:
-              Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
-            const Text('THE BEAUTY CABINET · CURATED BY DATA',
-                style: TextStyle(
-                    color: AppColors.berry,
-                    fontSize: 10,
-                    fontWeight: FontWeight.w700,
-                    letterSpacing: 1.1)),
-            const SizedBox(height: 18),
-            Text('예쁜 것보다,\n잘 맞는 것이\n나만의 취향.',
-                style: Theme.of(context).textTheme.headlineLarge),
-            const SizedBox(height: 24),
-            SingleChildScrollView(
-              scrollDirection: Axis.horizontal,
-              child: SegmentedButton<ShopFilterGroup>(
-                segments: const [
-                  ButtonSegment(
-                      value: ShopFilterGroup.concern, label: Text('피부 고민')),
-                  ButtonSegment(
-                      value: ShopFilterGroup.category, label: Text('카테고리')),
-                  ButtonSegment(
-                      value: ShopFilterGroup.ingredient, label: Text('성분')),
-                  ButtonSegment(
-                      value: ShopFilterGroup.brand, label: Text('브랜드')),
-                ],
-                selected: {group},
-                onSelectionChanged: (value) => setState(() {
-                  group = value.first;
-                  filter = '전체';
-                }),
-                style: const ButtonStyle(visualDensity: VisualDensity.compact),
-              ),
-            ),
-            const SizedBox(height: 17),
-            SingleChildScrollView(
-              scrollDirection: Axis.horizontal,
-              child: Row(
-                  children: ['전체', ...options]
-                      .map((value) => Padding(
-                            padding: const EdgeInsets.only(right: 8),
-                            child: Material(
-                              color: filter == value
-                                  ? AppColors.berry
-                                  : AppColors.surface,
-                              borderRadius: BorderRadius.circular(12),
-                              child: InkWell(
-                                borderRadius: BorderRadius.circular(12),
-                                onTap: () => setState(() => filter = value),
-                                child: Padding(
-                                  padding: const EdgeInsets.symmetric(
-                                      horizontal: 15, vertical: 10),
-                                  child: Text(filterLabel(value),
-                                      style: TextStyle(
-                                          color: filter == value
-                                              ? Colors.white
-                                              : AppColors.ink,
-                                          fontSize: 11,
-                                          fontWeight: FontWeight.w700)),
-                                ),
-                              ),
-                            ),
-                          ))
-                      .toList()),
-            ),
-            const SizedBox(height: 18),
-            Text('${visible.length} PRODUCTS',
-                style: const TextStyle(
-                    fontSize: 9,
-                    fontWeight: FontWeight.w700,
-                    letterSpacing: 1.1)),
-          ]),
-        )),
-      )),
+      SliverToBoxAdapter(child: _shopCategoryRail()),
       SliverPadding(
-        padding: const EdgeInsets.fromLTRB(20, 0, 20, 130),
+        padding: const EdgeInsets.fromLTRB(16, 16, 16, 130),
         sliver: SliverLayoutBuilder(builder: (context, constraints) {
           final columns = constraints.crossAxisExtent > 900
               ? 3
               : constraints.crossAxisExtent > 560
                   ? 2
-                  : 1;
-          final imageHeight = columns == 1 ? 320.0 : 230.0;
+                  : 2;
+          final imageHeight = columns == 3 ? 230.0 : 178.0;
           return SliverGrid(
             gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
                 crossAxisCount: columns,
                 crossAxisSpacing: 12,
                 mainAxisSpacing: 12,
-                mainAxisExtent: columns == 1 ? 520 : 430),
+                mainAxisExtent: columns == 3 ? 430 : 344),
             delegate: SliverChildBuilderDelegate((context, index) {
               final product = visible[index];
               final saved = widget.savedIds.contains(product.id);
@@ -197,7 +239,7 @@ class _ShopScreenState extends State<ShopScreen> {
                       ]),
                       Expanded(
                           child: Padding(
-                        padding: const EdgeInsets.all(16),
+                        padding: const EdgeInsets.fromLTRB(12, 11, 12, 10),
                         child: Column(
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
@@ -209,41 +251,43 @@ class _ShopScreenState extends State<ShopScreen> {
                                         fontSize: 9,
                                         fontWeight: FontWeight.w800))
                               ]),
-                              const SizedBox(height: 12),
+                              const SizedBox(height: 8),
                               Text(product.brand,
                                   style: const TextStyle(
-                                      fontSize: 8,
+                                      fontSize: 7,
                                       fontWeight: FontWeight.w700,
                                       letterSpacing: .8)),
-                              const SizedBox(height: 5),
+                              const SizedBox(height: 3),
                               Text(product.name,
                                   maxLines: 1,
                                   overflow: TextOverflow.ellipsis,
                                   style: const TextStyle(
-                                      fontSize: 15,
+                                      fontSize: 12,
                                       fontWeight: FontWeight.w700)),
-                              const SizedBox(height: 6),
+                              const SizedBox(height: 4),
                               Text(product.ingredients.take(2).join(' · '),
                                   style: const TextStyle(
-                                      color: AppColors.muted, fontSize: 10)),
+                                      color: AppColors.muted, fontSize: 8)),
                               const Spacer(),
                               Row(children: [
-                                Expanded(
-                                    child: TextButton.icon(
-                                        onPressed: () =>
-                                            widget.onCompare(product),
-                                        icon: Icon(
-                                            compared
-                                                ? Icons.check
-                                                : Icons.compare_arrows,
-                                            size: 16),
-                                        label:
-                                            Text(compared ? '비교 담김' : '비교'))),
-                                Expanded(
-                                    child: FilledButton(
-                                        onPressed: () =>
-                                            widget.onOpenProduct(product),
-                                        child: const Text('상세 보기'))),
+                                IconButton(
+                                    visualDensity: VisualDensity.compact,
+                                    onPressed: () => widget.onCompare(product),
+                                    tooltip: compared ? '비교 해제' : '비교 담기',
+                                    icon: Icon(
+                                        compared
+                                            ? Icons.check_rounded
+                                            : Icons.compare_arrows_rounded,
+                                        size: 16)),
+                                const Spacer(),
+                                IconButton(
+                                    visualDensity: VisualDensity.compact,
+                                    onPressed: () =>
+                                        widget.onOpenProduct(product),
+                                    tooltip: '상세 보기',
+                                    icon: const Icon(
+                                        Icons.arrow_outward_rounded,
+                                        size: 17)),
                               ]),
                             ]),
                       )),
@@ -254,5 +298,63 @@ class _ShopScreenState extends State<ShopScreen> {
         }),
       ),
     ]);
+  }
+}
+
+class _ShopCategoryTab extends StatelessWidget {
+  const _ShopCategoryTab({
+    required this.label,
+    required this.icon,
+    required this.selected,
+    required this.onTap,
+  });
+
+  final String label;
+  final IconData icon;
+  final bool selected;
+  final VoidCallback onTap;
+
+  @override
+  Widget build(BuildContext context) {
+    final tint = selected ? AppColors.berry : AppColors.ink;
+    return Semantics(
+      button: true,
+      selected: selected,
+      label: '$label 제품 보기',
+      child: InkWell(
+        onTap: onTap,
+        borderRadius: BorderRadius.circular(18),
+        child: SizedBox(
+          width: 74,
+          child: Column(mainAxisSize: MainAxisSize.min, children: [
+            Container(
+              width: 42,
+              height: 42,
+              alignment: Alignment.center,
+              decoration: BoxDecoration(
+                color: selected ? AppColors.berry.withValues(alpha: .09) : null,
+                shape: BoxShape.circle,
+              ),
+              child: Icon(icon, color: tint, size: 23),
+            ),
+            const SizedBox(height: 5),
+            Text(label,
+                overflow: TextOverflow.ellipsis,
+                style: TextStyle(
+                    color: tint, fontSize: 10, fontWeight: FontWeight.w700)),
+            const SizedBox(height: 7),
+            AnimatedContainer(
+              duration: const Duration(milliseconds: 180),
+              width: selected ? 36 : 28,
+              height: 3,
+              decoration: BoxDecoration(
+                color: selected ? AppColors.berry : AppColors.line,
+                borderRadius: BorderRadius.circular(99),
+              ),
+            ),
+          ]),
+        ),
+      ),
+    );
   }
 }

@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'dart:ui';
 
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_core/firebase_core.dart';
@@ -11,6 +12,7 @@ import '../theme.dart';
 import '../widgets/brand_widgets.dart';
 import '../widgets/product_search_delegate.dart';
 import 'compare_screen.dart';
+import 'commerce_screen.dart';
 import 'discover_screen.dart';
 import 'home_screen.dart';
 import 'my_skin_screen.dart';
@@ -115,6 +117,50 @@ class _AppShellState extends State<AppShell> {
                   onCompare: () => toggleCompare(product),
                   initiallySaved: appState.savedIds.contains(product.id),
                   onToggleSaved: () => toggleSaved(product),
+                  onAddToCart: () {
+                    appState.addToCart(product);
+                    ScaffoldMessenger.of(context).showSnackBar(
+                        const SnackBar(content: Text('장바구니에 담았어요.')));
+                  },
+                  onBuyNow: () => _openCheckout([product]),
+                )));
+  }
+
+  void _openCart() {
+    Navigator.push(
+        context,
+        MaterialPageRoute(
+            builder: (_) => CartScreen(
+                  products: appState.cartProducts,
+                  onRemove: appState.removeFromCart,
+                  onCheckout: _openCheckout,
+                )));
+  }
+
+  void _openCheckout(List<BeautyProduct> items) {
+    if (items.isEmpty) return;
+    final order = appState.checkout(items);
+    Navigator.push(
+        context,
+        MaterialPageRoute(
+            builder: (routeContext) => DeliveryStatusScreen(
+                  order: order,
+                  onAdvance: () => appState.advanceDelivery(order.id),
+                  onDone: () {
+                    Navigator.pop(routeContext);
+                    setState(() => currentIndex = 3);
+                  },
+                )));
+  }
+
+  void _openOrder(PurchaseOrder order) {
+    Navigator.push(
+        context,
+        MaterialPageRoute(
+            builder: (routeContext) => DeliveryStatusScreen(
+                  order: order,
+                  onAdvance: () => appState.advanceDelivery(order.id),
+                  onDone: () => Navigator.pop(routeContext),
                 )));
   }
 
@@ -170,42 +216,46 @@ class _AppShellState extends State<AppShell> {
           InputDecoration fieldDecoration({
             required String hint,
             required IconData icon,
-          }) => InputDecoration(
-            hintText: hint,
-            hintStyle: const TextStyle(
-              color: Color(0xFF9A98A8),
-              fontSize: 13,
-              fontWeight: FontWeight.w500,
-            ),
-            prefixIcon: Icon(icon, color: AppColors.fuchsia, size: 18),
-            filled: true,
-            fillColor: const Color(0xFFF8F7FC),
-            contentPadding: const EdgeInsets.symmetric(vertical: 14),
-            border: OutlineInputBorder(
-              borderRadius: BorderRadius.circular(14),
-              borderSide: BorderSide.none,
-            ),
-            enabledBorder: OutlineInputBorder(
-              borderRadius: BorderRadius.circular(14),
-              borderSide: const BorderSide(color: Color(0xFFEBE9F4)),
-            ),
-            focusedBorder: OutlineInputBorder(
-              borderRadius: BorderRadius.circular(14),
-              borderSide: const BorderSide(color: AppColors.fuchsia, width: 1.4),
-            ),
-          );
+          }) =>
+              InputDecoration(
+                hintText: hint,
+                hintStyle: const TextStyle(
+                  color: Color(0xFF9A98A8),
+                  fontSize: 13,
+                  fontWeight: FontWeight.w500,
+                ),
+                prefixIcon: Icon(icon, color: AppColors.fuchsia, size: 18),
+                filled: true,
+                fillColor: const Color(0xFFF8F7FC),
+                contentPadding: const EdgeInsets.symmetric(vertical: 14),
+                border: OutlineInputBorder(
+                  borderRadius: BorderRadius.circular(14),
+                  borderSide: BorderSide.none,
+                ),
+                enabledBorder: OutlineInputBorder(
+                  borderRadius: BorderRadius.circular(14),
+                  borderSide: const BorderSide(color: Color(0xFFEBE9F4)),
+                ),
+                focusedBorder: OutlineInputBorder(
+                  borderRadius: BorderRadius.circular(14),
+                  borderSide:
+                      const BorderSide(color: AppColors.fuchsia, width: 1.4),
+                ),
+              );
 
           return Dialog(
             backgroundColor: Colors.transparent,
             elevation: 0,
-            insetPadding: const EdgeInsets.symmetric(horizontal: 20, vertical: 28),
+            insetPadding:
+                const EdgeInsets.symmetric(horizontal: 20, vertical: 28),
             child: ConstrainedBox(
               constraints: const BoxConstraints(maxWidth: 420),
               child: Container(
                 decoration: BoxDecoration(
                   color: const Color(0xFFFFFEFF),
                   borderRadius: BorderRadius.circular(28),
-                  border: Border.all(color: Colors.white.withValues(alpha: .85)),
+                  border:
+                      Border.all(color: Colors.white.withValues(alpha: .85)),
                   boxShadow: const [
                     BoxShadow(
                       color: Color(0x331E1740),
@@ -275,7 +325,8 @@ class _AppShellState extends State<AppShell> {
                                 await FirebaseAuth.instance
                                     .signInWithRedirect(GoogleAuthProvider());
                               } on FirebaseAuthException catch (error) {
-                                if (dialogContext.mounted) _showAuthError(error);
+                                if (dialogContext.mounted)
+                                  _showAuthError(error);
                               }
                             },
                             icon: Container(
@@ -325,7 +376,8 @@ class _AppShellState extends State<AppShell> {
                           controller: name,
                           textCapitalization: TextCapitalization.words,
                           decoration: fieldDecoration(
-                              hint: '이름 또는 닉네임', icon: Icons.person_outline_rounded),
+                              hint: '이름 또는 닉네임',
+                              icon: Icons.person_outline_rounded),
                         ),
                         const SizedBox(height: 10),
                       ],
@@ -352,7 +404,8 @@ class _AppShellState extends State<AppShell> {
                               _showAccountRecoveryDialog();
                             },
                             style: TextButton.styleFrom(
-                              padding: const EdgeInsets.symmetric(horizontal: 4),
+                              padding:
+                                  const EdgeInsets.symmetric(horizontal: 4),
                               minimumSize: Size.zero,
                               tapTargetSize: MaterialTapTargetSize.shrinkWrap,
                             ),
@@ -363,14 +416,17 @@ class _AppShellState extends State<AppShell> {
                                     fontWeight: FontWeight.w700)),
                           ),
                           const Text(' · ',
-                              style: TextStyle(color: AppColors.muted, fontSize: 10)),
+                              style: TextStyle(
+                                  color: AppColors.muted, fontSize: 10)),
                           TextButton(
                             onPressed: () {
                               Navigator.pop(dialogContext);
-                              _showAccountRecoveryDialog(startWithPassword: true);
+                              _showAccountRecoveryDialog(
+                                  startWithPassword: true);
                             },
                             style: TextButton.styleFrom(
-                              padding: const EdgeInsets.symmetric(horizontal: 4),
+                              padding:
+                                  const EdgeInsets.symmetric(horizontal: 4),
                               minimumSize: Size.zero,
                               tapTargetSize: MaterialTapTargetSize.shrinkWrap,
                             ),
@@ -388,8 +444,12 @@ class _AppShellState extends State<AppShell> {
                         child: FilledButton(
                           onPressed: () => Navigator.pop(
                             dialogContext,
-                            (email.text.trim(), name.text.trim(), password.text,
-                                isSignUp),
+                            (
+                              email.text.trim(),
+                              name.text.trim(),
+                              password.text,
+                              isSignUp
+                            ),
                           ),
                           style: FilledButton.styleFrom(
                             backgroundColor: AppColors.fuchsia,
@@ -413,7 +473,8 @@ class _AppShellState extends State<AppShell> {
                               isSignUp = !isSignUp;
                             }),
                             style: TextButton.styleFrom(
-                              padding: const EdgeInsets.symmetric(horizontal: 6),
+                              padding:
+                                  const EdgeInsets.symmetric(horizontal: 6),
                               minimumSize: Size.zero,
                               tapTargetSize: MaterialTapTargetSize.shrinkWrap,
                             ),
@@ -468,7 +529,8 @@ class _AppShellState extends State<AppShell> {
     password.dispose();
   }
 
-  Future<void> _showAccountRecoveryDialog({bool startWithPassword = false}) async {
+  Future<void> _showAccountRecoveryDialog(
+      {bool startWithPassword = false}) async {
     final email = TextEditingController();
     var isPasswordReset = startWithPassword;
 
@@ -568,7 +630,8 @@ class _AppShellState extends State<AppShell> {
                         if (mounted) {
                           ScaffoldMessenger.of(this.context).showSnackBar(
                             const SnackBar(
-                                content: Text('등록된 이메일이라면 비밀번호 재설정 링크가 발송됩니다.')),
+                                content:
+                                    Text('등록된 이메일이라면 비밀번호 재설정 링크가 발송됩니다.')),
                           );
                         }
                       } on FirebaseAuthException catch (error) {
@@ -615,6 +678,37 @@ class _AppShellState extends State<AppShell> {
     );
   }
 
+  PreferredSizeWidget _buildShopAppBar() => AppBar(
+        toolbarHeight: 84,
+        backgroundColor: AppColors.surface,
+        centerTitle: true,
+        leadingWidth: 118,
+        leading: Row(children: [
+          IconButton(
+              tooltip: '메뉴',
+              onPressed: () => ScaffoldMessenger.of(context)
+                  .showSnackBar(const SnackBar(content: Text('메뉴는 준비 중이에요.'))),
+              icon: const Icon(Icons.menu_rounded, size: 27)),
+          IconButton(
+              tooltip: '검색',
+              onPressed: openSearch,
+              icon: const Icon(Icons.search_rounded, size: 25)),
+        ]),
+        title: const Icon(Icons.local_florist_outlined,
+            color: AppColors.fuchsia, size: 32),
+        actions: [
+          IconButton(
+              tooltip: '저장한 제품',
+              onPressed: () => setState(() => currentIndex = 3),
+              icon: const Icon(Icons.favorite_border_rounded, size: 25)),
+          IconButton(
+              onPressed: _openCart,
+              tooltip: '장바구니',
+              icon: const Icon(Icons.shopping_bag_outlined, size: 24)),
+          const SizedBox(width: 8),
+        ],
+      );
+
   @override
   Widget build(BuildContext context) {
     final pages = [
@@ -641,131 +735,208 @@ class _AppShellState extends State<AppShell> {
           recentIds: appState.recentIds,
           onEditProfile: editProfile,
           onOpenProduct: openProduct,
-          onToggleSave: toggleSaved),
+          onToggleSave: toggleSaved,
+          orders: appState.orders,
+          onOpenOrder: _openOrder),
     ];
 
     return Scaffold(
       extendBody: true,
-      appBar: AppBar(
-        toolbarHeight: 68,
-        titleSpacing: 20,
-        title: const BrandLogo(),
-        actions: [
-          IconButton(
-              onPressed: openSearch,
-              icon: const Icon(Icons.search_rounded),
-              tooltip: '검색'),
-          Stack(children: [
-            IconButton(
-                onPressed: () => ScaffoldMessenger.of(context).showSnackBar(
-                    const SnackBar(content: Text('장바구니가 비어 있어요.'))),
-                tooltip: '장바구니',
-                icon: const Icon(Icons.shopping_bag_outlined)),
-            const Positioned(
-                right: 7,
-                top: 8,
-                child: CircleAvatar(
-                    radius: 7,
-                    backgroundColor: AppColors.ink,
-                    child: Text('0',
-                        style: TextStyle(color: Colors.white, fontSize: 7)))),
-          ]),
-          IconButton(
-              key: const Key('auth-button'),
-              onPressed: showAuth,
-              tooltip: appState.isSignedIn ? '로그아웃' : '로그인',
-              icon: appState.isSignedIn
-                  ? CircleAvatar(
-                      radius: 13,
-                      backgroundColor: AppColors.fuchsia,
-                      child: Text(
-                          appState.userName.substring(0, 1).toUpperCase(),
-                          style: const TextStyle(
-                              color: Colors.white,
-                              fontSize: 11,
-                              fontWeight: FontWeight.w800)),
-                    )
-                  : const Icon(Icons.login_rounded)),
-          const SizedBox(width: 6),
-        ],
-      ),
-      body: IndexedStack(index: currentIndex, children: pages),
-      floatingActionButton: currentIndex == 0
-          ? FloatingActionButton.small(
-              key: const Key('pharmacist-chat-fab'),
-              heroTag: 'pharmacist-chat-home',
-              onPressed: openPharmacistChat,
-              tooltip: 'AI 약사 챗봇',
-              backgroundColor: AppColors.fuchsia,
-              foregroundColor: Colors.white,
-              elevation: 2,
-              child: const Icon(Icons.chat_bubble_outline_rounded, size: 19),
-            )
-          : FloatingActionButton.extended(
-              key: const Key('pharmacist-chat-fab'),
-              heroTag: 'pharmacist-chat',
-              onPressed: openPharmacistChat,
-              backgroundColor: AppColors.fuchsia,
-              foregroundColor: Colors.white,
-              elevation: 2,
-              icon: const Icon(Icons.chat_bubble_outline_rounded, size: 19),
-              label: const Text('AI 약사 챗봇',
-                  style: TextStyle(fontSize: 11, fontWeight: FontWeight.w700)),
-            ),
-      bottomNavigationBar: SafeArea(
-        minimum: const EdgeInsets.fromLTRB(12, 0, 12, 10),
-        child: Container(
-          decoration: BoxDecoration(
-            color: AppColors.surface,
-            borderRadius: BorderRadius.circular(20),
-            border: Border.all(color: AppColors.line),
-          ),
-          child: ClipRRect(
-            borderRadius: BorderRadius.circular(20),
-            child: NavigationBar(
-              selectedIndex: currentIndex,
-              onDestinationSelected: (index) =>
-                  setState(() => currentIndex = index),
-              height: 64,
-              backgroundColor: AppColors.surface,
-              surfaceTintColor: Colors.transparent,
-              indicatorColor: AppColors.blush,
-              indicatorShape: RoundedRectangleBorder(
-                borderRadius: BorderRadius.circular(12),
-              ),
-              labelBehavior: NavigationDestinationLabelBehavior.alwaysShow,
-              labelTextStyle:
-                  WidgetStateProperty.resolveWith((states) => TextStyle(
-                        fontSize: 10,
-                        fontWeight: states.contains(WidgetState.selected)
-                            ? FontWeight.w700
-                            : FontWeight.w600,
-                        color: states.contains(WidgetState.selected)
-                            ? AppColors.ink
-                            : AppColors.muted,
-                      )),
-              destinations: const [
-                NavigationDestination(
-                    icon: Icon(Icons.home_outlined),
-                    selectedIcon: Icon(Icons.home_rounded),
-                    label: 'HOME'),
-                NavigationDestination(
-                    icon: Icon(Icons.grid_view_outlined),
-                    selectedIcon: Icon(Icons.grid_view_rounded),
-                    label: 'SHOP'),
-                NavigationDestination(
-                    icon: Icon(Icons.science_outlined),
-                    selectedIcon: Icon(Icons.science_rounded),
-                    label: 'TREND'),
-                NavigationDestination(
-                    icon: Icon(Icons.person_outline_rounded),
-                    selectedIcon: Icon(Icons.person_rounded),
-                    label: 'MY SKIN'),
+      appBar: currentIndex == 1
+          ? _buildShopAppBar()
+          : AppBar(
+              toolbarHeight: 68,
+              titleSpacing: 20,
+              title: const BrandLogo(),
+              actions: [
+                IconButton(
+                    onPressed: openSearch,
+                    icon: const Icon(Icons.search_rounded),
+                    tooltip: '검색'),
+                Stack(children: [
+                  IconButton(
+                      onPressed: () => ScaffoldMessenger.of(context)
+                          .showSnackBar(
+                              const SnackBar(content: Text('장바구니가 비어 있어요.'))),
+                      tooltip: '장바구니',
+                      icon: const Icon(Icons.shopping_bag_outlined)),
+                  const Positioned(
+                      right: 7,
+                      top: 8,
+                      child: CircleAvatar(
+                          radius: 7,
+                          backgroundColor: AppColors.ink,
+                          child: Text('0',
+                              style: TextStyle(
+                                  color: Colors.white, fontSize: 7)))),
+                ]),
+                IconButton(
+                    key: const Key('auth-button'),
+                    onPressed: showAuth,
+                    tooltip: appState.isSignedIn ? '로그아웃' : '로그인',
+                    icon: appState.isSignedIn
+                        ? CircleAvatar(
+                            radius: 13,
+                            backgroundColor: AppColors.fuchsia,
+                            child: Text(
+                                appState.userName.substring(0, 1).toUpperCase(),
+                                style: const TextStyle(
+                                    color: Colors.white,
+                                    fontSize: 11,
+                                    fontWeight: FontWeight.w800)),
+                          )
+                        : const Icon(Icons.login_rounded)),
+                const SizedBox(width: 6),
               ],
+            ),
+      body: IndexedStack(index: currentIndex, children: pages),
+      floatingActionButton: _PharmacistChatFab(onPressed: openPharmacistChat),
+      bottomNavigationBar: SafeArea(
+        minimum: const EdgeInsets.fromLTRB(12, 0, 12, 12),
+        child: ClipRRect(
+          borderRadius: BorderRadius.circular(26),
+          child: BackdropFilter(
+            filter: ImageFilter.blur(sigmaX: 18, sigmaY: 18),
+            child: Container(
+              decoration: BoxDecoration(
+                color: AppColors.surface.withValues(alpha: .72),
+                borderRadius: BorderRadius.circular(26),
+                border: Border.all(color: Colors.white.withValues(alpha: .78)),
+                boxShadow: const [
+                  BoxShadow(
+                    color: Color(0x1A17171B),
+                    blurRadius: 24,
+                    offset: Offset(0, 10),
+                  ),
+                ],
+              ),
+              child: NavigationBar(
+                selectedIndex: currentIndex,
+                onDestinationSelected: (index) =>
+                    setState(() => currentIndex = index),
+                height: 68,
+                backgroundColor: Colors.transparent,
+                surfaceTintColor: Colors.transparent,
+                indicatorColor: AppColors.blush.withValues(alpha: .78),
+                indicatorShape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(16),
+                ),
+                labelBehavior: NavigationDestinationLabelBehavior.alwaysShow,
+                labelTextStyle:
+                    WidgetStateProperty.resolveWith((states) => TextStyle(
+                          fontSize: 10,
+                          fontWeight: states.contains(WidgetState.selected)
+                              ? FontWeight.w700
+                              : FontWeight.w600,
+                          color: states.contains(WidgetState.selected)
+                              ? AppColors.fuchsia
+                              : AppColors.muted,
+                        )),
+                destinations: const [
+                  NavigationDestination(
+                      icon: Icon(Icons.home_outlined),
+                      selectedIcon: Icon(Icons.home_rounded),
+                      label: 'HOME'),
+                  NavigationDestination(
+                      icon: Icon(Icons.grid_view_outlined),
+                      selectedIcon: Icon(Icons.grid_view_rounded),
+                      label: 'SHOP'),
+                  NavigationDestination(
+                      icon: Icon(Icons.science_outlined),
+                      selectedIcon: Icon(Icons.science_rounded),
+                      label: 'TREND'),
+                  NavigationDestination(
+                      icon: Icon(Icons.person_outline_rounded),
+                      selectedIcon: Icon(Icons.person_rounded),
+                      label: 'MY SKIN'),
+                ],
+              ),
             ),
           ),
         ),
       ),
     );
   }
+}
+
+class _PharmacistChatFab extends StatelessWidget {
+  const _PharmacistChatFab({required this.onPressed});
+  final VoidCallback onPressed;
+
+  @override
+  Widget build(BuildContext context) => Semantics(
+        button: true,
+        label: 'AI 약사 챗봇 열기',
+        child: Row(mainAxisSize: MainAxisSize.min, children: [
+          ClipRRect(
+            borderRadius: BorderRadius.circular(18),
+            child: BackdropFilter(
+              filter: ImageFilter.blur(sigmaX: 12, sigmaY: 12),
+              child: Container(
+                height: 44,
+                padding: const EdgeInsets.symmetric(horizontal: 17),
+                alignment: Alignment.center,
+                decoration: BoxDecoration(
+                  color: Colors.white.withValues(alpha: .68),
+                  borderRadius: BorderRadius.circular(18),
+                  border:
+                      Border.all(color: Colors.white.withValues(alpha: .88)),
+                  boxShadow: const [
+                    BoxShadow(
+                        color: Color(0x1A17171B),
+                        blurRadius: 16,
+                        offset: Offset(0, 7))
+                  ],
+                ),
+                child: const Text('AI Pharmacist',
+                    style:
+                        TextStyle(fontSize: 11, fontWeight: FontWeight.w700)),
+              ),
+            ),
+          ),
+          const SizedBox(width: 8),
+          Material(
+            color: Colors.transparent,
+            shape: const CircleBorder(),
+            child: InkWell(
+              key: const Key('pharmacist-chat-fab'),
+              onTap: onPressed,
+              customBorder: const CircleBorder(),
+              child: Ink(
+                width: 60,
+                height: 60,
+                decoration: BoxDecoration(
+                  color: Colors.white.withValues(alpha: .80),
+                  shape: BoxShape.circle,
+                  border: Border.all(color: Colors.white, width: 1.4),
+                  boxShadow: const [
+                    BoxShadow(
+                        color: Color(0x2417171B),
+                        blurRadius: 18,
+                        offset: Offset(0, 8))
+                  ],
+                ),
+                child: Stack(clipBehavior: Clip.none, children: [
+                  const Center(
+                      child: Icon(Icons.chat_bubble_outline_rounded,
+                          size: 28, color: AppColors.ink)),
+                  Positioned(
+                    right: -2,
+                    top: -2,
+                    child: Container(
+                      width: 24,
+                      height: 24,
+                      alignment: Alignment.center,
+                      decoration: const BoxDecoration(
+                          color: AppColors.fuchsia, shape: BoxShape.circle),
+                      child: const Icon(Icons.auto_awesome_rounded,
+                          size: 13, color: Colors.white),
+                    ),
+                  ),
+                ]),
+              ),
+            ),
+          ),
+        ]),
+      );
 }

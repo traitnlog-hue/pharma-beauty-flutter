@@ -78,10 +78,10 @@ class _PharmacistChatScreenState extends State<PharmacistChatScreen> {
           toolbarHeight: 76,
           titleSpacing: 4,
           title: const Row(children: [
-            _LiaAvatar(radius: 23),
+            _RemiAvatar(radius: 23),
             SizedBox(width: 11),
             Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
-              Text('리아 AI 약사',
+              Text('레미 AI 약사',
                   style: TextStyle(fontSize: 16, fontWeight: FontWeight.w700)),
               SizedBox(height: 2),
               Row(children: [
@@ -183,8 +183,8 @@ class _PharmacistChatScreenState extends State<PharmacistChatScreen> {
       );
 }
 
-class _LiaAvatar extends StatelessWidget {
-  const _LiaAvatar({required this.radius});
+class _RemiAvatar extends StatelessWidget {
+  const _RemiAvatar({required this.radius});
   final double radius;
 
   @override
@@ -210,7 +210,7 @@ class _MessageBubble extends StatelessWidget {
           crossAxisAlignment: CrossAxisAlignment.end,
           children: [
             if (message.fromPharmacist) ...[
-              const _LiaAvatar(radius: 16),
+              const _RemiAvatar(radius: 16),
               const SizedBox(width: 8),
             ],
             Flexible(
@@ -257,7 +257,7 @@ class _TypingBubble extends StatelessWidget {
   Widget build(BuildContext context) => const Padding(
         padding: EdgeInsets.only(bottom: 14),
         child: Row(children: [
-          _LiaAvatar(radius: 16),
+          _RemiAvatar(radius: 16),
           SizedBox(width: 8),
           DecoratedBox(
             decoration: BoxDecoration(
