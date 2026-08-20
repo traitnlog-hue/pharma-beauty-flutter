@@ -9,10 +9,25 @@ class PharmacistChatService {
     '민감 피부 루틴',
     '레티날 사용법',
     '사용 순서',
+    '화장품 법령 체크',
   ];
 
   String answerFor(String question) {
     final query = question.toLowerCase();
+    if (query.contains('법령') ||
+        query.contains('화장품법') ||
+        query.contains('시행령') ||
+        query.contains('시행규칙')) {
+      return '화장품 규정은 ① 화장품법(기본 원칙) ② 시행령(법의 위임사항) ③ 시행규칙(등록·표시·광고의 세부 절차) ④ 식약처 고시로 나눠 확인해요. LEXEM의 Trend 탭 「화장품 규정 체크」에서 현행본 연결과 핵심 적용 범위를 볼 수 있어요. 개별 사업·표시 문구의 적법성 판단은 식약처 또는 법률 전문가 확인이 필요합니다.';
+    }
+    if (query.contains('광고') || query.contains('표시') || query.contains('효능')) {
+      return '화장품의 표시·광고는 「화장품법」과 「화장품 표시·광고 실증에 관한 규정」을 함께 확인해야 해요. 효능을 표현하려면 이를 뒷받침할 실증자료가 필요한지 검토해야 하며, 의약품처럼 오인될 수 있는 표현은 특히 주의하세요. Trend 탭의 규정 카드에서 공식 현행본을 열어볼 수 있어요.';
+    }
+    if (query.contains('안전기준') ||
+        query.contains('금지') ||
+        query.contains('제한')) {
+      return '원료의 사용 가능 여부와 제한은 「화장품 안전기준 등에 관한 규정」을 우선 확인하세요. 금지·제한 원료와 사용기준은 수시로 개정될 수 있으므로, LEXEM 안내는 참고용으로 보고 제품 출시·제조 판단 전에는 국가법령정보센터 현행본과 식약처 고시를 다시 확인해야 해요.';
+    }
     if (query.contains('임신') || query.contains('수유')) {
       return '임신·수유 중에는 레티노이드 계열 사용 전 담당 의료진이나 약사에게 먼저 확인해 주세요. 현재 복용약과 피부 상태까지 함께 봐야 안전해요.';
     }

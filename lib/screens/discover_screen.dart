@@ -1,6 +1,10 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
 
 import '../catalog.dart';
+import '../features/cosmetics_law/cosmetics_law_service.dart';
+import '../features/ingredient_dictionary/ingredient_dictionary_service.dart';
 import '../models.dart';
 import '../theme.dart';
 import 'routine_builder_screen.dart';
@@ -17,6 +21,25 @@ class DiscoverScreen extends StatefulWidget {
 class _DiscoverScreenState extends State<DiscoverScreen> {
   String query = '';
   String category = 'ALL';
+  final IngredientDictionaryService _dictionaryService =
+      const IngredientDictionaryService();
+  final CosmeticsLawService _cosmeticsLawService = const CosmeticsLawService();
+  Timer? _searchDebounce;
+  List<IngredientInfo> _officialResults = const [];
+  bool _isSearchingOfficial = false;
+  CosmeticsLawStatus? _cosmeticsLawStatus;
+
+  @override
+  void initState() {
+    super.initState();
+    _loadCosmeticsLawStatus();
+  }
+
+  Future<void> _loadCosmeticsLawStatus() async {
+    final status = await _cosmeticsLawService.checkCurrentLaw();
+    if (!mounted || status == null) return;
+    setState(() => _cosmeticsLawStatus = status);
+  }
 
   static const trend =
       <String, ({int score, int delta, String signal, Color color})>{
@@ -61,9 +84,38 @@ class _DiscoverScreenState extends State<DiscoverScreen> {
         return matchesQuery && (category == 'ALL' || item.category == category);
       }).toList();
 
-  List<IngredientInfo> get searchResults => query.trim().isEmpty
-      ? const []
-      : ingredients.where(_matchesQuery).toList();
+  List<IngredientInfo> get searchResults {
+    if (query.trim().isEmpty) return const [];
+    final values = [...ingredients.where(_matchesQuery), ..._officialResults];
+    final seen = <String>{};
+    return values
+        .where((item) => seen.add('${item.name}|${item.englishName}'))
+        .toList(growable: false);
+  }
+
+  @override
+  void dispose() {
+    _searchDebounce?.cancel();
+    super.dispose();
+  }
+
+  void _onSearch(String value) {
+    setState(() {
+      query = value;
+      _officialResults = const [];
+      _isSearchingOfficial = value.trim().isNotEmpty;
+    });
+    _searchDebounce?.cancel();
+    if (value.trim().isEmpty) return;
+    _searchDebounce = Timer(const Duration(milliseconds: 360), () async {
+      final results = await _dictionaryService.search(value);
+      if (!mounted || value != query) return;
+      setState(() {
+        _officialResults = results;
+        _isSearchingOfficial = false;
+      });
+    });
+  }
 
   bool _matchesQuery(IngredientInfo item) {
     final normalized = query.trim().toLowerCase();
@@ -81,7 +133,13 @@ class _DiscoverScreenState extends State<DiscoverScreen> {
   }
 
   void showIngredient(IngredientInfo ingredient) {
-    final meta = trend[ingredient.name]!;
+    final meta = trend[ingredient.name] ??
+        (
+          score: 0,
+          delta: 0,
+          signal: 'MFDS INGREDIENT DB',
+          color: AppColors.ballerina,
+        );
     showModalBottomSheet<void>(
       context: context,
       isScrollControlled: true,
@@ -201,7 +259,8 @@ class _DiscoverScreenState extends State<DiscoverScreen> {
           child: _TrendHero(
               query: query,
               results: searchResults,
-              onSearch: (value) => setState(() => query = value),
+              isSearching: _isSearchingOfficial,
+              onSearch: _onSearch,
               onOpen: showIngredient)),
       SliverToBoxAdapter(
           child: Padding(
@@ -303,6 +362,7 @@ class _DiscoverScreenState extends State<DiscoverScreen> {
                   MaterialPageRoute(
                       builder: (_) => const RoutineBuilderScreen())))),
       const SliverToBoxAdapter(child: _TrendReports()),
+      SliverToBoxAdapter(child: _CosmeticLawWatch(status: _cosmeticsLawStatus)),
       const SliverToBoxAdapter(child: SizedBox(height: 120)),
     ]);
   }

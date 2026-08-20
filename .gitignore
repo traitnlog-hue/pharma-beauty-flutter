@@ -24,6 +24,7 @@ android/key.properties
 /coverage/
 /dist/
 worker/.wrangler/
+worker/node_modules/
 android/.gradle/
 android/local.properties
 ios/Flutter/ephemeral/

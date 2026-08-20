@@ -4,10 +4,12 @@ class _TrendHero extends StatelessWidget {
   const _TrendHero(
       {required this.query,
       required this.results,
+      required this.isSearching,
       required this.onSearch,
       required this.onOpen});
   final String query;
   final List<IngredientInfo> results;
+  final bool isSearching;
   final ValueChanged<String> onSearch;
   final ValueChanged<IngredientInfo> onOpen;
 
@@ -84,14 +86,21 @@ class _TrendHero extends StatelessWidget {
                         )
                       : Column(
                           children: [
-                            Align(
-                              alignment: Alignment.centerLeft,
-                              child: Text('성분 백과 검색 결과 ${results.length}개',
+                            Row(children: [
+                              Text('성분 백과 검색 결과 ${results.length}개',
                                   style: const TextStyle(
                                       color: AppColors.berry,
                                       fontSize: 11,
                                       fontWeight: FontWeight.w800)),
-                            ),
+                              if (isSearching) ...[
+                                const SizedBox(width: 8),
+                                const SizedBox(
+                                    width: 12,
+                                    height: 12,
+                                    child: CircularProgressIndicator(
+                                        strokeWidth: 2)),
+                              ],
+                            ]),
                             const SizedBox(height: 5),
                             for (final ingredient in results.take(4))
                               InkWell(
@@ -613,4 +622,215 @@ class _TrendReports extends StatelessWidget {
           ),
         )),
       );
+}
+
+class _CosmeticLawWatch extends StatelessWidget {
+  const _CosmeticLawWatch({this.status});
+
+  final CosmeticsLawStatus? status;
+
+  static const _references = [
+    _LawReference(
+      kind: 'LAW',
+      title: '화장품법',
+      detail: '화장품의 정의, 안전관리, 표시·광고의 기본 원칙',
+      url: 'https://www.law.go.kr/법령/화장품법',
+      color: AppColors.butter,
+    ),
+    _LawReference(
+      kind: 'ENFORCEMENT',
+      title: '화장품법 시행령',
+      detail: '법률에서 위임한 세부 기준과 행정 사항',
+      url: 'https://www.law.go.kr/lsStmdInfoP.do?ancYnChk=0&lsiSeq=234911',
+      color: AppColors.ballerina,
+    ),
+    _LawReference(
+      kind: 'RULE',
+      title: '화장품법 시행규칙',
+      detail: '등록, 표시·광고, 안전관리의 절차 기준',
+      url: 'https://www.law.go.kr/lsStmdInfoP.do?ancYnChk=0&lsiSeq=234911',
+      color: AppColors.mint,
+    ),
+    _LawReference(
+      kind: 'MFDS NOTICE',
+      title: '화장품 안전기준 등에 관한 규정',
+      detail: '금지·제한 원료 및 사용기준 확인',
+      url:
+          'https://www.law.go.kr/LSW/admRulInfoP.do?admRulSeq=2100000276068&chrClsCd=010201',
+      color: AppColors.blush,
+    ),
+    _LawReference(
+      kind: 'AD CLAIM',
+      title: '화장품 표시·광고 실증에 관한 규정',
+      detail: '효능 표현과 실증자료 검토 기준',
+      url:
+          'https://www.law.go.kr/LSW/admRulInfoP.do?admRulSeq=2100000192523&chrClsCd=010202&lsId=41277',
+      color: AppColors.oatmeal,
+    ),
+  ];
+
+  void _open(BuildContext context, _LawReference item) {
+    showModalBottomSheet<void>(
+      context: context,
+      backgroundColor: Colors.transparent,
+      builder: (context) => Container(
+        padding: const EdgeInsets.fromLTRB(24, 14, 24, 36),
+        decoration: const BoxDecoration(
+          color: AppColors.paper,
+          borderRadius: BorderRadius.vertical(top: Radius.circular(28)),
+        ),
+        child: Column(
+            mainAxisSize: MainAxisSize.min,
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Center(
+                  child: Container(
+                      width: 40,
+                      height: 4,
+                      decoration: BoxDecoration(
+                          color: AppColors.line,
+                          borderRadius: BorderRadius.circular(4)))),
+              const SizedBox(height: 24),
+              Text(item.kind,
+                  style: const TextStyle(
+                      color: AppColors.violet,
+                      fontSize: 10,
+                      fontWeight: FontWeight.w800,
+                      letterSpacing: 1.2)),
+              const SizedBox(height: 9),
+              Text(item.title,
+                  style: Theme.of(context).textTheme.headlineSmall),
+              const SizedBox(height: 12),
+              Text(item.detail,
+                  style: const TextStyle(
+                      color: AppColors.muted, fontSize: 14, height: 1.55)),
+              const SizedBox(height: 18),
+              Container(
+                width: double.infinity,
+                padding: const EdgeInsets.all(14),
+                decoration: BoxDecoration(
+                    color: AppColors.surface,
+                    borderRadius: BorderRadius.circular(16)),
+                child: SelectableText(item.url,
+                    style: const TextStyle(
+                        color: AppColors.berry,
+                        fontSize: 11,
+                        height: 1.45,
+                        fontWeight: FontWeight.w700)),
+              ),
+              const SizedBox(height: 14),
+              const Text('국가법령정보센터 현행본을 기준으로 최종 확인하세요. 이 안내는 법률 자문이 아닙니다.',
+                  style: TextStyle(
+                      color: AppColors.muted, fontSize: 11, height: 1.5)),
+            ]),
+      ),
+    );
+  }
+
+  @override
+  Widget build(BuildContext context) => Padding(
+        padding: const EdgeInsets.fromLTRB(20, 68, 20, 0),
+        child: Center(
+          child: ConstrainedBox(
+            constraints: const BoxConstraints(maxWidth: 1080),
+            child:
+                Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
+              const _ModernSectionHeader(
+                eyebrow: '04 · REGULATORY RADAR',
+                title: '화장품 규정 체크',
+                subtitle: '성분·광고·제품 콘텐츠를 보기 전에 확인할 핵심 법령과 식약처 고시',
+              ),
+              const SizedBox(height: 20),
+              Container(
+                padding: const EdgeInsets.all(16),
+                decoration: BoxDecoration(
+                    color: AppColors.deep,
+                    borderRadius: BorderRadius.circular(22)),
+                child: Row(children: [
+                  const Icon(Icons.gpp_good_outlined,
+                      color: AppColors.champagne),
+                  const SizedBox(width: 12),
+                  Expanded(
+                      child: Text(
+                          status == null
+                              ? '국가법령정보센터 현행본 기준으로 안내합니다. 연결 상태를 확인 중이에요.'
+                              : '${status!.source} 현행본과 연결됨 · 레미는 법령을 고정 지식으로 단정하지 않고 공식 원문을 기준으로 안내합니다.',
+                          style: const TextStyle(
+                              color: Colors.white,
+                              fontSize: 12,
+                              height: 1.45,
+                              fontWeight: FontWeight.w700))),
+                ]),
+              ),
+              const SizedBox(height: 12),
+              ..._references.map((item) => Material(
+                    color: Colors.transparent,
+                    child: InkWell(
+                      onTap: () => _open(context, item),
+                      borderRadius: BorderRadius.circular(18),
+                      child: Container(
+                        margin: const EdgeInsets.only(bottom: 9),
+                        padding: const EdgeInsets.symmetric(
+                            horizontal: 16, vertical: 14),
+                        decoration: BoxDecoration(
+                            color: AppColors.surface,
+                            borderRadius: BorderRadius.circular(18),
+                            border: Border.all(color: AppColors.line)),
+                        child: Row(children: [
+                          Container(
+                              width: 40,
+                              height: 40,
+                              alignment: Alignment.center,
+                              decoration: BoxDecoration(
+                                  color: item.color,
+                                  borderRadius: BorderRadius.circular(13)),
+                              child:
+                                  const Icon(Icons.policy_outlined, size: 19)),
+                          const SizedBox(width: 13),
+                          Expanded(
+                              child: Column(
+                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                  children: [
+                                Text(item.kind,
+                                    style: const TextStyle(
+                                        color: AppColors.violet,
+                                        fontSize: 9,
+                                        fontWeight: FontWeight.w800,
+                                        letterSpacing: .8)),
+                                const SizedBox(height: 3),
+                                Text(item.title,
+                                    style: const TextStyle(
+                                        fontSize: 14,
+                                        fontWeight: FontWeight.w800)),
+                                const SizedBox(height: 3),
+                                Text(item.detail,
+                                    style: const TextStyle(
+                                        color: AppColors.muted,
+                                        fontSize: 10,
+                                        height: 1.45)),
+                              ])),
+                          const Icon(Icons.north_east_rounded,
+                              size: 18, color: AppColors.berry),
+                        ]),
+                      ),
+                    ),
+                  )),
+            ]),
+          ),
+        ),
+      );
+}
+
+class _LawReference {
+  const _LawReference(
+      {required this.kind,
+      required this.title,
+      required this.detail,
+      required this.url,
+      required this.color});
+  final String kind;
+  final String title;
+  final String detail;
+  final String url;
+  final Color color;
 }

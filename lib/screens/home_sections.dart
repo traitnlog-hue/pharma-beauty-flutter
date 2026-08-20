@@ -1,9 +1,10 @@
 part of 'home_screen.dart';
 
 class _Hero extends StatefulWidget {
-  const _Hero({required this.onOpen});
+  const _Hero({required this.onOpen, required this.savedIds});
 
   final VoidCallback onOpen;
+  final Set<int> savedIds;
 
   @override
   State<_Hero> createState() => _HeroState();
@@ -11,22 +12,74 @@ class _Hero extends StatefulWidget {
 
 class _HeroState extends State<_Hero> {
   final controller = PageController();
+  final PurchaseTrendService _purchaseTrendService =
+      const PurchaseTrendService();
   Timer? timer;
   int selected = 0;
-  static const slides = [
-    ('이번 주, 레티날이\n빠르게 뜨고 있어요.', '탄력·피부결 검색량 상승 · 함께 쓰는 성분까지 확인'),
-    ('장벽 케어의 중심,\n세라마이드를 읽어요.', '건조한 날씨에 찾는 보습 성분 · 판테놀 궁합 확인'),
-    ('비타민C, 아침 루틴에\n다시 주목해요.', '칙칙함 케어 검색량 상승 · 자외선 차단과 함께'),
+  List<_WeeklySignal> slides = const [
+    _WeeklySignal(
+      kind: 'PURCHASE RANKING',
+      ingredient: '구매 순위',
+      title: '이번 주 구매 데이터를\n집계하고 있어요.',
+      subtitle: '결제 완료된 제품의 주요 성분이 순위에 반영됩니다.',
+      purchaseCount: 0,
+    ),
+    _WeeklySignal(
+      kind: 'INTEREST RANKING',
+      ingredient: '관심 순위',
+      title: '관심 제품 데이터를\n집계하고 있어요.',
+      subtitle: '저장한 제품의 성분 흐름을 다음 순위에 반영합니다.',
+      purchaseCount: 0,
+    ),
+    _WeeklySignal(
+      kind: 'AGE RANKING',
+      ingredient: '연령대 순위',
+      title: '연령대별 관심 데이터를\n준비하고 있어요.',
+      subtitle: '연령 정보는 동의한 회원의 익명 집계만 사용합니다.',
+      purchaseCount: 0,
+    ),
   ];
 
   @override
   void initState() {
     super.initState();
+    _loadPurchaseRanking();
     timer = Timer.periodic(const Duration(seconds: 5), (_) {
       if (!mounted) return;
       controller.animateToPage((selected + 1) % slides.length,
           duration: const Duration(milliseconds: 520),
           curve: Curves.easeOutCubic);
+    });
+  }
+
+  Future<void> _loadPurchaseRanking() async {
+    final ranking = await _purchaseTrendService.fetchWeeklyRanking();
+    if (!mounted || ranking == null || ranking.items.isEmpty) return;
+    setState(() {
+      selected = 0;
+      slides = [
+        _WeeklySignal(
+          kind: 'PURCHASE RANKING',
+          ingredient: ranking.items.first.ingredient,
+          title: '이번 주 구매 1위,\n${ranking.items.first.ingredient}을 읽어요.',
+          subtitle: '구매 완료 제품 ${ranking.items.first.purchaseCount}건에 포함된 주요 성분',
+          purchaseCount: ranking.items.first.purchaseCount,
+        ),
+        const _WeeklySignal(
+          kind: 'INTEREST RANKING',
+          ingredient: '관심 순위',
+          title: '관심 제품 데이터를\n집계하고 있어요.',
+          subtitle: '저장한 제품의 성분 흐름을 다음 순위에 반영합니다.',
+          purchaseCount: 0,
+        ),
+        const _WeeklySignal(
+          kind: 'AGE RANKING',
+          ingredient: '연령대 순위',
+          title: '연령대별 관심 데이터를\n준비하고 있어요.',
+          subtitle: '연령 정보는 동의한 회원의 익명 집계만 사용합니다.',
+          purchaseCount: 0,
+        ),
+      ];
     });
   }
 
@@ -62,144 +115,11 @@ class _HeroState extends State<_Hero> {
                         itemCount: slides.length,
                         onPageChanged: (index) =>
                             setState(() => selected = index),
-                        itemBuilder: (context, index) =>
-                            Stack(fit: StackFit.expand, children: [
-                          Image.asset(
-                            'assets/editorial/ingredient-trend-hero-editorial-v1.png',
-                            fit: BoxFit.cover,
-                            alignment: const Alignment(.55, 0),
-                          ),
-                          const DecoratedBox(
-                            decoration: BoxDecoration(
-                              gradient: LinearGradient(
-                                colors: [
-                                  Color(0xFF111115),
-                                  Color(0xE6111115),
-                                  Color(0x40493A9A),
-                                ],
-                                begin: Alignment.centerLeft,
-                                end: Alignment.centerRight,
-                              ),
-                            ),
-                          ),
-                          const DecoratedBox(
-                            decoration: BoxDecoration(
-                              gradient: LinearGradient(
-                                colors: [
-                                  Colors.transparent,
-                                  Color(0xD9111115),
-                                ],
-                                begin: Alignment.topCenter,
-                                end: Alignment.bottomCenter,
-                              ),
-                            ),
-                          ),
-                          Padding(
-                            padding: const EdgeInsets.all(20),
-                            child: Column(
-                              crossAxisAlignment: CrossAxisAlignment.start,
-                              children: [
-                                Row(
-                                  children: [
-                                    Container(
-                                      padding: const EdgeInsets.symmetric(
-                                          horizontal: 10, vertical: 7),
-                                      decoration: BoxDecoration(
-                                        color:
-                                            Colors.white.withValues(alpha: .12),
-                                        borderRadius: BorderRadius.circular(10),
-                                        border: Border.all(
-                                            color: Colors.white
-                                                .withValues(alpha: .18)),
-                                      ),
-                                      child: const Text(
-                                        'LIVE · INGREDIENT TREND',
-                                        style: TextStyle(
-                                          color: AppColors.ballerina,
-                                          fontSize: 9,
-                                          fontWeight: FontWeight.w700,
-                                          letterSpacing: .8,
-                                        ),
-                                      ),
-                                    ),
-                                    const Spacer(),
-                                    Text(
-                                      '0${index + 1} / 03',
-                                      style: TextStyle(
-                                        color: Colors.white,
-                                        fontSize: 9,
-                                        fontWeight: FontWeight.w700,
-                                      ),
-                                    ),
-                                  ],
-                                ),
-                                const Spacer(),
-                                Text(
-                                  slides[index].$1,
-                                  style: TextStyle(
-                                    color: Colors.white,
-                                    fontSize: 22,
-                                    height: 1.12,
-                                    fontWeight: FontWeight.w700,
-                                    letterSpacing: -.9,
-                                  ),
-                                ),
-                                const SizedBox(height: 8),
-                                Text(
-                                  slides[index].$2,
-                                  style: TextStyle(
-                                    color: Color(0xFFE8E6F7),
-                                    fontSize: 11,
-                                    height: 1.45,
-                                  ),
-                                ),
-                                const SizedBox(height: 10),
-                                Align(
-                                  alignment: Alignment.centerRight,
-                                  child: Container(
-                                    padding: const EdgeInsets.only(left: 12),
-                                    decoration: BoxDecoration(
-                                      color: Colors.white.withValues(alpha: .1),
-                                      borderRadius: BorderRadius.circular(20),
-                                      border: Border.all(
-                                        color:
-                                            Colors.white.withValues(alpha: .2),
-                                      ),
-                                    ),
-                                    child: Row(
-                                      mainAxisSize: MainAxisSize.min,
-                                      children: [
-                                        const Text(
-                                          '지금 뜨는 성분 보기',
-                                          style: TextStyle(
-                                            color: Colors.white,
-                                            fontSize: 11,
-                                            fontWeight: FontWeight.w700,
-                                          ),
-                                        ),
-                                        const SizedBox(width: 8),
-                                        Container(
-                                          width: 30,
-                                          height: 30,
-                                          alignment: Alignment.center,
-                                          decoration: const BoxDecoration(
-                                            color: Colors.white,
-                                            shape: BoxShape.circle,
-                                          ),
-                                          child: const Icon(
-                                            Icons.north_east_rounded,
-                                            color: AppColors.deep,
-                                            size: 17,
-                                          ),
-                                        ),
-                                      ],
-                                    ),
-                                  ),
-                                ),
-                              ],
-                            ),
-                          ),
-                        ]),
+                        itemBuilder: (context, index) => _OrbitSlide(
+                          index: index,
+                          count: slides.length,
+                          signal: slides[index],
+                        ),
                       ),
                     ),
                   ),
@@ -215,6 +135,471 @@ class _HeroState extends State<_Hero> {
             ),
           ),
         ),
+      );
+}
+
+class _SignalStackSlide extends StatelessWidget {
+  const _SignalStackSlide({
+    required this.index,
+    required this.title,
+    required this.subtitle,
+  });
+
+  final int index;
+  final String title;
+  final String subtitle;
+
+  static const _details = [
+    ('저자극 레티날', '밤에 천천히 시작해요', '주 2회 · 보습으로 마무리', Icons.nightlight_round),
+    ('세라마이드', '피부 장벽을 채워요', '판테놀 · 수분 레이어', Icons.shield_moon_rounded),
+    ('비타민 C', '아침 광채를 더해요', '자외선 차단과 함께', Icons.wb_sunny_rounded),
+  ];
+
+  @override
+  Widget build(BuildContext context) {
+    final detail = _details[index];
+    final accent = index == 2 ? AppColors.butter : const Color(0xFF9B74FF);
+    return LayoutBuilder(builder: (context, constraints) {
+      final mainWidth = (constraints.maxWidth * .61).clamp(210.0, 470.0);
+      final sideLeft = mainWidth * .78;
+      final sideWidth =
+          (constraints.maxWidth - sideLeft - 14).clamp(148.0, 248.0);
+      return Stack(fit: StackFit.expand, children: [
+        Image.asset(
+          'assets/editorial/ingredient-trend-hero-editorial-v1.png',
+          fit: BoxFit.cover,
+          alignment: const Alignment(.66, 0),
+          color: const Color(0xAA21164A),
+          colorBlendMode: BlendMode.modulate,
+        ),
+        const DecoratedBox(
+          decoration: BoxDecoration(
+            gradient: LinearGradient(
+              colors: [Color(0xFF0D0D12), Color(0xE9161322), Color(0xA60D0D12)],
+              begin: Alignment.centerLeft,
+              end: Alignment.centerRight,
+            ),
+          ),
+        ),
+        Positioned(
+          left: 14,
+          top: 13,
+          bottom: 13,
+          width: mainWidth,
+          child: Container(
+            clipBehavior: Clip.antiAlias,
+            padding: const EdgeInsets.fromLTRB(18, 15, 18, 14),
+            decoration: BoxDecoration(
+              color: const Color(0xE7111118),
+              borderRadius: BorderRadius.circular(22),
+              border: Border.all(color: Colors.white.withValues(alpha: .12)),
+            ),
+            child: Stack(children: [
+              Positioned(
+                left: 0,
+                top: 8,
+                bottom: 8,
+                child: Container(width: 2, color: accent),
+              ),
+              Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
+                Container(
+                  padding:
+                      const EdgeInsets.symmetric(horizontal: 9, vertical: 5),
+                  decoration: BoxDecoration(
+                    color: accent.withValues(alpha: .2),
+                    borderRadius: BorderRadius.circular(99),
+                  ),
+                  child: const Text('KEY SIGNAL',
+                      style: TextStyle(
+                          color: Colors.white,
+                          fontSize: 8,
+                          fontWeight: FontWeight.w700,
+                          letterSpacing: .8)),
+                ),
+                const SizedBox(height: 12),
+                Text(title,
+                    maxLines: 3,
+                    overflow: TextOverflow.ellipsis,
+                    style: const TextStyle(
+                        color: Colors.white,
+                        fontSize: 20,
+                        height: 1.1,
+                        fontWeight: FontWeight.w700,
+                        letterSpacing: -.8)),
+                const Spacer(),
+                Text(subtitle,
+                    maxLines: 2,
+                    overflow: TextOverflow.ellipsis,
+                    style: const TextStyle(
+                        color: Color(0xFFE6E3F4), fontSize: 9, height: 1.35)),
+                const SizedBox(height: 8),
+                Align(
+                  alignment: Alignment.centerRight,
+                  child: Container(
+                    width: 34,
+                    height: 34,
+                    decoration: const BoxDecoration(
+                        color: Colors.white, shape: BoxShape.circle),
+                    child: Icon(Icons.arrow_forward_rounded,
+                        color: AppColors.deep, size: 19),
+                  ),
+                ),
+              ]),
+            ]),
+          ),
+        ),
+        Positioned(
+          left: sideLeft,
+          top: 26,
+          width: sideWidth,
+          height: 112,
+          child: Transform.rotate(
+            angle: .055,
+            child: _SignalNote(
+              icon: detail.$4,
+              eyebrow: 'HOW IT WORKS',
+              title: detail.$2,
+              body: detail.$3,
+              color: const Color(0xFFF7F6FB),
+              accent: accent,
+            ),
+          ),
+        ),
+        Positioned(
+          left: sideLeft + 14,
+          bottom: 18,
+          width: sideWidth,
+          height: 74,
+          child: Transform.rotate(
+            angle: -.045,
+            child: _SignalNote(
+              icon: Icons.verified_user_outlined,
+              eyebrow: 'SKIN BENEFIT',
+              title: detail.$1,
+              body: '피부 리듬을 고려한 케어',
+              color: const Color(0xFFE6DEFF),
+              accent: accent,
+              compact: true,
+            ),
+          ),
+        ),
+        Positioned(
+          right: 17,
+          top: 16,
+          child: Text('0${index + 1} / 03',
+              style: const TextStyle(
+                  color: Colors.white,
+                  fontSize: 9,
+                  fontWeight: FontWeight.w700)),
+        ),
+      ]);
+    });
+  }
+}
+
+class _SignalNote extends StatelessWidget {
+  const _SignalNote(
+      {required this.icon,
+      required this.eyebrow,
+      required this.title,
+      required this.body,
+      required this.color,
+      required this.accent,
+      this.compact = false});
+  final IconData icon;
+  final String eyebrow;
+  final String title;
+  final String body;
+  final Color color;
+  final Color accent;
+  final bool compact;
+
+  @override
+  Widget build(BuildContext context) => Container(
+        padding: EdgeInsets.all(compact ? 11 : 13),
+        decoration: BoxDecoration(
+          color: color.withValues(alpha: .95),
+          borderRadius: BorderRadius.circular(18),
+          border: Border.all(color: Colors.white.withValues(alpha: .7)),
+          boxShadow: const [
+            BoxShadow(
+                color: Color(0x33000000), blurRadius: 16, offset: Offset(0, 7))
+          ],
+        ),
+        child: Row(crossAxisAlignment: CrossAxisAlignment.start, children: [
+          Icon(icon, color: accent, size: compact ? 18 : 21),
+          const SizedBox(width: 8),
+          Expanded(
+              child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                Text(eyebrow,
+                    style: TextStyle(
+                        color: AppColors.muted,
+                        fontSize: compact ? 6 : 7,
+                        fontWeight: FontWeight.w700,
+                        letterSpacing: .6)),
+                const SizedBox(height: 4),
+                Text(title,
+                    maxLines: 1,
+                    overflow: TextOverflow.ellipsis,
+                    style: TextStyle(
+                        color: AppColors.deep,
+                        fontSize: compact ? 10 : 12,
+                        fontWeight: FontWeight.w700)),
+                if (!compact) ...[
+                  const SizedBox(height: 4),
+                  Text(body,
+                      maxLines: 2,
+                      overflow: TextOverflow.ellipsis,
+                      style: const TextStyle(
+                          color: AppColors.muted, fontSize: 8, height: 1.25)),
+                ],
+              ])),
+        ]),
+      );
+}
+
+class _OrbitSlide extends StatelessWidget {
+  const _OrbitSlide({
+    required this.index,
+    required this.count,
+    required this.signal,
+  });
+
+  final int index;
+  final int count;
+  final _WeeklySignal signal;
+
+  static const _orbitData = [
+    (
+      'RETINAL',
+      '밤 루틴 추천',
+      '저자극 · 피부결 케어',
+      Icons.nightlight_round,
+      'assets/editorial/ingredient-orb-retinal-v1.png'
+    ),
+    (
+      'CERAMIDE',
+      '장벽 케어',
+      '판테놀 · 수분 레이어',
+      Icons.shield_moon_rounded,
+      'assets/editorial/ingredient-orb-ceramide-v1.png'
+    ),
+    (
+      'VITAMIN C',
+      'AM ROUTINE',
+      '광채 · 항산화 케어',
+      Icons.wb_sunny_rounded,
+      'assets/editorial/ingredient-orb-vitamin-c-v1.png'
+    ),
+  ];
+
+  @override
+  Widget build(BuildContext context) {
+    final normalized = signal.ingredient.replaceAll(' ', '').toLowerCase();
+    final assetIndex = normalized.contains('비타민')
+        ? 2
+        : normalized.contains('레티')
+            ? 0
+            : normalized.contains('세라마') || normalized.contains('판테놀')
+                ? 1
+                : 0;
+    final data = _orbitData[assetIndex];
+    final accent =
+        assetIndex == 2 ? const Color(0xFFE2A00A) : const Color(0xFF7255E8);
+    final orbTint =
+        assetIndex == 2 ? const Color(0xFFFFE19B) : const Color(0xFFCABFFF);
+    return LayoutBuilder(builder: (context, constraints) {
+      final copyWidth = (constraints.maxWidth * .54).clamp(190.0, 520.0);
+      final orbSize = (constraints.maxWidth * .62).clamp(220.0, 460.0);
+      return Stack(fit: StackFit.expand, children: [
+        const DecoratedBox(
+          decoration: BoxDecoration(
+            gradient: LinearGradient(
+              colors: [Color(0xFFFFFDFE), Color(0xFFF4F0FF)],
+              begin: Alignment.topLeft,
+              end: Alignment.bottomRight,
+            ),
+          ),
+        ),
+        Positioned(
+          right: -orbSize * .23,
+          top: 8,
+          width: orbSize,
+          height: orbSize,
+          child:
+              _IngredientOrbit(asset: data.$5, accent: accent, tint: orbTint),
+        ),
+        Positioned(
+          right: 18,
+          top: 16,
+          child: Text('0${index + 1} / 0$count',
+              style: const TextStyle(
+                  color: AppColors.muted,
+                  fontSize: 9,
+                  fontWeight: FontWeight.w700)),
+        ),
+        Positioned(
+          left: 18,
+          top: 16,
+          width: copyWidth,
+          bottom: 12,
+          child:
+              Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
+            Container(
+              padding: const EdgeInsets.symmetric(horizontal: 9, vertical: 5),
+              decoration: BoxDecoration(
+                borderRadius: BorderRadius.circular(99),
+                border: Border.all(color: accent.withValues(alpha: .35)),
+                color: Colors.white.withValues(alpha: .72),
+              ),
+              child: Text(signal.kind,
+                  style: TextStyle(
+                      color: accent,
+                      fontSize: 8,
+                      fontWeight: FontWeight.w700,
+                      letterSpacing: .55)),
+            ),
+            const SizedBox(height: 10),
+            Text(signal.title,
+                maxLines: 2,
+                overflow: TextOverflow.ellipsis,
+                style: const TextStyle(
+                    color: AppColors.deep,
+                    fontSize: 20,
+                    height: 1.08,
+                    fontWeight: FontWeight.w700,
+                    letterSpacing: -.9)),
+            const SizedBox(height: 5),
+            Text(signal.subtitle,
+                maxLines: 1,
+                overflow: TextOverflow.ellipsis,
+                style: const TextStyle(color: AppColors.muted, fontSize: 9)),
+            const Spacer(),
+            _OrbitInfoChip(
+                icon: data.$4,
+                title: signal.ingredient.toUpperCase(),
+                caption: signal.purchaseCount == 0
+                    ? '이번 주 순위 준비 중'
+                    : '${signal.purchaseCount}개 구매 제품 포함',
+                accent: accent),
+            const SizedBox(height: 6),
+            _OrbitInfoChip(
+                icon: Icons.auto_awesome_outlined,
+                title: data.$3,
+                caption: '구매 기반 성분 노트',
+                accent: accent),
+          ]),
+        ),
+      ]);
+    });
+  }
+}
+
+class _WeeklySignal {
+  const _WeeklySignal({
+    required this.kind,
+    required this.ingredient,
+    required this.title,
+    required this.subtitle,
+    required this.purchaseCount,
+  });
+
+  final String kind;
+  final String ingredient;
+  final String title;
+  final String subtitle;
+  final int purchaseCount;
+}
+
+class _IngredientOrbit extends StatelessWidget {
+  const _IngredientOrbit(
+      {required this.asset, required this.accent, required this.tint});
+  final String asset;
+  final Color accent;
+  final Color tint;
+
+  @override
+  Widget build(BuildContext context) =>
+      Stack(alignment: Alignment.center, children: [
+        Container(
+          width: 174,
+          height: 174,
+          decoration: BoxDecoration(
+              shape: BoxShape.circle,
+              border:
+                  Border.all(color: accent.withValues(alpha: .18), width: 1.3)),
+        ),
+        Container(
+          decoration: BoxDecoration(boxShadow: [
+            BoxShadow(
+                color: accent.withValues(alpha: .18),
+                blurRadius: 24,
+                spreadRadius: 2)
+          ]),
+          child: Image.asset(asset, fit: BoxFit.contain),
+        ),
+        Positioned(top: 22, right: 28, child: _OrbitDot(color: accent)),
+        Positioned(left: 23, bottom: 36, child: _OrbitDot(color: tint)),
+      ]);
+}
+
+class _OrbitDot extends StatelessWidget {
+  const _OrbitDot({required this.color});
+  final Color color;
+  @override
+  Widget build(BuildContext context) => Container(
+      width: 12,
+      height: 12,
+      decoration: BoxDecoration(
+          shape: BoxShape.circle,
+          color: color,
+          border: Border.all(color: Colors.white, width: 2)));
+}
+
+class _OrbitInfoChip extends StatelessWidget {
+  const _OrbitInfoChip(
+      {required this.icon,
+      required this.title,
+      required this.caption,
+      required this.accent});
+  final IconData icon;
+  final String title;
+  final String caption;
+  final Color accent;
+  @override
+  Widget build(BuildContext context) => Container(
+        height: 33,
+        padding: const EdgeInsets.symmetric(horizontal: 8),
+        decoration: BoxDecoration(
+            color: Colors.white.withValues(alpha: .82),
+            borderRadius: BorderRadius.circular(10),
+            border: Border.all(color: const Color(0x11000000))),
+        child: Row(children: [
+          Container(
+              width: 21,
+              height: 21,
+              alignment: Alignment.center,
+              decoration: BoxDecoration(
+                  color: accent.withValues(alpha: .13), shape: BoxShape.circle),
+              child: Icon(icon, color: accent, size: 12)),
+          const SizedBox(width: 7),
+          Expanded(
+              child: Text(title,
+                  maxLines: 1,
+                  overflow: TextOverflow.ellipsis,
+                  style: TextStyle(
+                      color: accent,
+                      fontSize: 8,
+                      fontWeight: FontWeight.w700))),
+          const SizedBox(width: 5),
+          Flexible(
+              child: Text(caption,
+                  maxLines: 1,
+                  overflow: TextOverflow.ellipsis,
+                  style: const TextStyle(color: AppColors.muted, fontSize: 7))),
+        ]),
       );
 }
 
@@ -760,8 +1145,7 @@ class _SkinChartCard extends StatelessWidget {
           child: ConstrainedBox(
             constraints: const BoxConstraints(maxWidth: 1080),
             child: Material(
-              color: AppColors.surface,
-              borderRadius: BorderRadius.circular(18),
+              borderRadius: BorderRadius.circular(22),
               clipBehavior: Clip.antiAlias,
               child: InkWell(
                 key: profile.isComplete
@@ -770,66 +1154,105 @@ class _SkinChartCard extends StatelessWidget {
                 onTap: onOpen,
                 child: Container(
                   key: const Key('skin-chart-card'),
-                  padding: const EdgeInsets.all(16),
+                  height: 204,
                   decoration: BoxDecoration(
-                    borderRadius: BorderRadius.circular(18),
-                    border: Border.all(color: AppColors.line),
+                    borderRadius: BorderRadius.circular(22),
+                    image: const DecorationImage(
+                      image: AssetImage(
+                          'assets/editorial/skin-chart-model-v1.png'),
+                      fit: BoxFit.cover,
+                      alignment: Alignment.centerRight,
+                    ),
                   ),
-                  child: Row(
-                    children: [
-                      Container(
-                        width: 44,
-                        height: 44,
-                        alignment: Alignment.center,
-                        decoration: BoxDecoration(
-                          color: AppColors.blush,
-                          borderRadius: BorderRadius.circular(13),
-                        ),
-                        child: const Icon(Icons.assignment_outlined,
-                            color: AppColors.berry, size: 21),
+                  child: DecoratedBox(
+                    decoration: BoxDecoration(
+                      borderRadius: BorderRadius.circular(22),
+                      border: Border.all(color: const Color(0xFFDCD4F3)),
+                      gradient: const LinearGradient(
+                        begin: Alignment.centerLeft,
+                        end: Alignment.centerRight,
+                        colors: [
+                          Color(0xFFFDFBFF),
+                          Color(0xEAFDFBFF),
+                          Color(0x16FDFBFF)
+                        ],
+                        stops: [0, .53, 1],
                       ),
-                      const SizedBox(width: 13),
-                      Expanded(
+                    ),
+                    child: Padding(
+                      padding: const EdgeInsets.fromLTRB(20, 18, 18, 18),
+                      child: SizedBox(
+                        width: 235,
                         child: Column(
+                          mainAxisAlignment: MainAxisAlignment.center,
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
+                            Container(
+                              padding: const EdgeInsets.symmetric(
+                                  horizontal: 10, vertical: 5),
+                              decoration: BoxDecoration(
+                                color: const Color(0xEDEDE7FF),
+                                borderRadius: BorderRadius.circular(20),
+                                border:
+                                    Border.all(color: const Color(0xFFCCBFFD)),
+                              ),
+                              child: const Text('SKIN CHART',
+                                  style: TextStyle(
+                                      color: AppColors.berry,
+                                      fontSize: 10,
+                                      letterSpacing: 1.2,
+                                      fontWeight: FontWeight.w800)),
+                            ),
+                            const SizedBox(height: 11),
                             Text(
                               profile.isComplete
-                                  ? '${profile.profileName} 차트'
-                                  : '내 스킨 차트 만들기',
-                              maxLines: 1,
+                                  ? '${profile.profileName}의 피부 차트'
+                                  : '내 피부를\n한눈에 읽어볼까요?',
+                              maxLines: 2,
                               overflow: TextOverflow.ellipsis,
                               style: const TextStyle(
                                   color: AppColors.ink,
-                                  fontSize: 16,
-                                  fontWeight: FontWeight.w700),
+                                  fontSize: 20,
+                                  height: 1.16,
+                                  fontWeight: FontWeight.w800),
                             ),
-                            const SizedBox(height: 4),
+                            const SizedBox(height: 7),
                             Text(
                               profile.isComplete
-                                  ? '${profile.primaryConcern} · ${profile.recommendedIngredients}'
-                                  : '5개 항목 · 약 1분 · 바로 맞춤 추천',
+                                  ? '${profile.primaryConcern} · 맞춤 루틴 업데이트'
+                                  : '5개 항목 · 약 1분 · 맞춤 추천',
                               maxLines: 1,
                               overflow: TextOverflow.ellipsis,
                               style: const TextStyle(
-                                  color: AppColors.muted, fontSize: 11),
+                                  color: AppColors.muted,
+                                  fontSize: 11,
+                                  fontWeight: FontWeight.w600),
+                            ),
+                            const SizedBox(height: 12),
+                            Container(
+                              padding: const EdgeInsets.symmetric(
+                                  horizontal: 11, vertical: 7),
+                              decoration: BoxDecoration(
+                                  color: AppColors.fuchsia,
+                                  borderRadius: BorderRadius.circular(12)),
+                              child: Row(
+                                  mainAxisSize: MainAxisSize.min,
+                                  children: [
+                                    Text(
+                                        profile.isComplete ? '차트 보기' : '차트 만들기',
+                                        style: const TextStyle(
+                                            color: Colors.white,
+                                            fontSize: 11,
+                                            fontWeight: FontWeight.w800)),
+                                    const SizedBox(width: 5),
+                                    const Icon(Icons.arrow_forward_rounded,
+                                        color: Colors.white, size: 15),
+                                  ]),
                             ),
                           ],
                         ),
                       ),
-                      const SizedBox(width: 8),
-                      Container(
-                        width: 38,
-                        height: 38,
-                        alignment: Alignment.center,
-                        decoration: BoxDecoration(
-                          color: AppColors.fuchsia,
-                          borderRadius: BorderRadius.circular(12),
-                        ),
-                        child: const Icon(Icons.arrow_forward_rounded,
-                            color: Colors.white, size: 18),
-                      ),
-                    ],
+                    ),
                   ),
                 ),
               ),
@@ -1518,7 +1941,9 @@ class _DailyBriefState extends State<_DailyBrief> {
                     ]),
                   )
                 : SizedBox(
-                    height: 184,
+                    // Keep enough vertical room for the card copy and the
+                    // pagination dots when the global text scale is applied.
+                    height: 200,
                     child: Column(children: [
                       Expanded(
                         child: PageView.builder(

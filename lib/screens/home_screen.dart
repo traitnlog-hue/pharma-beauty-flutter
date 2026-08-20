@@ -3,6 +3,7 @@ import 'dart:async';
 import 'package:flutter/material.dart';
 
 import '../catalog.dart';
+import '../features/purchase_trends/purchase_trend_service.dart';
 import '../features/skin_weather/skin_weather_service.dart';
 import '../models.dart';
 import '../theme.dart';
@@ -16,6 +17,7 @@ class HomeScreen extends StatefulWidget {
   const HomeScreen({
     required this.skinProfile,
     required this.compareIds,
+    required this.savedIds,
     required this.onToggleCompare,
     required this.onShowCompare,
     required this.onOpenProduct,
@@ -27,6 +29,7 @@ class HomeScreen extends StatefulWidget {
 
   final SkinProfile skinProfile;
   final Set<int> compareIds;
+  final Set<int> savedIds;
   final ValueChanged<BeautyProduct> onToggleCompare;
   final VoidCallback onShowCompare;
   final ValueChanged<BeautyProduct> onOpenProduct;
@@ -77,7 +80,8 @@ class _HomeScreenState extends State<HomeScreen> {
   Widget build(BuildContext context) {
     return Stack(children: [
       CustomScrollView(slivers: [
-        SliverToBoxAdapter(child: _Hero(onOpen: widget.onDiscover)),
+        SliverToBoxAdapter(
+            child: _Hero(onOpen: widget.onDiscover, savedIds: widget.savedIds)),
         SliverToBoxAdapter(
           child: _HomeSkinWeather(
             profile: widget.skinProfile,

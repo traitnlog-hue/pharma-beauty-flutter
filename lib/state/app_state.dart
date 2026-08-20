@@ -1,8 +1,10 @@
+import 'dart:async';
 import 'dart:collection';
 
 import 'package:flutter/foundation.dart';
 
 import '../catalog.dart';
+import '../features/purchase_trends/purchase_trend_service.dart';
 import '../models.dart';
 
 class AppState extends ChangeNotifier {
@@ -25,6 +27,8 @@ class AppState extends ChangeNotifier {
   final List<int> _recentIds;
   final Set<int> _cartIds = {};
   final List<PurchaseOrder> _orders = [];
+  final PurchaseTrendService _purchaseTrendService =
+      const PurchaseTrendService();
   String? _userEmail;
   String? _userName;
 
@@ -59,7 +63,8 @@ class AppState extends ChangeNotifier {
   }
 
   PurchaseOrder checkout(Iterable<BeautyProduct> selected) {
-    final selectedIds = selected.map((product) => product.id).toList();
+    final purchasedProducts = selected.toList(growable: false);
+    final selectedIds = purchasedProducts.map((product) => product.id).toList();
     final order = PurchaseOrder(
       id: 'LX${DateTime.now().millisecondsSinceEpoch.toString().substring(6)}',
       productIds: selectedIds,
@@ -68,6 +73,7 @@ class AppState extends ChangeNotifier {
     );
     _cartIds.removeAll(selectedIds);
     _orders.insert(0, order);
+    unawaited(_purchaseTrendService.recordCompletedPurchase(purchasedProducts));
     notifyListeners();
     return order;
   }

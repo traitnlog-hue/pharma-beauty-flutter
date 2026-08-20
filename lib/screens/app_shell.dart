@@ -694,8 +694,12 @@ class _AppShellState extends State<AppShell> {
               onPressed: openSearch,
               icon: const Icon(Icons.search_rounded, size: 25)),
         ]),
-        title: const Icon(Icons.local_florist_outlined,
-            color: AppColors.fuchsia, size: 32),
+        title: const Text('SHOP',
+            style: TextStyle(
+                color: AppColors.berry,
+                fontSize: 20,
+                fontWeight: FontWeight.w700,
+                letterSpacing: 3.2)),
         actions: [
           IconButton(
               tooltip: '저장한 제품',
@@ -715,6 +719,7 @@ class _AppShellState extends State<AppShell> {
       HomeScreen(
           skinProfile: appState.skinProfile,
           compareIds: appState.compareIds,
+          savedIds: appState.savedIds,
           onToggleCompare: toggleCompare,
           onShowCompare: openCompare,
           onOpenProduct: openProduct,

@@ -1,5 +1,13 @@
 {
   "name": "pharma-beauty-weather-proxy",
   "main": "src/index.js",
-  "compatibility_date": "2026-08-18"
+  "compatibility_date": "2026-08-18",
+  "d1_databases": [
+    {
+      "binding": "PURCHASE_TRENDS_DB",
+      "database_name": "lexem-purchase-trends",
+      "database_id": "5542c5f4-10ee-4eb1-8185-a49ecf7cb659",
+      "migrations_dir": "migrations"
+    }
+  ]
 }

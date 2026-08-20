@@ -106,12 +106,9 @@ void main() {
 
     expect(find.byKey(const Key('lexem-brand-logo')), findsOneWidget);
     expect(find.byKey(const Key('ingredient-trend-hero')), findsOneWidget);
-    expect(find.textContaining('이번 주, 레티날이'), findsOneWidget);
+    expect(find.textContaining('구매 데이터를'), findsWidgets);
     expect(find.byKey(const Key('skin-weather-hero')), findsOneWidget);
     expect(find.textContaining('회원님의 피부 기상 리포트'), findsOneWidget);
-    await tester.tap(find.byKey(const Key('ingredient-trend-tab-1')));
-    await tester.pumpAndSettle();
-    expect(find.textContaining('세라마이드를'), findsOneWidget);
   });
 
   testWidgets('opens weather-based skin recommendations', (tester) async {
