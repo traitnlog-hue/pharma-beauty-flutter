@@ -465,7 +465,7 @@ class _AppShellState extends State<AppShell> {
                       Row(
                         mainAxisAlignment: MainAxisAlignment.center,
                         children: [
-                          Text(isSignUp ? '이미 계정이 있나요?' : 'LEXEM이 처음인가요?',
+                          Text(isSignUp ? '이미 계정이 있나요?' : 'BE:CAUSE가 처음인가요?',
                               style: const TextStyle(
                                   color: AppColors.muted, fontSize: 11)),
                           TextButton(
@@ -578,7 +578,7 @@ class _AppShellState extends State<AppShell> {
                 Text(
                   isPasswordReset
                       ? '가입한 이메일로 비밀번호 재설정 링크를 보내드려요.'
-                      : 'LEXEM에서는 가입에 사용한 이메일 주소가 아이디예요.',
+                      : 'BE:CAUSE에서는 가입에 사용한 이메일 주소가 아이디예요.',
                   textAlign: TextAlign.center,
                   style: const TextStyle(
                       color: AppColors.muted, fontSize: 11, height: 1.45),

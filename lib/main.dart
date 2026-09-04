@@ -47,17 +47,30 @@ class _PharmaBeautyAppState extends State<PharmaBeautyApp> {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-      title: 'LEXEM — READ YOUR SKIN.',
+      title: 'BE:CAUSE — BEAUTY WITH REASONS.',
       debugShowCheckedModeBanner: false,
       theme: buildAppTheme(),
       builder: (context, child) {
+        // Portfolio capture keeps the implemented mobile home experience at
+        // its real application width without affecting normal app usage.
+        final isPortfolioMobileCapture =
+            Uri.base.queryParameters['portfolioCapture'] == 'mobile';
+        final mediaQuery = MediaQuery.of(context);
         // 앱 전반의 읽기 편한 기본 크기입니다. 개별 UI의 계층은 유지하면서
         // 작은 라벨과 보조 문구까지 동일한 비율로 키웁니다.
         return MediaQuery(
-          data: MediaQuery.of(context).copyWith(
+          data: mediaQuery.copyWith(
+            size: isPortfolioMobileCapture
+                ? Size(390, mediaQuery.size.height)
+                : mediaQuery.size,
             textScaler: TextScaler.linear(1.12),
           ),
-          child: child ?? const SizedBox.shrink(),
+          child: isPortfolioMobileCapture
+              ? Align(
+                  alignment: Alignment.topCenter,
+                  child: SizedBox(width: 390, child: child),
+                )
+              : child ?? const SizedBox.shrink(),
         );
       },
       home: AnimatedSwitcher(

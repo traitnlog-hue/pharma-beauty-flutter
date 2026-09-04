@@ -11,17 +11,27 @@ class BrandLogo extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Semantics(
-      label: 'LEXEM, READ YOUR SKIN',
+      label: 'BE:CAUSE, BEAUTY WITH REASONS',
       child: SizedBox(
-        key: const Key('lexem-brand-logo'),
-        width: compact ? 76 : 122,
+        key: const Key('because-brand-logo'),
+        width: compact ? 98 : 150,
         height: compact ? 26 : 32,
-        child: Image.asset(
-          'assets/branding/lexem-wordmark-v2.png',
-          fit: BoxFit.contain,
+        child: Align(
           alignment: Alignment.centerLeft,
-          filterQuality: FilterQuality.high,
-          semanticLabel: 'LEXEM, READ YOUR SKIN 브랜드 로고',
+          child: FittedBox(
+            fit: BoxFit.scaleDown,
+            alignment: Alignment.centerLeft,
+            child: Text(
+              'BE:CAUSE',
+              style: TextStyle(
+                color: AppColors.ink,
+                fontSize: compact ? 20 : 28,
+                fontWeight: FontWeight.w900,
+                letterSpacing: compact ? -1.1 : -1.6,
+                height: 1,
+              ),
+            ),
+          ),
         ),
       ),
     );

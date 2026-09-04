@@ -2,7 +2,7 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 
 abstract final class AppColors {
-  // LEXEM 2026 · Clinical editorial neutrals with a precise violet signal.
+  // BE:CAUSE 2026 · Clinical editorial neutrals with a precise violet signal.
   static const ink = Color(0xFF17171B);
   static const deep = Color(0xFF111115);
   static const paper = Color(0xFFF6F6F8);
@@ -13,7 +13,7 @@ abstract final class AppColors {
   static const ballerina = Color(0xFFD8D2FF);
   static const rose = Color(0xFF958BE0);
 
-  /// LEXEM signature violet.
+  /// BE:CAUSE signature violet.
   static const fuchsia = Color(0xFF6656D9);
   static const champagne = Color(0xFFC9C9D1);
   static const roseGold = Color(0xFFB8B2DA);

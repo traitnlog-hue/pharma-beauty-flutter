@@ -1401,7 +1401,7 @@ class _CoreHooks extends StatelessWidget {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              const SectionLabel('01', 'WHY LEXEM'),
+              const SectionLabel('01', 'WHY BE:CAUSE'),
               const SizedBox(height: 8),
               Text('내 피부에 필요한 기능만',
                   style: Theme.of(context).textTheme.headlineMedium),
@@ -1547,11 +1547,11 @@ class _BrandStory extends StatelessWidget {
   ];
 
   static const _brandLines = [
-    'LEXEM / BARRIER',
-    'LEXEM / HYDRATION',
-    'LEXEM / CALM',
-    'LEXEM / INGREDIENT INDEX',
-    'LEXEM / SKIN NOTE',
+    'BE:CAUSE / BARRIER',
+    'BE:CAUSE / HYDRATION',
+    'BE:CAUSE / CALM',
+    'BE:CAUSE / INGREDIENT INDEX',
+    'BE:CAUSE / SKIN NOTE',
   ];
 
   void _openLanguageNote(BuildContext context, (String, String, String) item) {
@@ -1591,7 +1591,7 @@ class _BrandStory extends StatelessWidget {
           ),
           const SizedBox(height: 12),
           const Text(
-            'LEXEM은 이 정보를 피부 상태와 성분 조합, 루틴의 맥락 안에서 읽기 쉽게 정리합니다.',
+            'BE:CAUSE는 이 정보를 피부 상태와 성분 조합, 루틴의 맥락 안에서 읽기 쉽게 정리합니다.',
             style: TextStyle(color: AppColors.muted, fontSize: 15, height: 1.6),
           ),
         ]),
@@ -1628,7 +1628,7 @@ class _BrandStory extends StatelessWidget {
                       ),
                       const SizedBox(width: 8),
                       const Text(
-                        'LEXEM / BRAND STORY',
+                        'BE:CAUSE / BRAND STORY',
                         style: TextStyle(
                           color: AppColors.berry,
                           fontSize: 9,
@@ -1658,11 +1658,17 @@ class _BrandStory extends StatelessWidget {
                       color: AppColors.paper,
                       borderRadius: BorderRadius.circular(16),
                     ),
-                    child: Image.asset(
-                      'assets/branding/lexem-wordmark.png',
-                      fit: BoxFit.contain,
-                      filterQuality: FilterQuality.high,
-                      semanticLabel: 'LEXEM, READ YOUR SKIN 브랜드 워드마크',
+                    child: const Align(
+                      alignment: Alignment.centerLeft,
+                      child: Text(
+                        'BE:CAUSE',
+                        style: TextStyle(
+                          color: AppColors.ink,
+                          fontSize: 34,
+                          fontWeight: FontWeight.w900,
+                          letterSpacing: -2.1,
+                        ),
+                      ),
                     ),
                   ),
                   const SizedBox(height: 30),
@@ -1683,7 +1689,7 @@ class _BrandStory extends StatelessWidget {
                   ),
                   const SizedBox(height: 10),
                   const Text(
-                    'LEXEM은 어려운 성분 정보를 해석하고, 사용자의 피부에 '
+                    'BE:CAUSE는 어려운 성분 정보를 해석하고, 사용자의 피부에 '
                     '필요한 의미만 남깁니다.',
                     style: TextStyle(
                       color: AppColors.muted,
@@ -1695,7 +1701,7 @@ class _BrandStory extends StatelessWidget {
                   const Divider(height: 1),
                   const SizedBox(height: 28),
                   const Text(
-                    'LEXEM CARE GUIDE',
+                    'BE:CAUSE CARE GUIDE',
                     style: TextStyle(
                       color: AppColors.berry,
                       fontSize: 9,
@@ -1772,7 +1778,7 @@ class _BrandStory extends StatelessWidget {
                   }),
                   const SizedBox(height: 30),
                   const Text(
-                    'LEXEM LIBRARY',
+                    'BE:CAUSE LIBRARY',
                     style: TextStyle(
                       color: AppColors.muted,
                       fontSize: 9,

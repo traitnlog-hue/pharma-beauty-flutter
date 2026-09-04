@@ -259,7 +259,7 @@ async function getWeeklyIngredientRanking(env, headers) {
   return Response.json(
     {
       weekStart,
-      source: 'LEXEM completed purchases',
+      source: 'BE:CAUSE completed purchases',
       totalProductPurchases: purchases.results?.[0]?.purchaseCount ?? 0,
       items: ingredients.results ?? [],
     },

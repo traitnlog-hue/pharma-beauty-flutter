@@ -91,20 +91,20 @@ void main() {
     expect(advice.recommendations.join(), contains('SPF 50+'));
   });
 
-  testWidgets('auto-dismisses the LEXEM intro before home', (tester) async {
+  testWidgets('auto-dismisses the BE:CAUSE intro before home', (tester) async {
     await tester.pumpWidget(const PharmaBeautyApp());
 
-    expect(find.text('YOUR SKIN, YOUR LANGUAGE'), findsOneWidget);
+    expect(find.text('BEAUTY, WITH REASONS.'), findsOneWidget);
     await tester.pump(const Duration(milliseconds: 800));
     await tester.pumpAndSettle();
 
     expect(find.byKey(const Key('ingredient-trend-hero')), findsOneWidget);
   });
 
-  testWidgets('shows the LEXEM home experience', (tester) async {
+  testWidgets('shows the BE:CAUSE home experience', (tester) async {
     await tester.pumpWidget(const PharmaBeautyApp(showIntro: false));
 
-    expect(find.byKey(const Key('lexem-brand-logo')), findsOneWidget);
+    expect(find.byKey(const Key('because-brand-logo')), findsOneWidget);
     expect(find.byKey(const Key('ingredient-trend-hero')), findsOneWidget);
     expect(find.textContaining('구매 데이터를'), findsWidgets);
     expect(find.byKey(const Key('skin-weather-hero')), findsOneWidget);
@@ -125,7 +125,7 @@ void main() {
     expect(find.textContaining('오늘 날씨 기준 추천'), findsOneWidget);
   });
 
-  testWidgets('shows the LEXEM brand story and concise care guide',
+  testWidgets('shows the BE:CAUSE brand story and concise care guide',
       (tester) async {
     await tester.pumpWidget(const PharmaBeautyApp(showIntro: false));
 

@@ -1,11 +1,11 @@
 {
-    "name": "LEXEM — READ YOUR SKIN.",
-    "short_name": "LEXEM",
+    "name": "BE:CAUSE — BEAUTY WITH REASONS.",
+    "short_name": "BE:CAUSE",
     "start_url": ".",
     "display": "standalone",
     "background_color": "#F8F8FA",
-    "theme_color": "#6C5CE7",
-    "description": "성분의 언어를 읽고 피부에 필요한 의미만 남기는 뷰티 큐레이션.",
+    "theme_color": "#123755",
+    "description": "피부·성분·루틴의 맥락을 연결해 더 분명한 선택을 돕는 뷰티 큐레이션.",
     "orientation": "portrait-primary",
     "prefer_related_applications": false,
     "icons": [

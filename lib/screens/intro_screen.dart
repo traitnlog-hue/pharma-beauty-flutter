@@ -59,7 +59,7 @@ class _IntroScreenState extends State<IntroScreen>
                 FadeTransition(
                   opacity: _taglineFade,
                   child: const Text(
-                    'YOUR SKIN, YOUR LANGUAGE',
+                    'BEAUTY, WITH REASONS.',
                     style: TextStyle(
                       color: AppColors.berry,
                       fontSize: 12,
@@ -83,14 +83,15 @@ class _IntroWordmark extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Semantics(
-      label: 'LEXEM',
-      child: SizedBox(
-        width: 216,
-        height: 52,
-        child: Image.asset(
-          'assets/branding/lexem-wordmark-v2.png',
-          fit: BoxFit.contain,
-          filterQuality: FilterQuality.high,
+      label: 'BE:CAUSE',
+      child: const Text(
+        'BE:CAUSE',
+        style: TextStyle(
+          color: AppColors.ink,
+          fontSize: 42,
+          fontWeight: FontWeight.w900,
+          letterSpacing: -2.5,
+          height: 1,
         ),
       ),
     );

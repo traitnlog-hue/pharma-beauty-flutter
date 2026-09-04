@@ -1,18 +1,18 @@
-# LEXEM 디자인 백업 스냅샷
+# BE:CAUSE 디자인 백업 스냅샷
 
 > 기준일: 2026-08-19 (KST)  
 > 목적: 현재 UX/UI 기준을 재현·복원하기 위한 디자인 결정 기록
 
 ## 브랜드와 기본 톤
 
-- 브랜드명은 `LEXEM`, 워드마크는 `assets/branding/lexem-wordmark-v2.png`를 사용한다.
+- 브랜드명은 `BE:CAUSE`, 워드마크는 코드 기반 타이포그래피로 표시한다.
 - 시각 언어는 임상적 뉴트럴 컬러 위에 시그니처 바이올렛을 신호색으로 쓰는 방식이다.
 - 기본 배경은 밝은 페이퍼 톤, 텍스트는 거의 검정에 가까운 잉크 톤으로 충분한 대비를 확보한다.
 - 본문·라벨은 전역 텍스트 스케일 112%를 적용해 작은 화면에서도 읽기 쉽게 유지한다.
 
 ## 앱 시작 인트로
 
-- 인트로에는 `LEXEM` 워드마크와 `YOUR SKIN, YOUR LANGUAGE`만 보여준다.
+- 인트로에는 `BE:CAUSE` 워드마크와 `BEAUTY, WITH REASONS.`만 보여준다.
 - 로고는 아래에서 위로 슬라이드하며 페이드 인한다.
 - 슬로건은 로고보다 늦게 페이드 인한다.
 - 시작 버튼은 두지 않는다. 진입 후 0.8초에 홈으로 전환되고, 전환은 420ms 페이드다.
@@ -103,6 +103,6 @@
 - `lib/screens/discover_sections.dart`
 - `lib/screens/skin_weather_screen.dart`
 - `lib/screens/shop_screen.dart`
-- `assets/branding/lexem-wordmark-v2.png`
+- `BE:CAUSE` 코드 기반 워드마크
 - `assets/editorial/skin-weather-hero-cute-v1.png`
 - `assets/editorial/ingredient-trend-hero-editorial-v1.png`
