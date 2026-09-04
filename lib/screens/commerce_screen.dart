@@ -33,7 +33,10 @@ class CartScreen extends StatelessWidget {
                               borderRadius: BorderRadius.circular(16),
                               side: const BorderSide(color: AppColors.line)),
                           tileColor: AppColors.surface,
-                          leading: ProductBottle(product: product, height: 66),
+                          leading: SizedBox(
+                            width: 66,
+                            child: ProductBottle(product: product, height: 66),
+                          ),
                           title: Text(product.name,
                               style: const TextStyle(
                                   fontSize: 14, fontWeight: FontWeight.w700)),
