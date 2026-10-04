@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 
 import '../theme.dart';
 
-/// 0.8초 동안 브랜드만 보여주는 미니멀 오프닝 화면입니다.
+/// 0.8초 동안 브랜드의 핵심 원칙만 보여주는 미니멀 오프닝 화면입니다.
 class IntroScreen extends StatefulWidget {
   const IntroScreen({super.key});
 
@@ -24,8 +24,10 @@ class _IntroScreenState extends State<IntroScreen>
       vsync: this,
       duration: const Duration(milliseconds: 560),
     )..forward();
-    _logoFade =
-        CurvedAnimation(parent: _controller, curve: Curves.easeOutCubic);
+    _logoFade = CurvedAnimation(
+      parent: _controller,
+      curve: Curves.easeOutCubic,
+    );
     _logoSlide = Tween<Offset>(
       begin: const Offset(0, .16),
       end: Offset.zero,
@@ -59,7 +61,7 @@ class _IntroScreenState extends State<IntroScreen>
                 FadeTransition(
                   opacity: _taglineFade,
                   child: const Text(
-                    'BEAUTY, WITH REASONS.',
+                    '내 피부를 위한 뷰티 선택',
                     style: TextStyle(
                       color: AppColors.berry,
                       fontSize: 12,
@@ -87,11 +89,11 @@ class _IntroWordmark extends StatelessWidget {
       child: const Text(
         'BE:CAUSE',
         style: TextStyle(
-          color: AppColors.ink,
+          color: AppColors.deep,
           fontSize: 42,
+          height: 1,
           fontWeight: FontWeight.w900,
           letterSpacing: -2.5,
-          height: 1,
         ),
       ),
     );

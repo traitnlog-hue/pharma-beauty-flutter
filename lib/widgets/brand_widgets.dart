@@ -11,27 +11,16 @@ class BrandLogo extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Semantics(
-      label: 'BE:CAUSE, BEAUTY WITH REASONS',
-      child: SizedBox(
+      label: 'BE:CAUSE, 화해 성분 탐색 리디자인',
+      child: Text(
+        'BE:CAUSE',
         key: const Key('because-brand-logo'),
-        width: compact ? 98 : 150,
-        height: compact ? 26 : 32,
-        child: Align(
-          alignment: Alignment.centerLeft,
-          child: FittedBox(
-            fit: BoxFit.scaleDown,
-            alignment: Alignment.centerLeft,
-            child: Text(
-              'BE:CAUSE',
-              style: TextStyle(
-                color: AppColors.ink,
-                fontSize: compact ? 20 : 28,
-                fontWeight: FontWeight.w900,
-                letterSpacing: compact ? -1.1 : -1.6,
-                height: 1,
-              ),
-            ),
-          ),
+        style: TextStyle(
+          color: AppColors.deep,
+          fontSize: compact ? 18 : 24,
+          height: 1,
+          fontWeight: FontWeight.w900,
+          letterSpacing: compact ? -1.0 : -1.3,
         ),
       ),
     );
@@ -60,7 +49,7 @@ class SectionLabel extends StatelessWidget {
 }
 
 /// 앱 전반의 슬라이드에 공통으로 쓰는 페이지 인디케이터입니다.
-/// 선택 항목은 짧은 바이올렛 필, 나머지는 회색 원으로 표시합니다.
+/// 선택 항목은 짧은 틸 필, 나머지는 중립 원으로 표시합니다.
 class PageIndicator extends StatelessWidget {
   const PageIndicator({
     super.key,
@@ -77,47 +66,48 @@ class PageIndicator extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) => Row(
-        mainAxisAlignment: MainAxisAlignment.center,
-        children: [
-          for (var index = 0; index < count; index++)
-            Semantics(
-              button: true,
-              selected: index == selectedIndex,
-              label: '${index + 1}번 슬라이드 보기',
-              child: InkWell(
-                key: keyPrefix == null ? null : Key('$keyPrefix-$index'),
-                onTap: () => onSelected(index),
-                borderRadius: BorderRadius.circular(20),
-                child: SizedBox(
-                  width: 36,
-                  height: 36,
-                  child: Center(
-                    child: AnimatedContainer(
-                      duration: const Duration(milliseconds: 220),
-                      curve: Curves.easeOutCubic,
-                      width: index == selectedIndex ? 30 : 11,
-                      height: 11,
-                      decoration: BoxDecoration(
-                        color: index == selectedIndex
-                            ? AppColors.fuchsia
-                            : AppColors.champagne,
-                        borderRadius: BorderRadius.circular(20),
-                      ),
-                    ),
+    mainAxisAlignment: MainAxisAlignment.center,
+    children: [
+      for (var index = 0; index < count; index++)
+        Semantics(
+          button: true,
+          selected: index == selectedIndex,
+          label: '${index + 1}번 슬라이드 보기',
+          child: InkWell(
+            key: keyPrefix == null ? null : Key('$keyPrefix-$index'),
+            onTap: () => onSelected(index),
+            borderRadius: BorderRadius.circular(20),
+            child: SizedBox(
+              width: 36,
+              height: 36,
+              child: Center(
+                child: AnimatedContainer(
+                  duration: const Duration(milliseconds: 220),
+                  curve: Curves.easeOutCubic,
+                  width: index == selectedIndex ? 30 : 11,
+                  height: 11,
+                  decoration: BoxDecoration(
+                    color: index == selectedIndex
+                        ? AppColors.fuchsia
+                        : AppColors.champagne,
+                    borderRadius: BorderRadius.circular(20),
                   ),
                 ),
               ),
             ),
-        ],
-      );
+          ),
+        ),
+    ],
+  );
 }
 
 class ProductBottle extends StatelessWidget {
-  const ProductBottle(
-      {required this.product,
-      super.key,
-      this.height = 210,
-      this.alignment = Alignment.center});
+  const ProductBottle({
+    required this.product,
+    super.key,
+    this.height = 210,
+    this.alignment = Alignment.center,
+  });
 
   final BeautyProduct product;
   final double height;
@@ -157,15 +147,18 @@ class MatchPill extends StatelessWidget {
         color: dark ? AppColors.champagne : AppColors.berry,
         borderRadius: BorderRadius.circular(10),
         border: Border.all(
-            color: dark ? AppColors.pearl : AppColors.champagne, width: .7),
+          color: dark ? AppColors.pearl : AppColors.champagne,
+          width: .7,
+        ),
       ),
       child: Text(
-        '$value% MATCH',
+        '기준 관련',
         style: TextStyle(
-            color: dark ? AppColors.deep : Colors.white,
-            fontSize: 9,
-            fontWeight: FontWeight.w700,
-            letterSpacing: .4),
+          color: dark ? AppColors.deep : Colors.white,
+          fontSize: 9,
+          fontWeight: FontWeight.w700,
+          letterSpacing: .4,
+        ),
       ),
     );
   }

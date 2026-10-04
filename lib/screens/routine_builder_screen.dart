@@ -60,7 +60,7 @@ class _RoutineBuilderScreenState extends State<RoutineBuilderScreen> {
     final warning = conflict != null || morningRetinal;
     return Scaffold(
       appBar: AppBar(
-          title: const Text('MY ROUTINE',
+          title: const Text('나의 뷰티 루틴',
               style: TextStyle(
                   fontSize: 11,
                   fontWeight: FontWeight.w700,
@@ -68,7 +68,7 @@ class _RoutineBuilderScreenState extends State<RoutineBuilderScreen> {
       body: ListView(
         padding: const EdgeInsets.fromLTRB(24, 24, 24, 80),
         children: [
-          const Text('AI ROUTINE · COMPATIBILITY SCAN',
+          const Text('루틴 성분 궁합 확인',
               style: TextStyle(
                   color: AppColors.violet,
                   fontSize: 10,
@@ -83,8 +83,8 @@ class _RoutineBuilderScreenState extends State<RoutineBuilderScreen> {
           const SizedBox(height: 28),
           SegmentedButton<bool>(
             segments: const [
-              ButtonSegment(value: true, label: Text('AM ROUTINE')),
-              ButtonSegment(value: false, label: Text('PM ROUTINE'))
+              ButtonSegment(value: true, label: Text('아침 루틴')),
+              ButtonSegment(value: false, label: Text('저녁 루틴'))
             ],
             selected: {morning},
             onSelectionChanged: (value) =>

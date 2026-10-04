@@ -20,7 +20,7 @@ class CartScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     final total = products.fold(0, (sum, product) => sum + product.price);
     return Scaffold(
-      appBar: AppBar(title: const Text('CART')),
+      appBar: AppBar(title: const Text('장바구니')),
       body: products.isEmpty
           ? const Center(child: Text('장바구니가 비어 있어요.'))
           : ListView(
@@ -80,11 +80,11 @@ class DeliveryStatusScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     const labels = ['결제 완료', '상품 준비', '배송 중', '배송 완료'];
     return Scaffold(
-      appBar: AppBar(title: const Text('ORDER STATUS')),
+      appBar: AppBar(title: const Text('배송 조회')),
       body: Padding(
         padding: const EdgeInsets.all(24),
         child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
-          const Text('ORDER COMPLETE',
+          const Text('주문 완료',
               style: TextStyle(
                   color: AppColors.berry,
                   fontSize: 10,
@@ -129,7 +129,7 @@ class DeliveryStatusScreen extends StatelessWidget {
                 icon: const Icon(Icons.local_shipping_outlined),
                 label: const Text('배송 단계 데모 진행')),
           const SizedBox(height: 10),
-          FilledButton(onPressed: onDone, child: const Text('MY SKIN에서 주문 조회')),
+          FilledButton(onPressed: onDone, child: const Text('마이에서 주문 조회')),
         ]),
       ),
     );

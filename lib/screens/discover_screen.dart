@@ -3,247 +3,169 @@ import 'dart:async';
 import 'package:flutter/material.dart';
 
 import '../catalog.dart';
-import '../features/cosmetics_law/cosmetics_law_service.dart';
 import '../features/ingredient_dictionary/ingredient_dictionary_service.dart';
 import '../models.dart';
 import '../theme.dart';
+import '../widgets/brand_widgets.dart';
 import 'routine_builder_screen.dart';
 
-part 'discover_sections.dart';
-
+/// 제품·성분·브랜드·리뷰 키워드를 같은 입력에서 해석하는 통합 탐색 화면입니다.
 class DiscoverScreen extends StatefulWidget {
-  const DiscoverScreen({super.key});
+  const DiscoverScreen({
+    required this.onOpenProduct,
+    required this.onAskRemi,
+    super.key,
+  });
+
+  final ValueChanged<BeautyProduct> onOpenProduct;
+  final VoidCallback onAskRemi;
 
   @override
   State<DiscoverScreen> createState() => _DiscoverScreenState();
 }
 
 class _DiscoverScreenState extends State<DiscoverScreen> {
-  String query = '';
-  String category = 'ALL';
-  final IngredientDictionaryService _dictionaryService =
-      const IngredientDictionaryService();
-  final CosmeticsLawService _cosmeticsLawService = const CosmeticsLawService();
-  Timer? _searchDebounce;
+  final _controller = TextEditingController();
+  final _dictionary = const IngredientDictionaryService();
+  Timer? _debounce;
+  String _query = '';
+  String _type = '전체';
+  bool _loadingOfficial = false;
   List<IngredientInfo> _officialResults = const [];
-  bool _isSearchingOfficial = false;
-  CosmeticsLawStatus? _cosmeticsLawStatus;
-
-  @override
-  void initState() {
-    super.initState();
-    _loadCosmeticsLawStatus();
-  }
-
-  Future<void> _loadCosmeticsLawStatus() async {
-    final status = await _cosmeticsLawService.checkCurrentLaw();
-    if (!mounted || status == null) return;
-    setState(() => _cosmeticsLawStatus = status);
-  }
-
-  static const trend =
-      <String, ({int score, int delta, String signal, Color color})>{
-    '세라마이드': (
-      score: 96,
-      delta: 18,
-      signal: 'BARRIER BOOM',
-      color: AppColors.cyan
-    ),
-    '판테놀': (
-      score: 91,
-      delta: 24,
-      signal: 'SOOTHING CORE',
-      color: AppColors.lime
-    ),
-    '레티날': (
-      score: 89,
-      delta: 31,
-      signal: 'NIGHT ACTIVE',
-      color: AppColors.violet
-    ),
-    '비타민 C': (
-      score: 84,
-      delta: 12,
-      signal: 'GLOW RESET',
-      color: AppColors.butter
-    ),
-    'BHA': (score: 78, delta: 9, signal: 'PORE CYCLE', color: AppColors.coral),
-    '나이아신아마이드': (
-      score: 86,
-      delta: 15,
-      signal: 'MULTI TASKER',
-      color: Color(0xFFA8B7FF)
-    ),
-  };
-
-  List<String> get categories =>
-      ['ALL', ...ingredients.map((item) => item.category).toSet()];
-
-  List<IngredientInfo> get filtered => ingredients.where((item) {
-        final matchesQuery = _matchesQuery(item);
-        return matchesQuery && (category == 'ALL' || item.category == category);
-      }).toList();
-
-  List<IngredientInfo> get searchResults {
-    if (query.trim().isEmpty) return const [];
-    final values = [...ingredients.where(_matchesQuery), ..._officialResults];
-    final seen = <String>{};
-    return values
-        .where((item) => seen.add('${item.name}|${item.englishName}'))
-        .toList(growable: false);
-  }
 
   @override
   void dispose() {
-    _searchDebounce?.cancel();
+    _controller.dispose();
+    _debounce?.cancel();
     super.dispose();
   }
 
-  void _onSearch(String value) {
+  void _search(String value) {
     setState(() {
-      query = value;
+      _query = value;
       _officialResults = const [];
-      _isSearchingOfficial = value.trim().isNotEmpty;
+      _loadingOfficial = value.trim().isNotEmpty;
     });
-    _searchDebounce?.cancel();
+    _debounce?.cancel();
     if (value.trim().isEmpty) return;
-    _searchDebounce = Timer(const Duration(milliseconds: 360), () async {
-      final results = await _dictionaryService.search(value);
-      if (!mounted || value != query) return;
+    _debounce = Timer(const Duration(milliseconds: 360), () async {
+      final response = await _dictionary.search(value);
+      if (!mounted || value != _query) return;
       setState(() {
-        _officialResults = results;
-        _isSearchingOfficial = false;
+        _officialResults = response;
+        _loadingOfficial = false;
       });
     });
   }
 
-  bool _matchesQuery(IngredientInfo item) {
-    final normalized = query.trim().toLowerCase();
-    if (normalized.isEmpty) return true;
-    final corpus = [
-      item.name,
-      item.englishName,
-      item.category,
-      item.summary,
-      ...item.benefits,
-      ...item.goodWith,
-      ...item.cautionWith,
-    ].join(' ').toLowerCase();
-    return corpus.contains(normalized);
+  List<BeautyProduct> get _products {
+    final keyword = _query.trim().toLowerCase();
+    if (keyword.isEmpty) return products.take(3).toList();
+    return products.where((product) {
+      return '${product.name} ${product.brand} ${product.ingredients.join(' ')} ${product.concern}'
+          .toLowerCase()
+          .contains(keyword);
+    }).toList();
   }
 
-  void showIngredient(IngredientInfo ingredient) {
-    final meta = trend[ingredient.name] ??
-        (
-          score: 0,
-          delta: 0,
-          signal: 'MFDS INGREDIENT DB',
-          color: AppColors.ballerina,
-        );
+  List<IngredientInfo> get _ingredients {
+    final keyword = _query.trim().toLowerCase();
+    final local = ingredients.where((ingredient) {
+      return '${ingredient.name} ${ingredient.englishName} ${ingredient.summary} ${ingredient.category}'
+          .toLowerCase()
+          .contains(keyword);
+    });
+    final seen = <String>{};
+    return [...local, ..._officialResults]
+        .where(
+          (ingredient) =>
+              seen.add('${ingredient.name}|${ingredient.englishName}'),
+        )
+        .toList();
+  }
+
+  void _showIngredient(IngredientInfo ingredient) {
     showModalBottomSheet<void>(
       context: context,
       isScrollControlled: true,
       backgroundColor: Colors.transparent,
       builder: (context) => DraggableScrollableSheet(
+        initialChildSize: .72,
+        maxChildSize: .92,
         expand: false,
-        initialChildSize: .8,
-        maxChildSize: .94,
         builder: (context, controller) => Container(
           decoration: const BoxDecoration(
-              color: AppColors.paper,
-              borderRadius: BorderRadius.vertical(top: Radius.circular(32))),
+            color: AppColors.paper,
+            borderRadius: BorderRadius.vertical(top: Radius.circular(30)),
+          ),
           child: ListView(
             controller: controller,
-            padding: const EdgeInsets.fromLTRB(22, 12, 22, 44),
+            padding: const EdgeInsets.fromLTRB(22, 12, 22, 34),
             children: [
               Center(
-                  child: Container(
-                      width: 42,
-                      height: 5,
-                      decoration: BoxDecoration(
-                          color: AppColors.ink.withValues(alpha: .25),
-                          borderRadius: BorderRadius.circular(10)))),
-              const SizedBox(height: 24),
-              Container(
-                padding: const EdgeInsets.all(24),
-                decoration: BoxDecoration(
-                  color: meta.color,
-                  borderRadius: BorderRadius.circular(28),
-                  boxShadow: [
-                    BoxShadow(
-                        color: meta.color.withValues(alpha: .35),
-                        blurRadius: 34,
-                        offset: const Offset(0, 16))
-                  ],
+                child: Container(
+                  width: 40,
+                  height: 4,
+                  decoration: BoxDecoration(
+                    color: AppColors.champagne,
+                    borderRadius: BorderRadius.circular(8),
+                  ),
                 ),
-                child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Row(children: [
-                        _LivePill(label: meta.signal, dark: true),
-                        const Spacer(),
-                        Text('${meta.score}',
-                            style: const TextStyle(
-                                fontSize: 42,
-                                fontWeight: FontWeight.w700,
-                                letterSpacing: -2)),
-                        const Text('/100',
-                            style: TextStyle(
-                                fontSize: 10, fontWeight: FontWeight.w800)),
-                      ]),
-                      const SizedBox(height: 38),
-                      Text(ingredient.englishName,
-                          style: const TextStyle(
-                              fontSize: 36,
-                              height: .95,
-                              fontWeight: FontWeight.w700,
-                              letterSpacing: -1)),
-                      const SizedBox(height: 7),
-                      Text(ingredient.name,
-                          style: const TextStyle(
-                              fontSize: 16, fontWeight: FontWeight.w800)),
-                    ]),
               ),
-              const SizedBox(height: 26),
-              Text(ingredient.summary,
-                  style: const TextStyle(
-                      fontSize: 15, height: 1.65, fontWeight: FontWeight.w600)),
-              const SizedBox(height: 24),
-              Wrap(
-                  spacing: 8,
-                  runSpacing: 8,
-                  children: ingredient.benefits
-                      .map((value) => Chip(label: Text(value)))
-                      .toList()),
-              const SizedBox(height: 30),
-              _RelationCard(
-                title: 'POWER PAIR',
-                subtitle: '함께 쓰면 시너지가 좋아요',
-                values: ingredient.goodWith,
-                icon: Icons.add_rounded,
-                color: AppColors.mint,
+              const SizedBox(height: 22),
+              const _EvidenceLabel(label: '성분 정보'),
+              const SizedBox(height: 14),
+              Text(
+                ingredient.name,
+                style: Theme.of(context).textTheme.headlineLarge,
               ),
-              const SizedBox(height: 12),
-              _RelationCard(
-                title: 'ROUTINE ALERT',
-                subtitle: '같은 루틴에서는 체크하세요',
-                values: ingredient.cautionWith.isEmpty
-                    ? const ['현재 알려진 주요 충돌 조합이 적어요']
-                    : ingredient.cautionWith,
-                icon: Icons.bolt_rounded,
-                color: AppColors.blush,
+              const SizedBox(height: 4),
+              Text(
+                ingredient.englishName,
+                style: const TextStyle(
+                  color: AppColors.berry,
+                  fontSize: 12,
+                  fontWeight: FontWeight.w800,
+                  letterSpacing: .6,
+                ),
               ),
-              const SizedBox(height: 24),
-              FilledButton.icon(
+              const SizedBox(height: 22),
+              _EvidenceBlock(
+                title: '무엇을 위한 성분인가요?',
+                body: ingredient.summary,
+                icon: Icons.science_outlined,
+              ),
+              const SizedBox(height: 10),
+              _EvidenceBlock(
+                title: '함께 확인할 조합',
+                body: ingredient.goodWith.isEmpty
+                    ? '제품의 전체 처방과 사용 맥락을 함께 확인해 주세요.'
+                    : ingredient.goodWith.join(' · '),
+                icon: Icons.hub_outlined,
+              ),
+              const SizedBox(height: 10),
+              _EvidenceBlock(
+                title: '주의할 조합',
+                body: ingredient.cautionWith.isEmpty
+                    ? '고정된 주의 조합이 적어요. 피부 상태와 제품 제형에 따라 달라질 수 있어요.'
+                    : ingredient.cautionWith.join(' · '),
+                icon: Icons.info_outline_rounded,
+              ),
+              const SizedBox(height: 20),
+              const _DataFreshness(),
+              const SizedBox(height: 16),
+              OutlinedButton.icon(
                 onPressed: () {
                   Navigator.pop(context);
                   Navigator.push(
-                      context,
-                      MaterialPageRoute(
-                          builder: (_) => const RoutineBuilderScreen()));
+                    context,
+                    MaterialPageRoute(
+                      builder: (_) => const RoutineBuilderScreen(),
+                    ),
+                  );
                 },
-                icon: const Icon(Icons.auto_awesome_rounded, size: 18),
-                label: const Text('내 루틴에 넣어 궁합 확인'),
+                icon: const Icon(Icons.playlist_add_check_rounded),
+                label: const Text('내 루틴에서 조합 확인'),
               ),
             ],
           ),
@@ -254,116 +176,530 @@ class _DiscoverScreenState extends State<DiscoverScreen> {
 
   @override
   Widget build(BuildContext context) {
-    return CustomScrollView(slivers: [
-      SliverToBoxAdapter(
-          child: _TrendHero(
-              query: query,
-              results: searchResults,
-              isSearching: _isSearchingOfficial,
-              onSearch: _onSearch,
-              onOpen: showIngredient)),
-      SliverToBoxAdapter(
-          child: Padding(
-        padding: const EdgeInsets.fromLTRB(20, 54, 20, 20),
-        child: Center(
-            child: ConstrainedBox(
-          constraints: const BoxConstraints(maxWidth: 1080),
-          child: const SizedBox(
-            width: double.infinity,
-            child: _ModernSectionHeader(
-                eyebrow: '01 · LIVE SIGNAL',
-                title: '지금 뜨는 성분',
-                subtitle: '검색량·저장·루틴 등록 데이터를 조합한 이번 주 트렌드'),
+    final showProducts =
+        _type == '전체' || _type == '제품' || _type == '브랜드' || _type == '리뷰';
+    final showIngredients = _type == '전체' || _type == '성분';
+    return ListView(
+      padding: const EdgeInsets.fromLTRB(20, 24, 20, 122),
+      children: [
+        const Text(
+          '성분 · 상품 찾기',
+          style: TextStyle(
+            color: AppColors.berry,
+            fontSize: 10,
+            letterSpacing: 1.4,
+            fontWeight: FontWeight.w900,
           ),
-        )),
-      )),
-      SliverToBoxAdapter(
-          child: SizedBox(
-        height: 278,
-        child: ListView.separated(
-          padding: const EdgeInsets.symmetric(horizontal: 20),
-          scrollDirection: Axis.horizontal,
-          itemCount: 3,
-          separatorBuilder: (_, __) => const SizedBox(width: 12),
-          itemBuilder: (context, index) {
-            final ingredient = ingredients[index];
-            return _TrendCard(
-                rank: index + 1,
-                ingredient: ingredient,
-                meta: trend[ingredient.name]!,
-                onTap: () => showIngredient(ingredient));
-          },
         ),
-      )),
-      SliverToBoxAdapter(
-          child: Padding(
-        padding: const EdgeInsets.fromLTRB(20, 64, 20, 18),
-        child: Center(
-            child: ConstrainedBox(
-          constraints: const BoxConstraints(maxWidth: 1080),
-          child: SizedBox(
-            width: double.infinity,
-            child:
-                Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
-              const _ModernSectionHeader(
-                  eyebrow: '02 · INGREDIENT RADAR',
-                  title: '내 피부를 위한 성분 신호',
-                  subtitle: '효능, 상승세, 궁합까지 한 번에 탐색하세요.'),
-              const SizedBox(height: 22),
-              Wrap(
-                  spacing: 8,
-                  runSpacing: 8,
-                  children: categories.map((value) {
-                    final selected = category == value;
-                    return ChoiceChip(
-                      label: Text(value),
-                      labelPadding: const EdgeInsets.symmetric(horizontal: 10),
-                      showCheckmark: false,
-                      selected: selected,
-                      labelStyle: TextStyle(
-                          color: selected ? Colors.white : AppColors.ink,
-                          fontWeight: FontWeight.w800),
-                      onSelected: (_) => setState(() => category = value),
-                    );
-                  }).toList()),
-            ]),
+        const SizedBox(height: 10),
+        Text(
+          '제품을 고르기 전,\n성분부터 확인해요.',
+          style:
+              Theme.of(context).textTheme.headlineLarge?.copyWith(fontSize: 30),
+        ),
+        const SizedBox(height: 10),
+        const Text(
+          '제품명·성분명·브랜드를 검색하고 내 피부 기준으로 비교해 보세요.',
+          style: TextStyle(color: AppColors.muted, fontSize: 12, height: 1.5),
+        ),
+        const SizedBox(height: 22),
+        TextField(
+          controller: _controller,
+          onChanged: _search,
+          decoration: InputDecoration(
+            hintText: '제품, 성분, 브랜드, 리뷰 키워드',
+            prefixIcon: const Icon(Icons.search_rounded),
+            suffixIcon: _loadingOfficial
+                ? const Padding(
+                    padding: EdgeInsets.all(14),
+                    child: SizedBox(
+                      width: 18,
+                      height: 18,
+                      child: CircularProgressIndicator(strokeWidth: 2),
+                    ),
+                  )
+                : _query.isEmpty
+                    ? null
+                    : IconButton(
+                        tooltip: '검색어 지우기',
+                        onPressed: () {
+                          _controller.clear();
+                          _search('');
+                        },
+                        icon: const Icon(Icons.close_rounded),
+                      ),
           ),
-        )),
-      )),
-      SliverPadding(
-        padding: const EdgeInsets.fromLTRB(20, 0, 20, 72),
-        sliver: SliverLayoutBuilder(builder: (context, constraints) {
-          final columns = constraints.crossAxisExtent > 900
-              ? 3
-              : constraints.crossAxisExtent > 560
-                  ? 2
-                  : 1;
-          return SliverGrid(
-            gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
-                crossAxisCount: columns,
-                crossAxisSpacing: 12,
-                mainAxisSpacing: 12,
-                mainAxisExtent: 218),
-            delegate: SliverChildBuilderDelegate((context, index) {
-              final ingredient = filtered[index];
-              final meta = trend[ingredient.name]!;
-              return _SignalCard(
-                  ingredient: ingredient,
-                  meta: meta,
-                  onTap: () => showIngredient(ingredient));
-            }, childCount: filtered.length),
-          );
-        }),
-      ),
-      SliverToBoxAdapter(
-          child: _RoutineForecast(
-              onTap: () => Navigator.push(
-                  context,
-                  MaterialPageRoute(
-                      builder: (_) => const RoutineBuilderScreen())))),
-      const SliverToBoxAdapter(child: _TrendReports()),
-      SliverToBoxAdapter(child: _CosmeticLawWatch(status: _cosmeticsLawStatus)),
-      const SliverToBoxAdapter(child: SizedBox(height: 120)),
-    ]);
+        ),
+        const SizedBox(height: 12),
+        SingleChildScrollView(
+          scrollDirection: Axis.horizontal,
+          child: Row(
+            children: [
+              for (final item in ['전체', '제품', '성분', '브랜드', '리뷰'])
+                Padding(
+                  padding: const EdgeInsets.only(right: 8),
+                  child: ChoiceChip(
+                    label: Text(item),
+                    selected: _type == item,
+                    showCheckmark: false,
+                    onSelected: (_) => setState(() => _type = item),
+                  ),
+                ),
+            ],
+          ),
+        ),
+        const SizedBox(height: 22),
+        const _SavedCriteriaStrip(),
+        if (showProducts) ...[
+          const SizedBox(height: 34),
+          _ResultHeading(
+            title: _query.isEmpty ? '지금 많이 찾는 상품' : '상품 검색 결과',
+            count: _products.length,
+            detail: _type == '리뷰'
+                ? '리뷰 유형과 구매 정보는 상세에서 확인해요'
+                : '내 피부 기준과 함께 비교해 볼 수 있어요',
+          ),
+          const SizedBox(height: 12),
+          if (_products.isEmpty)
+            const _EmptyState(
+              title: '찾는 상품이 없어요',
+              body: '상품명 또는 핵심 성분명으로 다시 검색해 보세요.',
+            )
+          else
+            ..._products.map(
+              (product) => Padding(
+                padding: const EdgeInsets.only(bottom: 10),
+                child: _ProductDecisionCard(
+                  product: product,
+                  onTap: () => widget.onOpenProduct(product),
+                ),
+              ),
+            ),
+        ],
+        if (showIngredients) ...[
+          const SizedBox(height: 34),
+          _ResultHeading(
+            title: _query.isEmpty ? '많이 찾는 성분' : '성분 검색 결과',
+            count: _ingredients.length,
+            detail: _query.isEmpty
+                ? '한글명·영문명·INCI 명칭으로 찾아볼 수 있어요'
+                : '공식 연동 결과가 있으면 함께 보여드려요',
+          ),
+          const SizedBox(height: 12),
+          if (_ingredients.isEmpty && _query.isNotEmpty)
+            const _EmptyState(
+              title: '성분 결과가 없어요',
+              body: '한글명, 영문명 또는 INCI 명칭을 확인해 보세요.',
+            )
+          else
+            ..._ingredients.take(_query.isEmpty ? 4 : 20).map(
+                  (ingredient) => Padding(
+                    padding: const EdgeInsets.only(bottom: 9),
+                    child: _IngredientRow(
+                      ingredient: ingredient,
+                      onTap: () => _showIngredient(ingredient),
+                    ),
+                  ),
+                ),
+        ],
+        const SizedBox(height: 34),
+        _RemiContextCard(onTap: widget.onAskRemi),
+      ],
+    );
   }
+}
+
+class _SavedCriteriaStrip extends StatelessWidget {
+  const _SavedCriteriaStrip();
+  @override
+  Widget build(BuildContext context) => Container(
+        padding: const EdgeInsets.all(14),
+        decoration: BoxDecoration(
+          color: AppColors.blush,
+          borderRadius: BorderRadius.circular(18),
+        ),
+        child: Row(
+          children: [
+            const Icon(
+              Icons.bookmark_added_outlined,
+              size: 18,
+              color: AppColors.berry,
+            ),
+            const SizedBox(width: 9),
+            const Expanded(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    '나의 성분 기준 적용 중',
+                    style: TextStyle(fontSize: 12, fontWeight: FontWeight.w800),
+                  ),
+                  SizedBox(height: 3),
+                  Text(
+                    '피부 장벽 · 세라마이드 · 판테놀',
+                    style: TextStyle(color: AppColors.berry, fontSize: 10),
+                  ),
+                ],
+              ),
+            ),
+            const Icon(Icons.tune_rounded, size: 17, color: AppColors.berry),
+          ],
+        ),
+      );
+}
+
+class _ResultHeading extends StatelessWidget {
+  const _ResultHeading({
+    required this.title,
+    required this.count,
+    required this.detail,
+  });
+  final String title;
+  final int count;
+  final String detail;
+  @override
+  Widget build(BuildContext context) => Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Row(
+            children: [
+              Expanded(
+                child: Text(
+                  title,
+                  style: const TextStyle(
+                      fontSize: 18, fontWeight: FontWeight.w900),
+                ),
+              ),
+              Text(
+                '$count개',
+                style: const TextStyle(
+                  color: AppColors.berry,
+                  fontSize: 10,
+                  fontWeight: FontWeight.w800,
+                ),
+              ),
+            ],
+          ),
+          const SizedBox(height: 4),
+          Text(
+            detail,
+            style: const TextStyle(color: AppColors.muted, fontSize: 10),
+          ),
+        ],
+      );
+}
+
+class _ProductDecisionCard extends StatelessWidget {
+  const _ProductDecisionCard({required this.product, required this.onTap});
+  final BeautyProduct product;
+  final VoidCallback onTap;
+  @override
+  Widget build(BuildContext context) => Material(
+        color: AppColors.surface,
+        borderRadius: BorderRadius.circular(20),
+        child: InkWell(
+          onTap: onTap,
+          borderRadius: BorderRadius.circular(20),
+          child: Container(
+            padding: const EdgeInsets.all(11),
+            decoration: BoxDecoration(
+              borderRadius: BorderRadius.circular(20),
+              border: Border.all(color: AppColors.line),
+            ),
+            child: Row(
+              children: [
+                ClipRRect(
+                  borderRadius: BorderRadius.circular(13),
+                  child: SizedBox(
+                    width: 78,
+                    height: 88,
+                    child: ProductBottle(product: product, height: 88),
+                  ),
+                ),
+                const SizedBox(width: 13),
+                Expanded(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      const _EvidenceLabel(label: '구매 전 확인'),
+                      const SizedBox(height: 7),
+                      Text(
+                        product.name,
+                        maxLines: 1,
+                        overflow: TextOverflow.ellipsis,
+                        style: const TextStyle(
+                          fontSize: 13,
+                          fontWeight: FontWeight.w900,
+                        ),
+                      ),
+                      const SizedBox(height: 3),
+                      Text(
+                        product.brand,
+                        style: const TextStyle(
+                            color: AppColors.muted, fontSize: 9),
+                      ),
+                      const SizedBox(height: 10),
+                      Text(
+                        '기준 포함 · ${product.ingredients.take(2).join(' · ')}',
+                        style: const TextStyle(
+                          color: AppColors.berry,
+                          fontSize: 10,
+                          fontWeight: FontWeight.w800,
+                        ),
+                      ),
+                      const SizedBox(height: 3),
+                      Text(
+                        '${product.formattedPrice} · 데이터 기준 확인',
+                        style: const TextStyle(
+                            color: AppColors.muted, fontSize: 9),
+                      ),
+                    ],
+                  ),
+                ),
+                const Icon(
+                  Icons.arrow_forward_rounded,
+                  size: 18,
+                  color: AppColors.berry,
+                ),
+              ],
+            ),
+          ),
+        ),
+      );
+}
+
+class _IngredientRow extends StatelessWidget {
+  const _IngredientRow({required this.ingredient, required this.onTap});
+  final IngredientInfo ingredient;
+  final VoidCallback onTap;
+  @override
+  Widget build(BuildContext context) => Material(
+        color: AppColors.surface,
+        borderRadius: BorderRadius.circular(16),
+        child: InkWell(
+          onTap: onTap,
+          borderRadius: BorderRadius.circular(16),
+          child: Container(
+            padding: const EdgeInsets.all(14),
+            decoration: BoxDecoration(
+              borderRadius: BorderRadius.circular(16),
+              border: Border.all(color: AppColors.line),
+            ),
+            child: Row(
+              children: [
+                Container(
+                  width: 40,
+                  height: 40,
+                  alignment: Alignment.center,
+                  decoration: const BoxDecoration(
+                    color: AppColors.blush,
+                    shape: BoxShape.circle,
+                  ),
+                  child: const Icon(
+                    Icons.science_outlined,
+                    size: 18,
+                    color: AppColors.berry,
+                  ),
+                ),
+                const SizedBox(width: 11),
+                Expanded(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(
+                        ingredient.name,
+                        style: const TextStyle(
+                          fontSize: 13,
+                          fontWeight: FontWeight.w900,
+                        ),
+                      ),
+                      const SizedBox(height: 2),
+                      Text(
+                        '${ingredient.englishName} · ${ingredient.category}',
+                        style: const TextStyle(
+                            color: AppColors.muted, fontSize: 9),
+                      ),
+                    ],
+                  ),
+                ),
+                const Icon(Icons.chevron_right_rounded, color: AppColors.muted),
+              ],
+            ),
+          ),
+        ),
+      );
+}
+
+class _EvidenceLabel extends StatelessWidget {
+  const _EvidenceLabel({required this.label});
+  final String label;
+  @override
+  Widget build(BuildContext context) => Text(
+        label,
+        style: const TextStyle(
+          color: AppColors.berry,
+          fontSize: 8,
+          letterSpacing: .8,
+          fontWeight: FontWeight.w900,
+        ),
+      );
+}
+
+class _EvidenceBlock extends StatelessWidget {
+  const _EvidenceBlock({
+    required this.title,
+    required this.body,
+    required this.icon,
+  });
+  final String title;
+  final String body;
+  final IconData icon;
+  @override
+  Widget build(BuildContext context) => Container(
+        padding: const EdgeInsets.all(16),
+        decoration: BoxDecoration(
+          color: AppColors.surface,
+          border: Border.all(color: AppColors.line),
+          borderRadius: BorderRadius.circular(18),
+        ),
+        child: Row(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Icon(icon, size: 18, color: AppColors.berry),
+            const SizedBox(width: 10),
+            Expanded(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    title,
+                    style: const TextStyle(
+                      fontSize: 12,
+                      fontWeight: FontWeight.w800,
+                    ),
+                  ),
+                  const SizedBox(height: 5),
+                  Text(
+                    body,
+                    style: const TextStyle(
+                      color: AppColors.muted,
+                      fontSize: 11,
+                      height: 1.5,
+                    ),
+                  ),
+                ],
+              ),
+            ),
+          ],
+        ),
+      );
+}
+
+class _DataFreshness extends StatelessWidget {
+  const _DataFreshness();
+  @override
+  Widget build(BuildContext context) => Container(
+        padding: const EdgeInsets.all(14),
+        decoration: BoxDecoration(
+          color: AppColors.butter,
+          borderRadius: BorderRadius.circular(16),
+        ),
+        child: const Row(
+          children: [
+            Icon(Icons.update_rounded, color: AppColors.berry, size: 18),
+            SizedBox(width: 9),
+            Expanded(
+              child: Text(
+                '공식 성분 데이터 연동 결과 · 데이터 기준일은 결과 출처에서 다시 확인해 주세요.',
+                style: TextStyle(
+                    color: AppColors.berry, fontSize: 10, height: 1.4),
+              ),
+            ),
+          ],
+        ),
+      );
+}
+
+class _RemiContextCard extends StatelessWidget {
+  const _RemiContextCard({required this.onTap});
+  final VoidCallback onTap;
+  @override
+  Widget build(BuildContext context) => Material(
+        color: AppColors.deep,
+        borderRadius: BorderRadius.circular(22),
+        child: InkWell(
+          onTap: onTap,
+          borderRadius: BorderRadius.circular(22),
+          child: Padding(
+            padding: const EdgeInsets.all(18),
+            child: Row(
+              children: [
+                const Icon(
+                  Icons.auto_awesome_rounded,
+                  color: AppColors.lime,
+                  size: 22,
+                ),
+                const SizedBox(width: 12),
+                const Expanded(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(
+                        '레미에게 이 결과 물어보기',
+                        style: TextStyle(
+                          color: Colors.white,
+                          fontSize: 13,
+                          fontWeight: FontWeight.w800,
+                        ),
+                      ),
+                      SizedBox(height: 4),
+                      Text(
+                        '의료 진단이 아닌 제품·성분 정보 해설을 제공해요.',
+                        style:
+                            TextStyle(color: Color(0xFFCAE0E2), fontSize: 10),
+                      ),
+                    ],
+                  ),
+                ),
+                const Icon(
+                  Icons.arrow_forward_rounded,
+                  color: AppColors.lime,
+                  size: 18,
+                ),
+              ],
+            ),
+          ),
+        ),
+      );
+}
+
+class _EmptyState extends StatelessWidget {
+  const _EmptyState({required this.title, required this.body});
+  final String title;
+  final String body;
+  @override
+  Widget build(BuildContext context) => Container(
+        padding: const EdgeInsets.all(24),
+        decoration: BoxDecoration(
+          color: AppColors.surface,
+          borderRadius: BorderRadius.circular(18),
+          border: Border.all(color: AppColors.line),
+        ),
+        child: Column(
+          children: [
+            const Icon(Icons.search_off_rounded, color: AppColors.muted),
+            const SizedBox(height: 8),
+            Text(
+              title,
+              style: const TextStyle(fontSize: 13, fontWeight: FontWeight.w800),
+            ),
+            const SizedBox(height: 4),
+            Text(
+              body,
+              textAlign: TextAlign.center,
+              style: const TextStyle(color: AppColors.muted, fontSize: 10),
+            ),
+          ],
+        ),
+      );
 }

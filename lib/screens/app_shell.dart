@@ -19,6 +19,7 @@ import 'my_skin_screen.dart';
 import 'pharmacist_chat_screen.dart';
 import 'product_detail_screen.dart';
 import 'profile_screen.dart';
+import 'scan_screen.dart';
 import 'shop_screen.dart';
 
 class AppShell extends StatefulWidget {
@@ -38,18 +39,18 @@ class _AppShellState extends State<AppShell> {
     super.initState();
     appState = AppState()..addListener(_refresh);
     if (Firebase.apps.isNotEmpty) {
-      _authSubscription = FirebaseAuth.instance.authStateChanges().listen(
-        (user) {
-          if (user == null) {
-            appState.signOut();
-          } else {
-            appState.signIn(
-              email: user.email ?? '',
-              name: user.displayName ?? user.email?.split('@').first ?? '회원',
-            );
-          }
-        },
-      );
+      _authSubscription = FirebaseAuth.instance.authStateChanges().listen((
+        user,
+      ) {
+        if (user == null) {
+          appState.signOut();
+        } else {
+          appState.signIn(
+            email: user.email ?? '',
+            name: user.displayName ?? user.email?.split('@').first ?? '회원',
+          );
+        }
+      });
       if (kIsWeb) unawaited(_completeGoogleRedirect());
     }
   }
@@ -85,24 +86,33 @@ class _AppShellState extends State<AppShell> {
 
   void openCompare() {
     Navigator.push(
-        context,
-        MaterialPageRoute(
-            builder: (_) => Scaffold(
-                  appBar: AppBar(
-                      title: const Text('SMART COMPARE',
-                          style: TextStyle(
-                              fontSize: 11,
-                              fontWeight: FontWeight.w700,
-                              letterSpacing: 1.3))),
-                  body: CompareScreen(
-                      products: appState.comparedProducts,
-                      onRemove: toggleCompare),
-                )));
+      context,
+      MaterialPageRoute(
+        builder: (_) => Scaffold(
+          appBar: AppBar(
+            title: const Text(
+              '상품 비교',
+              style: TextStyle(
+                fontSize: 11,
+                fontWeight: FontWeight.w700,
+                letterSpacing: 1.3,
+              ),
+            ),
+          ),
+          body: CompareScreen(
+            products: appState.comparedProducts,
+            onRemove: toggleCompare,
+          ),
+        ),
+      ),
+    );
   }
 
   Future<SkinProfile?> editProfile() async {
     final result = await Navigator.push<SkinProfile>(
-        context, MaterialPageRoute(builder: (_) => const SkinProfileScreen()));
+      context,
+      MaterialPageRoute(builder: (_) => const SkinProfileScreen()),
+    );
     if (result != null) appState.updateSkinProfile(result);
     return result;
   }
@@ -110,63 +120,73 @@ class _AppShellState extends State<AppShell> {
   void openProduct(BeautyProduct product) {
     appState.recordViewed(product);
     Navigator.push(
-        context,
-        MaterialPageRoute(
-            builder: (_) => ProductDetailScreen(
-                  product: product,
-                  onCompare: () => toggleCompare(product),
-                  initiallySaved: appState.savedIds.contains(product.id),
-                  onToggleSaved: () => toggleSaved(product),
-                  onAddToCart: () {
-                    appState.addToCart(product);
-                    ScaffoldMessenger.of(context).showSnackBar(
-                        const SnackBar(content: Text('장바구니에 담았어요.')));
-                  },
-                  onBuyNow: () => _openCheckout([product]),
-                )));
+      context,
+      MaterialPageRoute(
+        builder: (_) => ProductDetailScreen(
+          product: product,
+          onCompare: () => toggleCompare(product),
+          initiallySaved: appState.savedIds.contains(product.id),
+          onToggleSaved: () => toggleSaved(product),
+          onAddToCart: () {
+            appState.addToCart(product);
+            ScaffoldMessenger.of(context)
+                .showSnackBar(const SnackBar(content: Text('장바구니에 담았어요.')));
+          },
+          onBuyNow: () => _openCheckout([product]),
+        ),
+      ),
+    );
   }
 
   void _openCart() {
     Navigator.push(
-        context,
-        MaterialPageRoute(
-            builder: (_) => CartScreen(
-                  products: appState.cartProducts,
-                  onRemove: appState.removeFromCart,
-                  onCheckout: _openCheckout,
-                )));
+      context,
+      MaterialPageRoute(
+        builder: (_) => CartScreen(
+          products: appState.cartProducts,
+          onRemove: appState.removeFromCart,
+          onCheckout: _openCheckout,
+        ),
+      ),
+    );
   }
 
   void _openCheckout(List<BeautyProduct> items) {
     if (items.isEmpty) return;
     final order = appState.checkout(items);
     Navigator.push(
-        context,
-        MaterialPageRoute(
-            builder: (routeContext) => DeliveryStatusScreen(
-                  order: order,
-                  onAdvance: () => appState.advanceDelivery(order.id),
-                  onDone: () {
-                    Navigator.pop(routeContext);
-                    setState(() => currentIndex = 3);
-                  },
-                )));
+      context,
+      MaterialPageRoute(
+        builder: (routeContext) => DeliveryStatusScreen(
+          order: order,
+          onAdvance: () => appState.advanceDelivery(order.id),
+          onDone: () {
+            Navigator.pop(routeContext);
+            setState(() => currentIndex = 4);
+          },
+        ),
+      ),
+    );
   }
 
   void _openOrder(PurchaseOrder order) {
     Navigator.push(
-        context,
-        MaterialPageRoute(
-            builder: (routeContext) => DeliveryStatusScreen(
-                  order: order,
-                  onAdvance: () => appState.advanceDelivery(order.id),
-                  onDone: () => Navigator.pop(routeContext),
-                )));
+      context,
+      MaterialPageRoute(
+        builder: (routeContext) => DeliveryStatusScreen(
+          order: order,
+          onAdvance: () => appState.advanceDelivery(order.id),
+          onDone: () => Navigator.pop(routeContext),
+        ),
+      ),
+    );
   }
 
   Future<void> openSearch() async {
     final result = await showSearch<BeautyProduct?>(
-        context: context, delegate: ProductSearchDelegate());
+      context: context,
+      delegate: ProductSearchDelegate(),
+    );
     if (result != null && mounted) openProduct(result);
   }
 
@@ -186,11 +206,13 @@ class _AppShellState extends State<AppShell> {
           content: Text('${appState.userEmail} 계정에서 로그아웃합니다.'),
           actions: [
             TextButton(
-                onPressed: () => Navigator.pop(context, false),
-                child: const Text('취소')),
+              onPressed: () => Navigator.pop(context, false),
+              child: const Text('취소'),
+            ),
             FilledButton(
-                onPressed: () => Navigator.pop(context, true),
-                child: const Text('로그아웃')),
+              onPressed: () => Navigator.pop(context, true),
+              child: const Text('로그아웃'),
+            ),
           ],
         ),
       );
@@ -238,24 +260,29 @@ class _AppShellState extends State<AppShell> {
                 ),
                 focusedBorder: OutlineInputBorder(
                   borderRadius: BorderRadius.circular(14),
-                  borderSide:
-                      const BorderSide(color: AppColors.fuchsia, width: 1.4),
+                  borderSide: const BorderSide(
+                    color: AppColors.fuchsia,
+                    width: 1.4,
+                  ),
                 ),
               );
 
           return Dialog(
             backgroundColor: Colors.transparent,
             elevation: 0,
-            insetPadding:
-                const EdgeInsets.symmetric(horizontal: 20, vertical: 28),
+            insetPadding: const EdgeInsets.symmetric(
+              horizontal: 20,
+              vertical: 28,
+            ),
             child: ConstrainedBox(
               constraints: const BoxConstraints(maxWidth: 420),
               child: Container(
                 decoration: BoxDecoration(
                   color: const Color(0xFFFFFEFF),
                   borderRadius: BorderRadius.circular(28),
-                  border:
-                      Border.all(color: Colors.white.withValues(alpha: .85)),
+                  border: Border.all(
+                    color: Colors.white.withValues(alpha: .85),
+                  ),
                   boxShadow: const [
                     BoxShadow(
                       color: Color(0x331E1740),
@@ -284,8 +311,11 @@ class _AppShellState extends State<AppShell> {
                                 end: Alignment.bottomRight,
                               ),
                             ),
-                            child: const Icon(Icons.auto_awesome_rounded,
-                                color: Colors.white, size: 18),
+                            child: const Icon(
+                              Icons.auto_awesome_rounded,
+                              color: Colors.white,
+                              size: 18,
+                            ),
                           ),
                           const Spacer(),
                           IconButton(
@@ -297,13 +327,15 @@ class _AppShellState extends State<AppShell> {
                         ],
                       ),
                       const SizedBox(height: 12),
-                      Text(isSignUp ? '피부 루틴을 시작해요' : '다시 만난 반가워요',
-                          style: const TextStyle(
-                            color: AppColors.ink,
-                            fontSize: 23,
-                            fontWeight: FontWeight.w800,
-                            letterSpacing: -.8,
-                          )),
+                      Text(
+                        isSignUp ? '피부 루틴을 시작해요' : '다시 만난 반가워요',
+                        style: const TextStyle(
+                          color: AppColors.ink,
+                          fontSize: 23,
+                          fontWeight: FontWeight.w800,
+                          letterSpacing: -.8,
+                        ),
+                      ),
                       const SizedBox(height: 6),
                       Text(
                         isSignUp
@@ -322,8 +354,9 @@ class _AppShellState extends State<AppShell> {
                           child: OutlinedButton.icon(
                             onPressed: () async {
                               try {
-                                await FirebaseAuth.instance
-                                    .signInWithRedirect(GoogleAuthProvider());
+                                await FirebaseAuth.instance.signInWithRedirect(
+                                  GoogleAuthProvider(),
+                                );
                               } on FirebaseAuthException catch (error) {
                                 if (dialogContext.mounted)
                                   _showAuthError(error);
@@ -337,37 +370,52 @@ class _AppShellState extends State<AppShell> {
                                 color: Colors.white,
                                 shape: BoxShape.circle,
                               ),
-                              child: const Text('G',
-                                  style: TextStyle(
-                                      color: Color(0xFF4285F4),
-                                      fontSize: 13,
-                                      fontWeight: FontWeight.w900)),
+                              child: const Text(
+                                'G',
+                                style: TextStyle(
+                                  color: Color(0xFF4285F4),
+                                  fontSize: 13,
+                                  fontWeight: FontWeight.w900,
+                                ),
+                              ),
                             ),
                             label: const Text('Google로 계속하기'),
                             style: OutlinedButton.styleFrom(
                               foregroundColor: AppColors.ink,
                               side: const BorderSide(color: Color(0xFFE4E1ED)),
                               shape: RoundedRectangleBorder(
-                                  borderRadius: BorderRadius.circular(14)),
+                                borderRadius: BorderRadius.circular(14),
+                              ),
                               textStyle: const TextStyle(
-                                  fontSize: 13, fontWeight: FontWeight.w700),
+                                fontSize: 13,
+                                fontWeight: FontWeight.w700,
+                              ),
                             ),
                           ),
                         ),
                         const Padding(
                           padding: EdgeInsets.symmetric(vertical: 16),
-                          child: Row(children: [
-                            Expanded(child: Divider(color: Color(0xFFEAE8F0))),
-                            Padding(
-                              padding: EdgeInsets.symmetric(horizontal: 10),
-                              child: Text('또는 이메일로',
+                          child: Row(
+                            children: [
+                              Expanded(
+                                child: Divider(color: Color(0xFFEAE8F0)),
+                              ),
+                              Padding(
+                                padding: EdgeInsets.symmetric(horizontal: 10),
+                                child: Text(
+                                  '또는 이메일로',
                                   style: TextStyle(
-                                      color: AppColors.muted,
-                                      fontSize: 10,
-                                      fontWeight: FontWeight.w600)),
-                            ),
-                            Expanded(child: Divider(color: Color(0xFFEAE8F0))),
-                          ]),
+                                    color: AppColors.muted,
+                                    fontSize: 10,
+                                    fontWeight: FontWeight.w600,
+                                  ),
+                                ),
+                              ),
+                              Expanded(
+                                child: Divider(color: Color(0xFFEAE8F0)),
+                              ),
+                            ],
+                          ),
                         ),
                       ] else
                         const SizedBox(height: 18),
@@ -376,8 +424,9 @@ class _AppShellState extends State<AppShell> {
                           controller: name,
                           textCapitalization: TextCapitalization.words,
                           decoration: fieldDecoration(
-                              hint: '이름 또는 닉네임',
-                              icon: Icons.person_outline_rounded),
+                            hint: '이름 또는 닉네임',
+                            icon: Icons.person_outline_rounded,
+                          ),
                         ),
                         const SizedBox(height: 10),
                       ],
@@ -385,14 +434,18 @@ class _AppShellState extends State<AppShell> {
                         controller: email,
                         keyboardType: TextInputType.emailAddress,
                         decoration: fieldDecoration(
-                            hint: '이메일 주소', icon: Icons.mail_outline_rounded),
+                          hint: '이메일 주소',
+                          icon: Icons.mail_outline_rounded,
+                        ),
                       ),
                       const SizedBox(height: 10),
                       TextField(
                         controller: password,
                         obscureText: true,
                         decoration: fieldDecoration(
-                            hint: '비밀번호', icon: Icons.lock_outline_rounded),
+                          hint: '비밀번호',
+                          icon: Icons.lock_outline_rounded,
+                        ),
                       ),
                       const SizedBox(height: 8),
                       Row(
@@ -404,37 +457,50 @@ class _AppShellState extends State<AppShell> {
                               _showAccountRecoveryDialog();
                             },
                             style: TextButton.styleFrom(
-                              padding:
-                                  const EdgeInsets.symmetric(horizontal: 4),
+                              padding: const EdgeInsets.symmetric(
+                                horizontal: 4,
+                              ),
                               minimumSize: Size.zero,
                               tapTargetSize: MaterialTapTargetSize.shrinkWrap,
                             ),
-                            child: const Text('아이디 찾기',
-                                style: TextStyle(
-                                    color: AppColors.muted,
-                                    fontSize: 10,
-                                    fontWeight: FontWeight.w700)),
-                          ),
-                          const Text(' · ',
+                            child: const Text(
+                              '아이디 찾기',
                               style: TextStyle(
-                                  color: AppColors.muted, fontSize: 10)),
+                                color: AppColors.muted,
+                                fontSize: 10,
+                                fontWeight: FontWeight.w700,
+                              ),
+                            ),
+                          ),
+                          const Text(
+                            ' · ',
+                            style: TextStyle(
+                              color: AppColors.muted,
+                              fontSize: 10,
+                            ),
+                          ),
                           TextButton(
                             onPressed: () {
                               Navigator.pop(dialogContext);
                               _showAccountRecoveryDialog(
-                                  startWithPassword: true);
+                                startWithPassword: true,
+                              );
                             },
                             style: TextButton.styleFrom(
-                              padding:
-                                  const EdgeInsets.symmetric(horizontal: 4),
+                              padding: const EdgeInsets.symmetric(
+                                horizontal: 4,
+                              ),
                               minimumSize: Size.zero,
                               tapTargetSize: MaterialTapTargetSize.shrinkWrap,
                             ),
-                            child: const Text('비밀번호 찾기',
-                                style: TextStyle(
-                                    color: AppColors.fuchsia,
-                                    fontSize: 10,
-                                    fontWeight: FontWeight.w800)),
+                            child: const Text(
+                              '비밀번호 찾기',
+                              style: TextStyle(
+                                color: AppColors.fuchsia,
+                                fontSize: 10,
+                                fontWeight: FontWeight.w800,
+                              ),
+                            ),
                           ),
                         ],
                       ),
@@ -442,47 +508,57 @@ class _AppShellState extends State<AppShell> {
                       SizedBox(
                         height: 48,
                         child: FilledButton(
-                          onPressed: () => Navigator.pop(
-                            dialogContext,
-                            (
-                              email.text.trim(),
-                              name.text.trim(),
-                              password.text,
-                              isSignUp
-                            ),
-                          ),
+                          onPressed: () => Navigator.pop(dialogContext, (
+                            email.text.trim(),
+                            name.text.trim(),
+                            password.text,
+                            isSignUp,
+                          )),
                           style: FilledButton.styleFrom(
                             backgroundColor: AppColors.fuchsia,
                             shape: RoundedRectangleBorder(
-                                borderRadius: BorderRadius.circular(14)),
+                              borderRadius: BorderRadius.circular(14),
+                            ),
                           ),
-                          child: Text(isSignUp ? '계정 만들기' : '로그인하기',
-                              style: const TextStyle(
-                                  fontSize: 14, fontWeight: FontWeight.w800)),
+                          child: Text(
+                            isSignUp ? '계정 만들기' : '로그인하기',
+                            style: const TextStyle(
+                              fontSize: 14,
+                              fontWeight: FontWeight.w800,
+                            ),
+                          ),
                         ),
                       ),
                       const SizedBox(height: 14),
                       Row(
                         mainAxisAlignment: MainAxisAlignment.center,
                         children: [
-                          Text(isSignUp ? '이미 계정이 있나요?' : 'BE:CAUSE가 처음인가요?',
-                              style: const TextStyle(
-                                  color: AppColors.muted, fontSize: 11)),
+                          Text(
+                            isSignUp ? '이미 계정이 있나요?' : 'BE:CAUSE가 처음인가요?',
+                            style: const TextStyle(
+                              color: AppColors.muted,
+                              fontSize: 11,
+                            ),
+                          ),
                           TextButton(
                             onPressed: () => setDialogState(() {
                               isSignUp = !isSignUp;
                             }),
                             style: TextButton.styleFrom(
-                              padding:
-                                  const EdgeInsets.symmetric(horizontal: 6),
+                              padding: const EdgeInsets.symmetric(
+                                horizontal: 6,
+                              ),
                               minimumSize: Size.zero,
                               tapTargetSize: MaterialTapTargetSize.shrinkWrap,
                             ),
-                            child: Text(isSignUp ? '로그인' : '이메일 가입',
-                                style: const TextStyle(
-                                    color: AppColors.fuchsia,
-                                    fontSize: 11,
-                                    fontWeight: FontWeight.w800)),
+                            child: Text(
+                              isSignUp ? '로그인' : '이메일 가입',
+                              style: const TextStyle(
+                                color: AppColors.fuchsia,
+                                fontSize: 11,
+                                fontWeight: FontWeight.w800,
+                              ),
+                            ),
                           ),
                         ],
                       ),
@@ -520,17 +596,17 @@ class _AppShellState extends State<AppShell> {
         if (mounted) _showAuthError(error);
       }
     } else if (mounted) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('이메일과 비밀번호를 입력해 주세요.')),
-      );
+      ScaffoldMessenger.of(context)
+          .showSnackBar(const SnackBar(content: Text('이메일과 비밀번호를 입력해 주세요.')));
     }
     name.dispose();
     email.dispose();
     password.dispose();
   }
 
-  Future<void> _showAccountRecoveryDialog(
-      {bool startWithPassword = false}) async {
+  Future<void> _showAccountRecoveryDialog({
+    bool startWithPassword = false,
+  }) async {
     final email = TextEditingController();
     var isPasswordReset = startWithPassword;
 
@@ -556,104 +632,130 @@ class _AppShellState extends State<AppShell> {
                   ),
                 ],
               ),
-              child: Column(mainAxisSize: MainAxisSize.min, children: [
-                Container(
-                  width: 42,
-                  height: 42,
-                  alignment: Alignment.center,
-                  decoration: const BoxDecoration(
-                    color: Color(0xFFF0EDFF),
-                    shape: BoxShape.circle,
-                  ),
-                  child: Icon(Icons.mark_email_read_outlined,
-                      color: AppColors.fuchsia, size: 21),
-                ),
-                const SizedBox(height: 14),
-                Text(isPasswordReset ? '비밀번호를 재설정할까요?' : '아이디를 잊으셨나요?',
-                    style: const TextStyle(
-                        color: AppColors.ink,
-                        fontSize: 18,
-                        fontWeight: FontWeight.w800)),
-                const SizedBox(height: 8),
-                Text(
-                  isPasswordReset
-                      ? '가입한 이메일로 비밀번호 재설정 링크를 보내드려요.'
-                      : 'BE:CAUSE에서는 가입에 사용한 이메일 주소가 아이디예요.',
-                  textAlign: TextAlign.center,
-                  style: const TextStyle(
-                      color: AppColors.muted, fontSize: 11, height: 1.45),
-                ),
-                const SizedBox(height: 18),
-                TextField(
-                  controller: email,
-                  keyboardType: TextInputType.emailAddress,
-                  decoration: InputDecoration(
-                    hintText: '가입한 이메일 주소',
-                    prefixIcon: const Icon(Icons.mail_outline_rounded,
-                        color: AppColors.fuchsia, size: 18),
-                    filled: true,
-                    fillColor: const Color(0xFFF8F7FC),
-                    contentPadding: const EdgeInsets.symmetric(vertical: 14),
-                    border: OutlineInputBorder(
-                      borderRadius: BorderRadius.circular(14),
-                      borderSide: BorderSide.none,
+              child: Column(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  Container(
+                    width: 42,
+                    height: 42,
+                    alignment: Alignment.center,
+                    decoration: const BoxDecoration(
+                      color: Color(0xFFF0EDFF),
+                      shape: BoxShape.circle,
+                    ),
+                    child: Icon(
+                      Icons.mark_email_read_outlined,
+                      color: AppColors.fuchsia,
+                      size: 21,
                     ),
                   ),
-                ),
-                if (!isPasswordReset) ...[
-                  const SizedBox(height: 9),
-                  const Text('이메일로 로그인하거나 비밀번호 재설정을 이용해 주세요.',
+                  const SizedBox(height: 14),
+                  Text(
+                    isPasswordReset ? '비밀번호를 재설정할까요?' : '아이디를 잊으셨나요?',
+                    style: const TextStyle(
+                      color: AppColors.ink,
+                      fontSize: 18,
+                      fontWeight: FontWeight.w800,
+                    ),
+                  ),
+                  const SizedBox(height: 8),
+                  Text(
+                    isPasswordReset
+                        ? '가입한 이메일로 비밀번호 재설정 링크를 보내드려요.'
+                        : 'BE:CAUSE에서는 가입에 사용한 이메일 주소가 아이디예요.',
+                    textAlign: TextAlign.center,
+                    style: const TextStyle(
+                      color: AppColors.muted,
+                      fontSize: 11,
+                      height: 1.45,
+                    ),
+                  ),
+                  const SizedBox(height: 18),
+                  TextField(
+                    controller: email,
+                    keyboardType: TextInputType.emailAddress,
+                    decoration: InputDecoration(
+                      hintText: '가입한 이메일 주소',
+                      prefixIcon: const Icon(
+                        Icons.mail_outline_rounded,
+                        color: AppColors.fuchsia,
+                        size: 18,
+                      ),
+                      filled: true,
+                      fillColor: const Color(0xFFF8F7FC),
+                      contentPadding: const EdgeInsets.symmetric(vertical: 14),
+                      border: OutlineInputBorder(
+                        borderRadius: BorderRadius.circular(14),
+                        borderSide: BorderSide.none,
+                      ),
+                    ),
+                  ),
+                  if (!isPasswordReset) ...[
+                    const SizedBox(height: 9),
+                    const Text(
+                      '이메일로 로그인하거나 비밀번호 재설정을 이용해 주세요.',
                       textAlign: TextAlign.center,
-                      style: TextStyle(color: AppColors.muted, fontSize: 10)),
-                ],
-                const SizedBox(height: 18),
-                SizedBox(
-                  width: double.infinity,
-                  height: 46,
-                  child: FilledButton(
-                    onPressed: () async {
-                      final address = email.text.trim();
-                      if (!address.contains('@')) {
-                        ScaffoldMessenger.of(this.context).showSnackBar(
-                          const SnackBar(content: Text('가입한 이메일 주소를 입력해 주세요.')),
-                        );
-                        return;
-                      }
-                      if (!isPasswordReset) {
-                        setDialogState(() => isPasswordReset = true);
-                        return;
-                      }
-                      try {
-                        await FirebaseAuth.instance
-                            .sendPasswordResetEmail(email: address);
-                        if (dialogContext.mounted) Navigator.pop(dialogContext);
-                        if (mounted) {
+                      style: TextStyle(color: AppColors.muted, fontSize: 10),
+                    ),
+                  ],
+                  const SizedBox(height: 18),
+                  SizedBox(
+                    width: double.infinity,
+                    height: 46,
+                    child: FilledButton(
+                      onPressed: () async {
+                        final address = email.text.trim();
+                        if (!address.contains('@')) {
                           ScaffoldMessenger.of(this.context).showSnackBar(
                             const SnackBar(
-                                content:
-                                    Text('등록된 이메일이라면 비밀번호 재설정 링크가 발송됩니다.')),
+                              content: Text('가입한 이메일 주소를 입력해 주세요.'),
+                            ),
                           );
+                          return;
                         }
-                      } on FirebaseAuthException catch (error) {
-                        if (mounted) _showAuthError(error);
-                      }
-                    },
-                    style: FilledButton.styleFrom(
-                      backgroundColor: AppColors.fuchsia,
-                      shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(14)),
+                        if (!isPasswordReset) {
+                          setDialogState(() => isPasswordReset = true);
+                          return;
+                        }
+                        try {
+                          await FirebaseAuth.instance.sendPasswordResetEmail(
+                            email: address,
+                          );
+                          if (dialogContext.mounted)
+                            Navigator.pop(dialogContext);
+                          if (mounted) {
+                            ScaffoldMessenger.of(this.context).showSnackBar(
+                              const SnackBar(
+                                content: Text('등록된 이메일이라면 비밀번호 재설정 링크가 발송됩니다.'),
+                              ),
+                            );
+                          }
+                        } on FirebaseAuthException catch (error) {
+                          if (mounted) _showAuthError(error);
+                        }
+                      },
+                      style: FilledButton.styleFrom(
+                        backgroundColor: AppColors.fuchsia,
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(14),
+                        ),
+                      ),
+                      child: Text(
+                        isPasswordReset ? '재설정 링크 보내기' : '비밀번호 재설정하기',
+                        style: const TextStyle(fontWeight: FontWeight.w800),
+                      ),
                     ),
-                    child: Text(isPasswordReset ? '재설정 링크 보내기' : '비밀번호 재설정하기',
-                        style: const TextStyle(fontWeight: FontWeight.w800)),
                   ),
-                ),
-                const SizedBox(height: 8),
-                TextButton(
-                  onPressed: () => Navigator.pop(dialogContext),
-                  child: const Text('로그인으로 돌아가기',
-                      style: TextStyle(color: AppColors.muted, fontSize: 11)),
-                ),
-              ]),
+                  const SizedBox(height: 8),
+                  TextButton(
+                    onPressed: () => Navigator.pop(dialogContext),
+                    child: const Text(
+                      '로그인으로 돌아가기',
+                      style: TextStyle(color: AppColors.muted, fontSize: 11),
+                    ),
+                  ),
+                ],
+              ),
             ),
           ),
         ),
@@ -674,189 +776,161 @@ class _AppShellState extends State<AppShell> {
     };
     ScaffoldMessenger.of(context).showSnackBar(
       SnackBar(
-          content: Text(messages[error.code] ?? '로그인에 실패했습니다. 다시 시도해 주세요.')),
+        content: Text(messages[error.code] ?? '로그인에 실패했습니다. 다시 시도해 주세요.'),
+      ),
     );
   }
-
-  PreferredSizeWidget _buildShopAppBar() => AppBar(
-        toolbarHeight: 84,
-        backgroundColor: AppColors.surface,
-        centerTitle: true,
-        leadingWidth: 118,
-        leading: Row(children: [
-          IconButton(
-              tooltip: '메뉴',
-              onPressed: () => ScaffoldMessenger.of(context)
-                  .showSnackBar(const SnackBar(content: Text('메뉴는 준비 중이에요.'))),
-              icon: const Icon(Icons.menu_rounded, size: 27)),
-          IconButton(
-              tooltip: '검색',
-              onPressed: openSearch,
-              icon: const Icon(Icons.search_rounded, size: 25)),
-        ]),
-        title: const Text('SHOP',
-            style: TextStyle(
-                color: AppColors.berry,
-                fontSize: 20,
-                fontWeight: FontWeight.w700,
-                letterSpacing: 3.2)),
-        actions: [
-          IconButton(
-              tooltip: '저장한 제품',
-              onPressed: () => setState(() => currentIndex = 3),
-              icon: const Icon(Icons.favorite_border_rounded, size: 25)),
-          IconButton(
-              onPressed: _openCart,
-              tooltip: '장바구니',
-              icon: const Icon(Icons.shopping_bag_outlined, size: 24)),
-          const SizedBox(width: 8),
-        ],
-      );
 
   @override
   Widget build(BuildContext context) {
     final pages = [
       HomeScreen(
-          skinProfile: appState.skinProfile,
-          compareIds: appState.compareIds,
-          savedIds: appState.savedIds,
-          onToggleCompare: toggleCompare,
-          onShowCompare: openCompare,
-          onOpenProduct: openProduct,
-          onAskPharmacist: openPharmacistChat,
-          onEditProfile: editProfile,
-          onDiscover: () => setState(() => currentIndex = 2)),
+        skinProfile: appState.skinProfile,
+        compareIds: appState.compareIds,
+        savedIds: appState.savedIds,
+        onToggleCompare: toggleCompare,
+        onShowCompare: openCompare,
+        onOpenProduct: openProduct,
+        onAskPharmacist: openPharmacistChat,
+        onEditProfile: editProfile,
+        onDiscover: () => setState(() => currentIndex = 1),
+      ),
+      DiscoverScreen(onOpenProduct: openProduct, onAskRemi: openPharmacistChat),
+      ScanScreen(onOpenProduct: openProduct),
       ShopScreen(
-          compareIds: appState.compareIds,
-          savedIds: appState.savedIds,
-          onCompare: toggleCompare,
-          onSave: toggleSaved,
-          onOpenProduct: openProduct),
-      const DiscoverScreen(),
+        compareIds: appState.compareIds,
+        savedIds: appState.savedIds,
+        onCompare: toggleCompare,
+        onSave: toggleSaved,
+        onOpenProduct: openProduct,
+      ),
       MySkinScreen(
-          skinProfile: appState.skinProfile,
-          profileConcern: appState.profileConcern,
-          savedIds: appState.savedIds,
-          recentIds: appState.recentIds,
-          onEditProfile: editProfile,
-          onOpenProduct: openProduct,
-          onToggleSave: toggleSaved,
-          orders: appState.orders,
-          onOpenOrder: _openOrder),
+        skinProfile: appState.skinProfile,
+        profileConcern: appState.profileConcern,
+        savedIds: appState.savedIds,
+        recentIds: appState.recentIds,
+        onEditProfile: editProfile,
+        onOpenProduct: openProduct,
+        onToggleSave: toggleSaved,
+        orders: appState.orders,
+        onOpenOrder: _openOrder,
+      ),
     ];
 
     return Scaffold(
       extendBody: true,
-      appBar: currentIndex == 1
-          ? _buildShopAppBar()
-          : AppBar(
-              toolbarHeight: 68,
-              titleSpacing: 20,
-              title: const BrandLogo(),
-              actions: [
-                IconButton(
-                    onPressed: openSearch,
-                    icon: const Icon(Icons.search_rounded),
-                    tooltip: '검색'),
-                Stack(children: [
-                  IconButton(
-                      onPressed: () => ScaffoldMessenger.of(context)
-                          .showSnackBar(
-                              const SnackBar(content: Text('장바구니가 비어 있어요.'))),
-                      tooltip: '장바구니',
-                      icon: const Icon(Icons.shopping_bag_outlined)),
-                  const Positioned(
-                      right: 7,
-                      top: 8,
-                      child: CircleAvatar(
-                          radius: 7,
-                          backgroundColor: AppColors.ink,
-                          child: Text('0',
-                              style: TextStyle(
-                                  color: Colors.white, fontSize: 7)))),
-                ]),
-                IconButton(
-                    key: const Key('auth-button'),
-                    onPressed: showAuth,
-                    tooltip: appState.isSignedIn ? '로그아웃' : '로그인',
-                    icon: appState.isSignedIn
-                        ? CircleAvatar(
-                            radius: 13,
-                            backgroundColor: AppColors.fuchsia,
-                            child: Text(
-                                appState.userName.substring(0, 1).toUpperCase(),
-                                style: const TextStyle(
-                                    color: Colors.white,
-                                    fontSize: 11,
-                                    fontWeight: FontWeight.w800)),
-                          )
-                        : const Icon(Icons.login_rounded)),
-                const SizedBox(width: 6),
-              ],
+      appBar: AppBar(
+        toolbarHeight: 68,
+        titleSpacing: 20,
+        title: const BrandLogo(),
+        actions: [
+          IconButton(
+            onPressed: () => ScaffoldMessenger.of(context).showSnackBar(
+              const SnackBar(content: Text('새로운 뷰티 혜택을 준비하고 있어요.')),
             ),
-      body: IndexedStack(index: currentIndex, children: pages),
-      floatingActionButton: _PharmacistChatFab(onPressed: openPharmacistChat),
-      bottomNavigationBar: SafeArea(
-        minimum: const EdgeInsets.fromLTRB(12, 0, 12, 12),
-        child: ClipRRect(
-          borderRadius: BorderRadius.circular(26),
-          child: BackdropFilter(
-            filter: ImageFilter.blur(sigmaX: 18, sigmaY: 18),
-            child: Container(
-              decoration: BoxDecoration(
-                color: AppColors.surface.withValues(alpha: .72),
-                borderRadius: BorderRadius.circular(26),
-                border: Border.all(color: Colors.white.withValues(alpha: .78)),
-                boxShadow: const [
-                  BoxShadow(
-                    color: Color(0x1A17171B),
-                    blurRadius: 24,
-                    offset: Offset(0, 10),
+            icon: const Icon(Icons.notifications_none_rounded),
+            tooltip: '알림',
+          ),
+          Stack(
+            children: [
+              IconButton(
+                onPressed: _openCart,
+                tooltip: '장바구니',
+                icon: const Icon(Icons.shopping_bag_outlined),
+              ),
+              const Positioned(
+                right: 7,
+                top: 8,
+                child: CircleAvatar(
+                  radius: 7,
+                  backgroundColor: AppColors.ink,
+                  child: Text(
+                    '0',
+                    style: TextStyle(color: Colors.white, fontSize: 7),
                   ),
-                ],
-              ),
-              child: NavigationBar(
-                selectedIndex: currentIndex,
-                onDestinationSelected: (index) =>
-                    setState(() => currentIndex = index),
-                height: 68,
-                backgroundColor: Colors.transparent,
-                surfaceTintColor: Colors.transparent,
-                indicatorColor: AppColors.blush.withValues(alpha: .78),
-                indicatorShape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(16),
                 ),
-                labelBehavior: NavigationDestinationLabelBehavior.alwaysShow,
-                labelTextStyle:
-                    WidgetStateProperty.resolveWith((states) => TextStyle(
-                          fontSize: 10,
-                          fontWeight: states.contains(WidgetState.selected)
-                              ? FontWeight.w700
-                              : FontWeight.w600,
-                          color: states.contains(WidgetState.selected)
-                              ? AppColors.fuchsia
-                              : AppColors.muted,
-                        )),
-                destinations: const [
-                  NavigationDestination(
-                      icon: Icon(Icons.home_outlined),
-                      selectedIcon: Icon(Icons.home_rounded),
-                      label: 'HOME'),
-                  NavigationDestination(
-                      icon: Icon(Icons.grid_view_outlined),
-                      selectedIcon: Icon(Icons.grid_view_rounded),
-                      label: 'SHOP'),
-                  NavigationDestination(
-                      icon: Icon(Icons.science_outlined),
-                      selectedIcon: Icon(Icons.science_rounded),
-                      label: 'TREND'),
-                  NavigationDestination(
-                      icon: Icon(Icons.person_outline_rounded),
-                      selectedIcon: Icon(Icons.person_rounded),
-                      label: 'MY SKIN'),
-                ],
+              ),
+            ],
+          ),
+          IconButton(
+            key: const Key('auth-button'),
+            onPressed: showAuth,
+            tooltip: appState.isSignedIn ? '로그아웃' : '로그인',
+            icon: appState.isSignedIn
+                ? CircleAvatar(
+                    radius: 13,
+                    backgroundColor: AppColors.gold,
+                    child: Text(
+                      appState.userName.substring(0, 1).toUpperCase(),
+                      style: const TextStyle(
+                        color: Colors.white,
+                        fontSize: 11,
+                        fontWeight: FontWeight.w800,
+                      ),
+                    ),
+                  )
+                : const Icon(Icons.person_outline_rounded),
+          ),
+          const SizedBox(width: 6),
+        ],
+      ),
+      body: IndexedStack(index: currentIndex, children: pages),
+      bottomNavigationBar: SafeArea(
+        child: Container(
+          decoration: const BoxDecoration(
+            color: AppColors.surface,
+            border: Border(top: BorderSide(color: AppColors.line)),
+          ),
+          child: NavigationBar(
+            selectedIndex: currentIndex,
+            onDestinationSelected: (index) =>
+                setState(() => currentIndex = index),
+            height: 70,
+            backgroundColor: Colors.transparent,
+            surfaceTintColor: Colors.transparent,
+            indicatorColor: Colors.transparent,
+            indicatorShape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(16),
+            ),
+            labelBehavior: NavigationDestinationLabelBehavior.alwaysShow,
+            labelTextStyle: WidgetStateProperty.resolveWith(
+              (states) => TextStyle(
+                fontSize: 10,
+                fontWeight: states.contains(WidgetState.selected)
+                    ? FontWeight.w700
+                    : FontWeight.w600,
+                color: states.contains(WidgetState.selected)
+                    ? AppColors.goldDeep
+                    : AppColors.muted,
               ),
             ),
+            destinations: const [
+              NavigationDestination(
+                icon: Icon(Icons.home_outlined),
+                selectedIcon: Icon(Icons.home_rounded),
+                label: '홈',
+              ),
+              NavigationDestination(
+                icon: Icon(Icons.search_outlined),
+                selectedIcon: Icon(Icons.search_rounded),
+                label: '찾기',
+              ),
+              NavigationDestination(
+                icon: Icon(Icons.document_scanner_outlined),
+                selectedIcon: Icon(Icons.document_scanner_rounded),
+                label: '스캔',
+              ),
+              NavigationDestination(
+                icon: Icon(Icons.shopping_bag_outlined),
+                selectedIcon: Icon(Icons.shopping_bag_rounded),
+                label: '쇼핑',
+              ),
+              NavigationDestination(
+                icon: Icon(Icons.person_outline_rounded),
+                selectedIcon: Icon(Icons.person_rounded),
+                label: '마이',
+              ),
+            ],
           ),
         ),
       ),
@@ -872,76 +946,94 @@ class _PharmacistChatFab extends StatelessWidget {
   Widget build(BuildContext context) => Semantics(
         button: true,
         label: 'AI 약사 챗봇 열기',
-        child: Row(mainAxisSize: MainAxisSize.min, children: [
-          ClipRRect(
-            borderRadius: BorderRadius.circular(18),
-            child: BackdropFilter(
-              filter: ImageFilter.blur(sigmaX: 12, sigmaY: 12),
-              child: Container(
-                height: 44,
-                padding: const EdgeInsets.symmetric(horizontal: 17),
-                alignment: Alignment.center,
-                decoration: BoxDecoration(
-                  color: Colors.white.withValues(alpha: .68),
-                  borderRadius: BorderRadius.circular(18),
-                  border:
-                      Border.all(color: Colors.white.withValues(alpha: .88)),
-                  boxShadow: const [
-                    BoxShadow(
+        child: Row(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            ClipRRect(
+              borderRadius: BorderRadius.circular(18),
+              child: BackdropFilter(
+                filter: ImageFilter.blur(sigmaX: 12, sigmaY: 12),
+                child: Container(
+                  height: 44,
+                  padding: const EdgeInsets.symmetric(horizontal: 17),
+                  alignment: Alignment.center,
+                  decoration: BoxDecoration(
+                    color: Colors.white.withValues(alpha: .68),
+                    borderRadius: BorderRadius.circular(18),
+                    border:
+                        Border.all(color: Colors.white.withValues(alpha: .88)),
+                    boxShadow: const [
+                      BoxShadow(
                         color: Color(0x1A17171B),
                         blurRadius: 16,
-                        offset: Offset(0, 7))
-                  ],
+                        offset: Offset(0, 7),
+                      ),
+                    ],
+                  ),
+                  child: const Text(
+                    'AI Pharmacist',
+                    style: TextStyle(fontSize: 11, fontWeight: FontWeight.w700),
+                  ),
                 ),
-                child: const Text('AI Pharmacist',
-                    style:
-                        TextStyle(fontSize: 11, fontWeight: FontWeight.w700)),
               ),
             ),
-          ),
-          const SizedBox(width: 8),
-          Material(
-            color: Colors.transparent,
-            shape: const CircleBorder(),
-            child: InkWell(
-              key: const Key('pharmacist-chat-fab'),
-              onTap: onPressed,
-              customBorder: const CircleBorder(),
-              child: Ink(
-                width: 60,
-                height: 60,
-                decoration: BoxDecoration(
-                  color: Colors.white.withValues(alpha: .80),
-                  shape: BoxShape.circle,
-                  border: Border.all(color: Colors.white, width: 1.4),
-                  boxShadow: const [
-                    BoxShadow(
+            const SizedBox(width: 8),
+            Material(
+              color: Colors.transparent,
+              shape: const CircleBorder(),
+              child: InkWell(
+                key: const Key('pharmacist-chat-fab'),
+                onTap: onPressed,
+                customBorder: const CircleBorder(),
+                child: Ink(
+                  width: 60,
+                  height: 60,
+                  decoration: BoxDecoration(
+                    color: Colors.white.withValues(alpha: .80),
+                    shape: BoxShape.circle,
+                    border: Border.all(color: Colors.white, width: 1.4),
+                    boxShadow: const [
+                      BoxShadow(
                         color: Color(0x2417171B),
                         blurRadius: 18,
-                        offset: Offset(0, 8))
-                  ],
-                ),
-                child: Stack(clipBehavior: Clip.none, children: [
-                  const Center(
-                      child: Icon(Icons.chat_bubble_outline_rounded,
-                          size: 28, color: AppColors.ink)),
-                  Positioned(
-                    right: -2,
-                    top: -2,
-                    child: Container(
-                      width: 24,
-                      height: 24,
-                      alignment: Alignment.center,
-                      decoration: const BoxDecoration(
-                          color: AppColors.fuchsia, shape: BoxShape.circle),
-                      child: const Icon(Icons.auto_awesome_rounded,
-                          size: 13, color: Colors.white),
-                    ),
+                        offset: Offset(0, 8),
+                      ),
+                    ],
                   ),
-                ]),
+                  child: Stack(
+                    clipBehavior: Clip.none,
+                    children: [
+                      const Center(
+                        child: Icon(
+                          Icons.chat_bubble_outline_rounded,
+                          size: 28,
+                          color: AppColors.ink,
+                        ),
+                      ),
+                      Positioned(
+                        right: -2,
+                        top: -2,
+                        child: Container(
+                          width: 24,
+                          height: 24,
+                          alignment: Alignment.center,
+                          decoration: const BoxDecoration(
+                            color: AppColors.fuchsia,
+                            shape: BoxShape.circle,
+                          ),
+                          child: const Icon(
+                            Icons.auto_awesome_rounded,
+                            size: 13,
+                            color: Colors.white,
+                          ),
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
               ),
             ),
-          ),
-        ]),
+          ],
+        ),
       );
 }

@@ -50,7 +50,7 @@ class SkinWeatherScreen extends StatelessWidget {
                 children: [
                   Row(
                     children: [
-                      const SectionLabel('LIVE', 'SKIN WEATHER'),
+                      const SectionLabel('오늘의 환경', '피부 컨디션 체크'),
                       const Spacer(),
                       Container(
                         padding: const EdgeInsets.symmetric(
@@ -59,7 +59,7 @@ class SkinWeatherScreen extends StatelessWidget {
                           color: AppColors.paper2,
                           borderRadius: BorderRadius.circular(9),
                         ),
-                        child: const Text('SEOUL · DEMO DATA',
+                        child: const Text('서울 · 예시 데이터',
                             style: TextStyle(
                                 color: AppColors.muted,
                                 fontSize: 8,
@@ -209,7 +209,7 @@ class _RiskHero extends StatelessWidget {
               ),
             ),
             const SizedBox(height: 7),
-            Text('SKIN RISK ${weather.skinRiskScore}/100',
+            Text('피부 자극 지수 ${weather.skinRiskScore}/100',
                 style: const TextStyle(
                     color: AppColors.berry,
                     fontSize: 9,
@@ -291,7 +291,7 @@ class _RoutineAdvice extends StatelessWidget {
         child: const Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Text('TODAY · ROUTINE NOTE',
+            Text('오늘의 루틴 메모',
                 style: TextStyle(
                     color: AppColors.ballerina,
                     fontSize: 9,

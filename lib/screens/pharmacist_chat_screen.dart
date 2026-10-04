@@ -81,13 +81,13 @@ class _PharmacistChatScreenState extends State<PharmacistChatScreen> {
             _RemiAvatar(radius: 23),
             SizedBox(width: 11),
             Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
-              Text('레미 AI 약사',
+              Text('레미 · 성분 정보 해설',
                   style: TextStyle(fontSize: 16, fontWeight: FontWeight.w700)),
               SizedBox(height: 2),
               Row(children: [
                 CircleAvatar(radius: 3, backgroundColor: AppColors.fuchsia),
                 SizedBox(width: 5),
-                Text('24시간 성분 상담 중',
+                Text('개인 기준을 함께 정리해요',
                     style: TextStyle(
                         color: AppColors.muted,
                         fontSize: 10,
@@ -113,7 +113,7 @@ class _PharmacistChatScreenState extends State<PharmacistChatScreen> {
                 SizedBox(width: 9),
                 Expanded(
                   child: Text(
-                    '챗봇의 화장품 성분 안내이며 의료 진단·처방을 대신하지 않아요.',
+                    '성분·표시 정보를 읽기 쉽게 정리해요. 의료 진단·처방은 제공하지 않아요.',
                     style: TextStyle(fontSize: 10, height: 1.4),
                   ),
                 ),

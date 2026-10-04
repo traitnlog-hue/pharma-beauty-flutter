@@ -94,27 +94,26 @@ void main() {
   testWidgets('auto-dismisses the BE:CAUSE intro before home', (tester) async {
     await tester.pumpWidget(const PharmaBeautyApp());
 
-    expect(find.text('BEAUTY, WITH REASONS.'), findsOneWidget);
+    expect(find.text('내 피부를 위한 뷰티 선택'), findsOneWidget);
     await tester.pump(const Duration(milliseconds: 800));
     await tester.pumpAndSettle();
 
-    expect(find.byKey(const Key('ingredient-trend-hero')), findsOneWidget);
+    expect(find.text('오늘의 뷰티 브리핑'), findsOneWidget);
   });
 
-  testWidgets('shows the BE:CAUSE home experience', (tester) async {
+  testWidgets('shows the BE:CAUSE daily decision home', (tester) async {
     await tester.pumpWidget(const PharmaBeautyApp(showIntro: false));
 
     expect(find.byKey(const Key('because-brand-logo')), findsOneWidget);
-    expect(find.byKey(const Key('ingredient-trend-hero')), findsOneWidget);
-    expect(find.textContaining('구매 데이터를'), findsWidgets);
-    expect(find.byKey(const Key('skin-weather-hero')), findsOneWidget);
-    expect(find.textContaining('회원님의 피부 기상 리포트'), findsOneWidget);
+    expect(find.text('오늘의 뷰티 브리핑'), findsOneWidget);
+    expect(find.textContaining('피부 맥락을'), findsOneWidget);
   });
 
-  testWidgets('opens weather-based skin recommendations', (tester) async {
+  testWidgets('opens the contextual skin weather recommendation',
+      (tester) async {
     await tester.pumpWidget(const PharmaBeautyApp(showIntro: false));
 
-    await tester.tap(find.text('MY SKIN'));
+    await tester.tap(find.text('마이'));
     await tester.pumpAndSettle();
     final weatherEntry = find.byKey(const Key('skin-weather-entry'));
     tester.widget<InkWell>(weatherEntry).onTap!.call();
@@ -125,79 +124,39 @@ void main() {
     expect(find.textContaining('오늘 날씨 기준 추천'), findsOneWidget);
   });
 
-  testWidgets('shows the BE:CAUSE brand story and concise care guide',
-      (tester) async {
+  testWidgets('opens criteria editing from the MY screen', (tester) async {
+    await tester.pumpWidget(const PharmaBeautyApp(showIntro: false));
+
+    await tester.tap(find.text('마이'));
+    await tester.pumpAndSettle();
+    expect(find.textContaining('마이 뷰티'), findsOneWidget);
+    expect(find.textContaining('내 피부 기준'), findsOneWidget);
+  });
+
+  testWidgets('opens the unified discover experience', (tester) async {
+    await tester.pumpWidget(const PharmaBeautyApp(showIntro: false));
+
+    await tester.tap(find.text('찾기'));
+    await tester.pumpAndSettle();
+
+    expect(find.text('성분 · 상품 찾기'), findsWidgets);
+    expect(find.text('제품, 성분, 브랜드, 리뷰 키워드'), findsOneWidget);
+  });
+
+  testWidgets('asks contextual Remi about retinal', (tester) async {
     await tester.pumpWidget(const PharmaBeautyApp(showIntro: false));
 
     await tester.scrollUntilVisible(
-      find.byKey(const Key('brand-story-section')),
-      420,
+      find.text('레미에게 묻기'),
+      380,
       scrollable: find.byType(Scrollable).first,
     );
     await tester.pumpAndSettle();
-
-    expect(find.text('화장품 성분은\n하나의 언어다.'), findsOneWidget);
-    expect(find.text('피부 케어, 이렇게 도와드려요'), findsOneWidget);
-    expect(find.text('성분 해석'), findsOneWidget);
-  });
-
-  testWidgets('completes the five-step skin chart from home', (tester) async {
-    await tester.pumpWidget(const PharmaBeautyApp(showIntro: false));
-
-    await tester.scrollUntilVisible(
-      find.byKey(const Key('skin-chart-start')),
-      420,
-      scrollable: find.byType(Scrollable).first,
-    );
-    await tester.pumpAndSettle();
-    await tester.tap(find.byKey(const Key('skin-chart-start')));
+    await tester.tap(find.text('레미에게 묻기'));
     await tester.pumpAndSettle();
 
-    await tester.tap(find.byKey(const Key('skin-chart-option-0-0')));
-    await tester.pumpAndSettle();
-    await tester.tap(find.byKey(const Key('skin-chart-option-1-0')));
-    await tester.pumpAndSettle();
-    await tester.tap(find.byKey(const Key('skin-chart-concern-next')));
-    await tester.pumpAndSettle();
-    await tester.tap(find.byKey(const Key('skin-chart-option-2-0')));
-    await tester.pumpAndSettle();
-    await tester.tap(find.byKey(const Key('skin-chart-option-3-0')));
-    await tester.pumpAndSettle();
-    await tester.tap(find.byKey(const Key('skin-chart-option-4-0')));
-    await tester.pumpAndSettle();
-
-    expect(find.text('장벽 회복형'), findsOneWidget);
-    expect(find.textContaining('세라마이드 · 판테놀'), findsOneWidget);
-
-    await tester.drag(find.byType(ListView).last, const Offset(0, -320));
-    await tester.pumpAndSettle();
-    await tester.tap(find.byKey(const Key('skin-chart-complete')));
-    await tester.pumpAndSettle();
-
-    expect(find.byKey(const Key('skin-chart-edit')), findsOneWidget);
-    expect(find.textContaining('장벽 회복형'), findsOneWidget);
-  });
-
-  testWidgets('opens the ingredient discovery experience', (tester) async {
-    await tester.pumpWidget(const PharmaBeautyApp(showIntro: false));
-
-    await tester.tap(find.text('TREND'));
-    await tester.pumpAndSettle();
-
-    expect(find.text('지금 뜨는 성분'), findsOneWidget);
-    expect(find.textContaining('INGREDIENT'), findsWidgets);
-  });
-
-  testWidgets('asks Remi pharmacist about retinal', (tester) async {
-    await tester.pumpWidget(const PharmaBeautyApp(showIntro: false));
-
-    await tester.tap(find.text('SHOP'));
-    await tester.pumpAndSettle();
-    await tester.tap(find.byKey(const Key('pharmacist-chat-fab')));
-    await tester.pumpAndSettle();
-
-    expect(find.text('레미 AI 약사'), findsOneWidget);
-    expect(find.textContaining('의료 진단·처방을 대신하지 않아요'), findsOneWidget);
+    expect(find.text('레미 · 성분 정보 해설'), findsOneWidget);
+    expect(find.textContaining('의료 진단·처방은 제공하지 않아요'), findsOneWidget);
 
     await tester.tap(find.text('레티날 사용법'));
     await tester.pumpAndSettle();
